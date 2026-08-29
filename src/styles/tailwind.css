@@ -1,0 +1,297 @@
+@import 'tailwindcss';
+
+@plugin '@tailwindcss/forms';
+@plugin '@tailwindcss/typography';
+
+@source "../components/**/*.{ts,html}";
+@source "../icons/**/*.{ts,html}";
+@source "../utils/**/*.{ts,html}";
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 0.625rem;
+  @media (width >= theme(--breakpoint-md)) {
+    padding-inline: 0.875rem;
+  }
+  @media (width >= theme(--breakpoint-lg)) {
+    padding-inline: 1.375rem;
+  }
+  @media (width >= theme(--breakpoint-xl)) {
+    padding-inline: 1.25rem;
+  }
+}
+
+@theme {
+  --breakpoint-*: initial;
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
+  --font-*: initial;
+  --font-roboto:
+    'Roboto', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
+    'Segoe UI', 'Helvetica Neue', sans-serif;
+  --font-inter: 'Inter', 'Helvetica Neue', ui-sans-serif, system-ui, sans-serif;
+  --font-notokufi:
+    'Noto Kufi Arabic', ui-sans-serif, 'Helvetica Neue', sans-serif;
+  --font-alexandria:
+    'Alexandria', 'Helvetica Neue', ui-sans-serif, system-ui, sans-serif;
+
+  --text-*: initial;
+  --text-xs: 0.75rem;
+  --text-xs--line-height: 1rem;
+  --text-sm: 0.875rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base: 1rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg: 1.125rem;
+  --text-lg--line-height: 1.5rem;
+  --text-xl: 1.25rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl: 1.5rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl: 1.875rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-h6: 1.25rem;
+  --text-h6--line-height: 1.75rem;
+  --text-h5: 1.625rem;
+  --text-h5--line-height: 2.125rem;
+  --text-h4: 2rem;
+  --text-h4--line-height: 2.375rem;
+  --text-h3: 2.5rem;
+  --text-h3--line-height: 1.2;
+  --text-h2: 3rem;
+  --text-h2--line-height: 1.2;
+  --text-h1: 3.875rem;
+  --text-h1--line-height: 1.1;
+  --text-display: 4.75rem;
+  --text-display--line-height: 1.1;
+
+  --color-inherit: inherit;
+  --color-current: currentColor;
+  --color-transparent: transparent;
+
+  --color-aegold-50: #f9f7ed;
+  --color-aegold-100: #f2eccf;
+  --color-aegold-200: #e6d7a2;
+  --color-aegold-300: #d7bc6d;
+  --color-aegold-400: #cba344;
+  --color-aegold-450: #cba343;
+  --color-aegold-500: #b68a35;
+  --color-aegold-600: #92722a;
+  --color-aegold-700: #7c5e24;
+  --color-aegold-800: #6c4527;
+  --color-aegold-900: #5d3b26;
+  --color-aegold-950: #361e12;
+
+  --color-aered-50: #fef2f2;
+  --color-aered-100: #fde4e3;
+  --color-aered-200: #fdcdcb;
+  --color-aered-300: #faaaa7;
+  --color-aered-400: #f47a75;
+  --color-aered-500: #ea4f49;
+  --color-aered-600: #d83731;
+  --color-aered-700: #b52520;
+  --color-aered-800: #95231f;
+  --color-aered-900: #7c2320;
+  --color-aered-950: #430e0c;
+
+  --color-aegreen-50: #f3faf4;
+  --color-aegreen-100: #e4f4e7;
+  --color-aegreen-200: #cae8cf;
+  --color-aegreen-300: #a0d5ab;
+  --color-aegreen-400: #6fb97f;
+  --color-aegreen-500: #4a9d5c;
+  --color-aegreen-600: #3f8e50;
+  --color-aegreen-700: #2f663c;
+  --color-aegreen-800: #2a5133;
+  --color-aegreen-900: #24432b;
+  --color-aegreen-950: #0f2415;
+
+  --color-aeblack-50: #f7f7f7;
+  --color-aeblack-100: #e1e3e5;
+  --color-aeblack-200: #c3c6cb;
+  --color-aeblack-300: #9ea2a9;
+  --color-aeblack-400: #797e86;
+  --color-aeblack-500: #5f646d;
+  --color-aeblack-600: #4b4f58;
+  --color-aeblack-700: #3e4046;
+  --color-aeblack-800: #232528;
+  --color-aeblack-900: #1b1d21;
+  --color-aeblack-950: #0e0f12;
+
+  --color-whitely-50: #ffffff;
+  --color-whitely-100: #fcfcfc;
+  --color-whitely-200: #f7f7f7;
+  --color-whitely-300: #f2f2f2;
+  --color-whitely-400: #ededed;
+  --color-whitely-500: #e8e8e8;
+
+  --color-camel-50: #fffbeb;
+  --color-camel-100: #fdf4c8;
+  --color-camel-200: #fbe68c;
+  --color-camel-300: #fad44f;
+  --color-camel-400: #f8c027;
+  --color-camel-500: #f29f0e;
+  --color-camel-600: #d67909;
+  --color-camel-700: #b2550b;
+  --color-camel-800: #904110;
+  --color-camel-900: #773610;
+  --color-camel-950: #441b04;
+
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-600: #475569;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-900: #0f172a;
+  --color-slate-950: #020617;
+
+  --color-fuchsia-50: #fdf4ff;
+  --color-fuchsia-100: #fae8ff;
+  --color-fuchsia-200: #f5d0fe;
+  --color-fuchsia-300: #f0abfc;
+  --color-fuchsia-400: #e879f9;
+  --color-fuchsia-500: #d946ef;
+  --color-fuchsia-600: #c026d3;
+  --color-fuchsia-700: #a21caf;
+  --color-fuchsia-800: #86198f;
+  --color-fuchsia-900: #701a75;
+  --color-fuchsia-950: #4a044e;
+
+  --color-techblue-50: #e7f5ff;
+  --color-techblue-100: #d3edff;
+  --color-techblue-200: #b0dbff;
+  --color-techblue-300: #81c1ff;
+  --color-techblue-400: #4f98ff;
+  --color-techblue-500: #286cff;
+  --color-techblue-600: #043dff;
+  --color-techblue-700: #003cff;
+  --color-techblue-800: #002dc2;
+  --color-techblue-900: #0b32a4;
+  --color-techblue-950: #071c5f;
+
+  --color-seablue-50: #effaff;
+  --color-seablue-100: #def3ff;
+  --color-seablue-200: #b6eaff;
+  --color-seablue-300: #75dbff;
+  --color-seablue-400: #2ccaff;
+  --color-seablue-500: #00abeb;
+  --color-seablue-600: #0090d4;
+  --color-seablue-700: #0073ab;
+  --color-seablue-800: #00608d;
+  --color-seablue-900: #065074;
+  --color-seablue-950: #04334d;
+
+  --color-desert-50: #fef5ee;
+  --color-desert-100: #fce9d8;
+  --color-desert-200: #f9cfaf;
+  --color-desert-300: #f5ac7c;
+  --color-desert-400: #ef8048;
+  --color-desert-500: #eb5f24;
+  --color-desert-600: #e54b1d;
+  --color-desert-700: #b73417;
+  --color-desert-800: #922b1a;
+  --color-desert-900: #762518;
+  --color-desert-950: #3f100b;
+
+  --color-primary-50: #f9f7ed;
+  --color-primary-100: #f2eccf;
+  --color-primary-200: #e6d7a2;
+  --color-primary-300: #d7bc6d;
+  --color-primary-400: #cba344;
+  --color-primary-500: #b68a35;
+  --color-primary-550: #b68a36;
+  --color-primary-600: #92722a;
+  --color-primary-700: #7c5e24;
+  --color-primary-800: #6c4527;
+  --color-primary-900: #5d3b26;
+  --color-primary-950: #361e12;
+
+  --color-secondary-50: #f7f7f7;
+  --color-secondary-100: #e1e3e5;
+  --color-secondary-200: #c3c6cb;
+  --color-secondary-300: #9ea2a9;
+  --color-secondary-400: #797e86;
+  --color-secondary-500: #5f646d;
+  --color-secondary-600: #4b4f58;
+  --color-secondary-700: #3e4046;
+  --color-secondary-800: #232528;
+  --color-secondary-900: #1b1d21;
+  --color-secondary-950: #0e0f12;
+
+  --color-primary-support-50: #fffbeb;
+  --color-primary-support-100: #fdf4c8;
+  --color-primary-support-200: #fbe68c;
+  --color-primary-support-300: #fad44f;
+  --color-primary-support-400: #f8c027;
+
+  --color-secondary-support-50: #effaff;
+  --color-secondary-support-100: #def3ff;
+  --color-secondary-support-200: #b6eaff;
+  --color-secondary-support-300: #75dbff;
+  --color-secondary-support-400: #2ccaff;
+
+  --color-aered-support-50: #fef2f2;
+  --color-aered-support-100: #fde4e3;
+  --color-aered-support-200: #fdcdcb;
+  --color-aered-support-300: #faaaa7;
+  --color-aered-support-400: #f47a75;
+  --color-aered-support-500: #ea4f49;
+
+  --shadow-button: 0px 0px 0px 6px;
+
+  --spacing-13: 3.25rem;
+  --spacing-4_5: 1.125rem;
+
+  --height-13: 3.25rem;
+  --height-4_5: 1.125rem;
+
+  --width-13: 3.25rem;
+  --width-4_5: 1.125rem;
+
+  --animate-hide: hide 100ms ease-in;
+  --animate-slideIn: slideIn 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --animate-swipeOut: swipeOut 100ms ease-out;
+
+  @keyframes hide {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes slideIn {
+    from {
+      transform: translateX(calc(100% + 1rem));
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+  @keyframes swipeOut {
+    from {
+      transform: translateX(var(--radix-toast-swipe-end-x));
+    }
+    to {
+      transform: translateX(calc(100% + 1rem));
+    }
+  }
+}
+
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
