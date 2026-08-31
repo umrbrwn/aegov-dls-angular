@@ -173,7 +173,6 @@ export class RadioGroupComponent implements ControlValueAccessor {
         <label
           [attr.for]="computedId()"
           [class]="labelClasses()"
-          (click)="select()"
         >
           @if (label()) {
             {{ label() }}

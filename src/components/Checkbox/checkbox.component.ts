@@ -56,7 +56,6 @@ export type CheckboxVariant = 'primary' | 'secondary';
             <label
               [attr.for]="computedId()"
               [class]="labelClasses()"
-              (click)="toggle()"
             >
               {{ label() }}
             </label>
