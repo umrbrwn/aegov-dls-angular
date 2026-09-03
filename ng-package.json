@@ -8,9 +8,5 @@
   "allowedNonPeerDependencies": [
     "clsx",
     "tailwind-merge"
-  ],
-  "assets": [
-    "src/styles/**/*.css",
-    "src/assets/**/*"
   ]
 }

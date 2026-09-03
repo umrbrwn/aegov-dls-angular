@@ -6,7 +6,8 @@
     "postinstall": "node scripts/generate-icons.cjs",
     "storybook": "ng run aegov-dls-angular:storybook",
     "build-storybook": "ng run aegov-dls-angular:build-storybook",
-    "build": "ng-packagr -p ng-package.json",
+    "build:styles": "node scripts/build-styles.cjs",
+    "build": "ng-packagr -p ng-package.json && npm run build:styles",
     "watch": "ng-packagr -p ng-package.json --watch"
   },
   "keywords": [
