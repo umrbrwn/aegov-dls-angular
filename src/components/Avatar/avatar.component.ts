@@ -8,7 +8,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type AvatarSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
 export type AvatarVariant = 'square' | 'rounded-sm' | 'rounded' | 'circle';

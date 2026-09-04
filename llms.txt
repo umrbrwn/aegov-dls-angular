@@ -1,0 +1,436 @@
+# aegov-dls-angular
+
+> Unofficial, community-driven Angular 19+ port of the UAE Government Design Language System (AEGOV DLS). Built with Standalone Components, Angular Signals, modern control flow (@if, @for), Tailwind CSS v4, and Phosphor Icons.
+
+## Setup & Global Requirements
+
+1. **Installation**:
+```bash
+npm install aegov-dls-angular @angular/cdk
+```
+
+2. **Global Stylesheet**:
+Must include the compiled Tailwind v4 CSS in the global stylesheet (`styles.css` or `angular.json`):
+```css
+@import "aegov-dls-angular/styles/tailwind.css";
+```
+
+3. **Standalone Component Import**:
+Import components directly from `'aegov-dls-angular'`:
+```typescript
+import { Component } from '@angular/core';
+import { ButtonComponent, InputComponent, AlertComponent, IconComponent } from 'aegov-dls-angular';
+
+@Component({
+  selector: 'app-example',
+  standalone: true,
+  imports: [ButtonComponent, InputComponent, AlertComponent, IconComponent],
+  template: `...`
+})
+export class ExampleComponent {}
+```
+
+---
+
+## Component Index & Quick Reference
+
+### 1. Button (`ae-button`, `button[ae-button]`, `a[ae-button]`)
+- **Import**: `import { ButtonComponent } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `color`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `variant`: `'solid' | 'soft' | 'link' | 'outline' | 'outline-solid'` (default: `'solid'`)
+  - `size`: `'xs' | 'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `block`: `boolean` (full width)
+  - `disabled`: `boolean`
+  - `isIcon`: `boolean` (for square icon buttons)
+  - `href`: `string` (renders `<a>` tag when set)
+  - `type`: `'button' | 'submit' | 'reset'` (default: `'button'`)
+- **Usage**:
+```html
+<ae-button color="primary" variant="solid" size="base">
+  Submit Application
+</ae-button>
+<a ae-button href="/portal" color="secondary" variant="outline">
+  Go to Portal
+</a>
+```
+
+### 2. Icon (`ae-icon`) & Custom Icons
+- **Import**: `import { IconComponent, provideAeIcons, AeIconRegistry } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `name`: `string` (e.g. `'check'`, `'x'`, `'caret-down'`, `'warning'`, `'info'`, `'check-circle'`, `'house'`, or any custom icon registered via `provideAeIcons`)
+  - `svg`: `string` (direct SVG path content e.g. `[svg]="customSvgString"`)
+  - `weight`: `'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone'` (default: `'regular'`)
+  - `size`: `number | string` (default: `16`)
+  - `class`: `string`
+- **Register Custom / Consumer Icons** (in `app.config.ts` or component):
+```typescript
+import { provideAeIcons } from 'aegov-dls-angular';
+
+export const appConfig = {
+  providers: [
+    provideAeIcons({
+      heart: '<path d="..."/>',
+      gear: '<path d="..."/>',
+    }),
+  ],
+};
+```
+- **Usage**:
+```html
+<!-- Built-in icons work with zero configuration -->
+<ae-icon name="check" [size]="20" class="text-primary-600"></ae-icon>
+<ae-icon name="caret-down" weight="bold" [size]="16"></ae-icon>
+
+<!-- Registered custom icons -->
+<ae-icon name="heart" [size]="24" class="text-red-500"></ae-icon>
+
+<!-- Direct SVG string -->
+<ae-icon [svg]="customSvg" [size]="24"></ae-icon>
+```
+
+### 3. Input (`ae-input`)
+- **Import**: `import { InputComponent } from 'aegov-dls-angular';`
+- **Features**: `ControlValueAccessor` compatible with `[(ngModel)]` and `[formControl]`.
+- **Inputs**:
+  - `type`: `'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url'` (default: `'text'`)
+  - `label`: `string`
+  - `placeholder`: `string`
+  - `helperText`: `string`
+  - `error`: `string` (shows validation error text & red border)
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `disabled`: `boolean`
+  - `required`: `boolean`
+- **Slots**: `[prefix]`, `[suffix]`
+- **Usage**:
+```html
+<ae-input
+  label="Emirates ID"
+  placeholder="784-XXXX-XXXXXXX-X"
+  [(ngModel)]="emiratesId"
+  [required]="true"
+  helperText="Enter 15 digit Emirates ID">
+</ae-input>
+```
+
+### 4. Textarea (`ae-textarea`)
+- **Import**: `import { TextareaComponent } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `label`: `string`
+  - `placeholder`: `string`
+  - `rows`: `number` (default: `4`)
+  - `error`: `string`
+  - `helperText`: `string`
+  - `disabled`: `boolean`
+  - `required`: `boolean`
+  - `size`: `'sm' | 'base' | 'lg'`
+- **Usage**:
+```html
+<ae-textarea
+  label="Feedback / Comments"
+  placeholder="Write your comments here..."
+  [(ngModel)]="comments"
+  [rows]="5">
+</ae-textarea>
+```
+
+### 5. Select (`ae-select`)
+- **Import**: `import { SelectComponent, SelectOption } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `options`: `SelectOption[]` (`{ value: string, label: string, disabled?: boolean }`)
+  - `label`: `string`
+  - `placeholder`: `string`
+  - `error`: `string`
+  - `helperText`: `string`
+  - `size`: `'sm' | 'base' | 'lg'`
+  - `disabled`: `boolean`
+- **Usage**:
+```html
+<ae-select
+  label="Select Emirate"
+  [options]="[
+    { value: 'auh', label: 'Abu Dhabi' },
+    { value: 'dxb', label: 'Dubai' },
+    { value: 'shj', label: 'Sharjah' }
+  ]"
+  [(ngModel)]="selectedEmirate">
+</ae-select>
+```
+
+### 6. Alert (`ae-alert`)
+- **Import**: `import { AlertComponent } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `variant`: `'info' | 'warning' | 'success' | 'error'` (default: `'info'`)
+  - `tone`: `'soft' | 'solid'` (default: `'soft'`)
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `title`: `string`
+  - `dismissible`: `boolean`
+  - `showIcon`: `boolean` (default: `true`)
+  - `action`: `{ text: string, href: string }`
+- **Outputs**: `(dismiss)`
+- **Usage**:
+```html
+<ae-alert variant="success" title="Application Approved" [dismissible]="true">
+  Your digital permit has been issued successfully.
+</ae-alert>
+```
+
+### 7. Modal (`ae-modal`)
+- **Import**: `import { ModalComponent } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `open`: `boolean` (controlled visibility)
+  - `title`: `string`
+  - `size`: `'sm' | 'md' | 'lg' | 'xl'` (default: `'md'`)
+  - `variant`: `'default' | 'danger'`
+  - `closeOnBackdrop`: `boolean` (default: `true`)
+  - `closeOnEsc`: `boolean` (default: `true`)
+- **Outputs**: `(close)`
+- **Slots**: `[trigger]`, default `<ng-content>`
+- **Usage**:
+```html
+<ae-modal [open]="isModalOpen" (close)="isModalOpen = false" title="Confirm Action">
+  <p class="text-gray-600 mb-6">Are you sure you want to proceed with this request?</p>
+  <div class="flex justify-end gap-3">
+    <ae-button variant="outline" color="secondary" (click)="isModalOpen = false">Cancel</ae-button>
+    <ae-button color="primary" (click)="confirmAction()">Confirm</ae-button>
+  </div>
+</ae-modal>
+```
+
+### 8. Toast (`ae-toast`, `ToastService`)
+- **Import**: `import { ToastComponent, ToastService } from 'aegov-dls-angular';`
+- **Service API**:
+  - `toastService.success(message, title?)`
+  - `toastService.error(message, title?)`
+  - `toastService.info(message, title?)`
+  - `toastService.warning(message, title?)`
+  - `toastService.show({ message, title, variant, duration })`
+- **App Setup**: Place `<ae-toast></ae-toast>` once in `app.component.html`.
+- **Usage**:
+```typescript
+import { Component, inject } from '@angular/core';
+import { ToastComponent, ToastService, ButtonComponent } from 'aegov-dls-angular';
+
+@Component({
+  standalone: true,
+  imports: [ToastComponent, ButtonComponent],
+  template: `
+    <ae-button (click)="notify()">Notify</ae-button>
+    <ae-toast></ae-toast>
+  `
+})
+export class AppComponent {
+  private toast = inject(ToastService);
+
+  notify() {
+    this.toast.success('Document uploaded successfully!', 'Upload Complete');
+  }
+}
+```
+
+### 9. Tabs (`ae-tabs`)
+- **Import**: `import { TabsComponent, TabItem } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `items`: `TabItem[]` (`{ value: string, label: string, content?: string, icon?: IconName }`)
+  - `variant`: `'default' | 'pills' | 'compact'`
+  - `defaultValue`: `string`
+- **Outputs**: `(tabChange)`
+- **Usage**:
+```html
+<ae-tabs
+  variant="pills"
+  [items]="[
+    { value: 'personal', label: 'Personal Info', content: 'Personal details form' },
+    { value: 'documents', label: 'Documents', content: 'Uploaded documents list' }
+  ]">
+</ae-tabs>
+```
+
+### 10. Accordion (`ae-accordion`, `ae-accordion-item`)
+- **Import**: `import { AccordionComponent, AccordionItemComponent } from 'aegov-dls-angular';`
+- **Inputs on `ae-accordion`**:
+  - `type`: `'single' | 'multiple'` (default: `'single'`)
+  - `variant`: `'default' | 'card' | 'bordered'`
+  - `items`: `AccordionItemData[]` (optional data-driven mode)
+- **Inputs on `ae-accordion-item`**:
+  - `value`: `string` (required)
+  - `title`: `string` (required)
+  - `icon`: `IconName` (default: `'caret-down'`)
+- **Usage**:
+```html
+<ae-accordion type="single">
+  <ae-accordion-item value="item-1" title="What are the prerequisites?">
+    Valid Emirates ID and registered UAE PASS account.
+  </ae-accordion-item>
+  <ae-accordion-item value="item-2" title="How long does processing take?">
+    Instant issuance for digital services.
+  </ae-accordion-item>
+</ae-accordion>
+```
+
+### 11. Checkbox & Radio & Toggle
+- **Imports**: `CheckboxComponent`, `RadioComponent`, `RadioGroupComponent`, `ToggleComponent`
+- **Usage**:
+```html
+<!-- Checkbox -->
+<ae-checkbox [(ngModel)]="agreed" label="I agree to the Terms and Conditions"></ae-checkbox>
+
+<!-- Radio Group -->
+<ae-radio-group [(ngModel)]="plan" name="plan" label="Select Plan">
+  <ae-radio value="basic" label="Basic"></ae-radio>
+  <ae-radio value="premium" label="Premium"></ae-radio>
+</ae-radio-group>
+
+<!-- Toggle Switch -->
+<ae-toggle [(ngModel)]="notifications" label="Enable SMS Notifications"></ae-toggle>
+```
+
+### 12. Dropdown (`ae-dropdown`)
+- **Import**: `import { DropdownComponent, DropdownGroupData } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `groups`: `DropdownGroupData[]`
+  - `header`: `string`
+  - `align`: `'start' | 'center' | 'end'`
+  - `side`: `'top' | 'right' | 'bottom' | 'left'`
+  - `triggerType`: `'click' | 'hover'`
+- **Outputs**: `(select)`
+- **Usage**:
+```html
+<ae-dropdown
+  [groups]="[
+    { items: [
+      { label: 'Profile', value: 'profile', icon: 'user' },
+      { label: 'Settings', value: 'settings', icon: 'gear' },
+      { label: 'Logout', value: 'logout', icon: 'sign-out' }
+    ]}
+  ]"
+  (select)="onSelect($event)">
+  <ae-button slot="trigger" variant="outline">Options</ae-button>
+</ae-dropdown>
+```
+
+### 13. Card (`ae-card`, `ae-card-header`, `ae-card-footer`)
+- **Import**: `import { CardComponent, CardHeaderComponent, CardFooterComponent } from 'aegov-dls-angular';`
+- **Inputs on `ae-card`**:
+  - `variant`: `'default' | 'flat' | 'outline' | 'bordered'`
+  - `elevation`: `'none' | 'sm' | 'base' | 'md' | 'lg'`
+- **Usage**:
+```html
+<ae-card variant="bordered" elevation="sm">
+  <ae-card-header title="Service Overview" subtitle="Updated today"></ae-card-header>
+  <p class="text-gray-700">Detailed information about the selected government service.</p>
+  <ae-card-footer>
+    <ae-button color="primary" size="sm">Apply Now</ae-button>
+  </ae-card-footer>
+</ae-card>
+```
+
+### 14. Breadcrumbs (`ae-breadcrumbs`)
+- **Import**: `import { BreadcrumbsComponent, BreadcrumbItem } from 'aegov-dls-angular';`
+- **Inputs**: `items: BreadcrumbItem[]` (`{ label: string, href?: string, current?: boolean }`)
+- **Usage**:
+```html
+<ae-breadcrumbs [items]="[
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/services' },
+  { label: 'Residency', current: true }
+]"></ae-breadcrumbs>
+```
+
+### 15. Pagination (`ae-pagination`)
+- **Import**: `import { PaginationComponent } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `total`: `number` (total items)
+  - `pageSize`: `number` (items per page, default: `10`)
+  - `currentPage`: `number` (1-indexed)
+- **Outputs**: `(pageChange)`
+- **Usage**:
+```html
+<ae-pagination
+  [total]="100"
+  [pageSize]="10"
+  [currentPage]="page"
+  (pageChange)="page = $event">
+</ae-pagination>
+```
+
+### 16. Steps (`ae-steps`)
+- **Import**: `import { StepsComponent, StepItem } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `steps`: `StepItem[]` (`{ title: string, description?: string, icon?: IconName }`)
+  - `currentStep`: `number` (0-indexed or 1-indexed)
+  - `direction`: `'horizontal' | 'vertical'`
+- **Usage**:
+```html
+<ae-steps
+  [currentStep]="1"
+  [steps]="[
+    { title: 'Identity Verification' },
+    { title: 'Application Form' },
+    { title: 'Payment & Confirmation' }
+  ]">
+</ae-steps>
+```
+
+### 17. Tooltip (`ae-tooltip`, `[aeTooltip]`) & Popover (`ae-popover`)
+- **Imports**: `TooltipComponent`, `TooltipDirective`, `PopoverComponent`
+- **Usage**:
+```html
+<!-- Tooltip directive -->
+<ae-button aeTooltip="Click to download your permit" tooltipPosition="top">Download</ae-button>
+
+<!-- Popover -->
+<ae-popover position="bottom">
+  <ae-button slot="trigger">View Details</ae-button>
+  <div class="p-3 text-sm">Detailed popover content...</div>
+</ae-popover>
+```
+
+### 18. File Upload (`ae-file-upload`)
+- **Import**: `import { FileUploadComponent } from 'aegov-dls-angular';`
+- **Inputs**: `label`, `accept`, `multiple`, `maxSize`, `helperText`, `error`
+- **Outputs**: `(filesChange)`
+- **Usage**:
+```html
+<ae-file-upload
+  label="Upload Passport Copy"
+  accept=".pdf,.jpg,.png"
+  helperText="PDF or Image up to 5MB"
+  (filesChange)="onFilesSelected($event)">
+</ae-file-upload>
+```
+
+### 19. Range Slider (`ae-range-slider`)
+- **Import**: `import { RangeSliderComponent } from 'aegov-dls-angular';`
+- **Inputs**: `min`, `max`, `step`, `label`, `value`
+- **Usage**:
+```html
+<ae-range-slider
+  label="Investment Amount (AED)"
+  [min]="1000"
+  [max]="100000"
+  [step]="500"
+  [(ngModel)]="amount">
+</ae-range-slider>
+```
+
+### 20. Avatar (`ae-avatar`), Banner (`ae-banner`), Blockquote (`ae-blockquote`), Hyperlink (`ae-hyperlink`), Navigation (`ae-navigation`)
+- **Imports**: `AvatarComponent`, `BannerComponent`, `BlockquoteComponent`, `HyperlinkComponent`, `NavigationComponent`
+- **Usage**:
+```html
+<ae-avatar src="/avatar.jpg" alt="User" size="lg" status="online"></ae-avatar>
+<ae-banner variant="warning" title="System Maintenance">Scheduled on Saturday at 2 AM.</ae-banner>
+<ae-blockquote author="Founding Father" tone="soft">Quote content here...</ae-blockquote>
+<ae-hyperlink href="https://u.ae" external="true">Visit Official Portal</ae-hyperlink>
+```
+
+---
+
+## Best Practices for AI Code Generation
+
+1. **Always use standalone imports**: Never attempt to import an `NgModule` (e.g. do NOT do `AegovModule`). Import the exact component class needed (e.g. `[ButtonComponent, InputComponent]`).
+2. **Always include the Tailwind CSS import**: Global styles must contain `@import "aegov-dls-angular/styles/tailwind.css";`.
+3. **Use Phosphor Icon names**: Use valid icon names for `leftIcon`, `rightIcon`, or `<ae-icon name="...">` (e.g. `'check'`, `'x'`, `'arrow-right'`, `'gear'`, `'magnifying-glass'`, `'eye'`, `'eye-slash'`, `'user'`).
+4. **Use exact button color literal types**: `color="primary"` or `color="secondary"`. Variant types: `variant="solid" | "soft" | "link" | "outline" | "outline-solid"`.
+5. **Form components implement ControlValueAccessor**: Use `[(ngModel)]` or `[formControl]` directly with `<ae-input>`, `<ae-textarea>`, `<ae-select>`, `<ae-checkbox>`, `<ae-radio-group>`, `<ae-toggle>`, `<ae-range-slider>`.

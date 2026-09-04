@@ -1,5 +1,5 @@
 import { Injectable, makeEnvironmentProviders, EnvironmentProviders } from '@angular/core';
-import { defaultIcons } from './generated/default-icons';
+import { defaultIcons } from './default-icons';
 
 export type IconWeight = 'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone';
 
@@ -17,7 +17,7 @@ export class AeIconRegistry {
   private registry = new Map<string, string>();
 
   constructor() {
-    // Automatically pre-load internal default icons across all weights
+    // Automatically pre-load internal default icons across weights
     for (const [weight, icons] of Object.entries(defaultIcons)) {
       for (const [name, svg] of Object.entries(icons)) {
         this.registry.set(`${weight}:${name}`, svg);

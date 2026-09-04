@@ -2,7 +2,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { DropdownComponent } from './dropdown.component';
 import { ButtonComponent } from '../Button/button.component';
 import { CheckboxComponent } from '../Checkbox/checkbox.component';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 const meta: Meta<DropdownComponent> = {
   title: 'Components/Dropdown',

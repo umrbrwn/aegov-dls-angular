@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { PopoverComponent } from './popover.component';
 import { ButtonComponent } from '../Button/button.component';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 const meta: Meta<PopoverComponent> = {
   title: 'Components/Popover',

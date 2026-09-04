@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "description": "Unofficial, community-driven Angular port of the UAE Government Design Language System (@aegov/design-system).",
   "scripts": {
-    "postinstall": "node scripts/generate-icons.cjs",
+    "postinstall": "node scripts/sync-icons.cjs",
     "storybook": "ng run aegov-dls-angular:storybook",
     "build-storybook": "ng run aegov-dls-angular:build-storybook",
     "build:styles": "node scripts/build-styles.cjs",

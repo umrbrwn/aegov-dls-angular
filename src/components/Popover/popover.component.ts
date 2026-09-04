@@ -11,7 +11,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type PopoverTrigger = 'click' | 'hover';
 export type PopoverSide = 'top' | 'right' | 'bottom' | 'left';

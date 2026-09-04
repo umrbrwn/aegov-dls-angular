@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { InputComponent } from './input.component';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 import { DropdownComponent } from '../Dropdown/dropdown.component';
 
 const meta: Meta<InputComponent> = {

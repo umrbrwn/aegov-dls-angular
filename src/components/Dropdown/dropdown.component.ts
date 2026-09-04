@@ -10,7 +10,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../../icons/icon.component';
+import { IconComponent, type IconName } from '../Icon/icon.component';
 
 export interface DropdownItemData {
   label: string;

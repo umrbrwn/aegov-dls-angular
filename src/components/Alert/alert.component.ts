@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../../icons/icon.component';
+import { IconComponent, type IconName } from '../Icon/icon.component';
 
 export type AlertVariant = 'info' | 'warning' | 'success' | 'error';
 export type AlertSize = 'sm' | 'base' | 'lg';

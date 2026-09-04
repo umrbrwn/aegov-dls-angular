@@ -9,7 +9,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type BannerPosition = 'top' | 'bottom' | 'static';
 export type BannerVariant = 'default' | 'camel' | 'red' | 'dark' | 'primaryNotice' | 'secondaryNotice';

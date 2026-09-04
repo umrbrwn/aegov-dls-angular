@@ -10,7 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type InputSize = 'sm' | 'base' | 'lg';
 export type InputVariant = 'primary' | 'secondary';

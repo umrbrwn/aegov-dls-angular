@@ -10,7 +10,7 @@ import {
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
 import { ButtonComponent } from '../Button/button.component';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type FileUploadVariant = 'default' | 'simple' | 'card' | 'withPreview' | 'dragDrop';
 

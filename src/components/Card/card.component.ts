@@ -7,7 +7,7 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 export type CardVariant = 'default' | 'news' | 'service' | 'creative';
 export type CardSize = 'sm' | 'base' | 'lg';

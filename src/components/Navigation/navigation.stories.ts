@@ -5,7 +5,7 @@ import {
   SecondaryMenuComponent,
   NavItemComponent
 } from './navigation.component';
-import { IconComponent } from '../../icons/icon.component';
+import { IconComponent } from '../Icon/icon.component';
 
 const meta: Meta<NavigationComponent> = {
   title: 'Components/Navigation',

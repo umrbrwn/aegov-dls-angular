@@ -6,10 +6,10 @@ import {
   ChangeDetectionStrategy
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
-import { AeIconRegistry, type IconWeight } from './icon-registry.service';
-import { cn } from '../utils/cn';
+import { AeIconRegistry, type IconWeight, type IconDefinition } from './icon-registry.service';
+import { cn } from '../../utils/cn';
 
-export type { IconWeight };
+export type { IconWeight, IconDefinition };
 export type IconName = string;
 
 @Component({

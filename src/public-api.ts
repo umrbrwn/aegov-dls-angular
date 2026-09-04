@@ -6,9 +6,8 @@
 export * from './utils/cn';
 
 // Icons
-export * from './icons/icon.component';
-export * from './icons/icon-registry.service';
-export * from './icons/generated';
+export * from './components/Icon/icon.component';
+export * from './components/Icon/icon-registry.service';
 
 // Components
 export * from './components/Button/button.component';
