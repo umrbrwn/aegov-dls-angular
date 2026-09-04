@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const postcss = require('postcss');
 const tailwind = require('@tailwindcss/postcss');
+const lightningcss = require('lightningcss');
 
 async function buildStyles() {
   const rootDir = path.resolve(__dirname, '..');
@@ -13,12 +14,6 @@ async function buildStyles() {
     process.exit(1);
   }
 
-  // Remove dist/src if it exists
-  const distSrcDir = path.resolve(distDir, 'src');
-  if (fs.existsSync(distSrcDir)) {
-    fs.rmSync(distSrcDir, { recursive: true, force: true });
-  }
-
   const rawCss = fs.readFileSync(srcCssPath, 'utf-8');
   console.log('Compiling Tailwind CSS with @tailwindcss/postcss...');
 
@@ -27,13 +22,26 @@ async function buildStyles() {
     to: path.resolve(distDir, 'styles/tailwind.css'),
   });
 
+  console.log('Minifying CSS with lightningcss...');
+  let finalCss = result.css;
+  try {
+    const minified = lightningcss.transform({
+      filename: 'tailwind.css',
+      code: Buffer.from(result.css),
+      minify: true,
+    });
+    finalCss = minified.code.toString();
+  } catch (err) {
+    console.warn('Warning: lightningcss minification encountered an issue, keeping unminified:', err.message);
+  }
+
   const distStylesDir = path.resolve(distDir, 'styles');
   fs.mkdirSync(distStylesDir, { recursive: true });
 
-  // Write ONLY the compiled CSS to dist/styles/tailwind.css
-  fs.writeFileSync(path.resolve(distStylesDir, 'tailwind.css'), result.css, 'utf-8');
+  // Write minified CSS to dist/styles/tailwind.css
+  fs.writeFileSync(path.resolve(distStylesDir, 'tailwind.css'), finalCss, 'utf-8');
 
-  // Update dist/package.json exports to expose compiled styles cleanly
+  // Update dist/package.json exports to expose compiled styles and ./icons cleanly
   const distPackageJsonPath = path.resolve(distDir, 'package.json');
   if (fs.existsSync(distPackageJsonPath)) {
     const pkg = JSON.parse(fs.readFileSync(distPackageJsonPath, 'utf-8'));
@@ -49,7 +57,7 @@ async function buildStyles() {
     fs.writeFileSync(distPackageJsonPath, JSON.stringify(pkg, null, 2) + '\n', 'utf-8');
   }
 
-  console.log(`Successfully compiled Tailwind CSS to dist/styles/tailwind.css (${(result.css.length / 1024).toFixed(2)} KB)`);
+  console.log(`Successfully compiled & minified Tailwind CSS to dist/styles/tailwind.css (${(finalCss.length / 1024).toFixed(2)} KB, was ${(result.css.length / 1024).toFixed(2)} KB)`);
 }
 
 buildStyles().catch((err) => {
