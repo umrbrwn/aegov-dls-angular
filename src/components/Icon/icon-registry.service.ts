@@ -1,4 +1,10 @@
-import { Injectable, makeEnvironmentProviders, EnvironmentProviders } from '@angular/core';
+import {
+  Injectable,
+  makeEnvironmentProviders,
+  EnvironmentProviders,
+  provideEnvironmentInitializer,
+  inject
+} from '@angular/core';
 import { defaultIcons } from './default-icons';
 
 export type IconWeight = 'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone';
@@ -64,12 +70,9 @@ export function provideAeIcons(
   weight: IconWeight = 'regular'
 ): EnvironmentProviders {
   return makeEnvironmentProviders([
-    {
-      provide: 'AE_ICON_REGISTRATION',
-      useFactory: (registry: AeIconRegistry) => {
-        registry.registerIcons(icons, weight);
-      },
-      deps: [AeIconRegistry],
-    },
+    provideEnvironmentInitializer(() => {
+      const registry = inject(AeIconRegistry);
+      registry.registerIcons(icons, weight);
+    }),
   ]);
 }

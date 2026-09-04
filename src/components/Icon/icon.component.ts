@@ -3,7 +3,8 @@ import {
   input,
   computed,
   inject,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  booleanAttribute
 } from '@angular/core';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 import { AeIconRegistry, type IconWeight, type IconDefinition } from './icon-registry.service';
@@ -67,6 +68,11 @@ export class IconComponent {
   readonly size = input<number | string>(16);
 
   /**
+   * Automatically rotate the icon 180 degrees when in RTL (right-to-left) mode
+   */
+  readonly rotateRtl = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
    * Additional CSS classes (e.g. 'text-primary-600', 'fill-current')
    */
   readonly class = input<string>('');
@@ -76,5 +82,13 @@ export class IconComponent {
     return this.sanitizer.bypassSecurityTrustHtml(rawSvg);
   });
 
-  readonly computedClass = computed(() => cn('shrink-0 inline-block', this.class()));
+  readonly computedClass = computed(() =>
+    cn(
+      'shrink-0 inline-block',
+      this.rotateRtl() && 'rtl:rotate-180',
+      this.class()
+    )
+  );
 }
+
+
