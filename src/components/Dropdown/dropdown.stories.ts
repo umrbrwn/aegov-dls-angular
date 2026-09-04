@@ -63,7 +63,7 @@ export const Default: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">
+          <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
             <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
           </ae-button>
@@ -98,7 +98,7 @@ export const WithIcons: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">
+          <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
             <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
           </ae-button>
@@ -147,7 +147,7 @@ export const WithGroups: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">
+          <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
             <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
           </ae-button>
@@ -189,7 +189,7 @@ export const ArabicDropdown: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">
+          <ae-button trigger color="secondary" variant="solid">
             <span>حدد خياراً</span>
             <ae-icon name="caret-down" [size]="16" class="mr-2"></ae-icon>
           </ae-button>
@@ -222,7 +222,7 @@ export const LanguageSelector: Story = {
             }
           ]"
         >
-          <ae-button trigger variant="outline" style="secondary">
+          <ae-button trigger variant="outline" color="secondary">
             <ae-icon name="globe" [size]="16" class="mr-2"></ae-icon>
             <span>Language</span>
             <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
@@ -258,7 +258,7 @@ export const Alignments: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">Left</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Left</ae-button>
         </ae-dropdown>
 
         <ae-dropdown
@@ -274,7 +274,7 @@ export const Alignments: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">Center</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Center</ae-button>
         </ae-dropdown>
 
         <ae-dropdown
@@ -290,7 +290,7 @@ export const Alignments: Story = {
             }
           ]"
         >
-          <ae-button trigger style="secondary" variant="solid">Right</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Right</ae-button>
         </ae-dropdown>
       </div>
     `,
@@ -315,7 +315,7 @@ export const Placements: Story = {
           [trigger]="trigger"
           [groups]="[{ items: [{ label: 'Bottom', value: '1' }] }]"
         >
-          <ae-button trigger style="secondary" variant="solid">Bottom</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Bottom</ae-button>
         </ae-dropdown>
 
         <ae-dropdown
@@ -324,7 +324,7 @@ export const Placements: Story = {
           [trigger]="trigger"
           [groups]="[{ items: [{ label: 'Top', value: '1' }] }]"
         >
-          <ae-button trigger style="secondary" variant="solid">Top</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Top</ae-button>
         </ae-dropdown>
 
         <ae-dropdown
@@ -333,7 +333,7 @@ export const Placements: Story = {
           [trigger]="trigger"
           [groups]="[{ items: [{ label: 'Right', value: '1' }] }]"
         >
-          <ae-button trigger style="secondary" variant="solid">Right</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Right</ae-button>
         </ae-dropdown>
 
         <ae-dropdown
@@ -342,7 +342,7 @@ export const Placements: Story = {
           [trigger]="trigger"
           [groups]="[{ items: [{ label: 'Left', value: '1' }] }]"
         >
-          <ae-button trigger style="secondary" variant="solid">Left</ae-button>
+          <ae-button trigger color="secondary" variant="solid">Left</ae-button>
         </ae-dropdown>
       </div>
     `,
@@ -381,7 +381,7 @@ export const WithHeaderDividerAndIcons: Story = {
             }
           ]"
         >
-          <ae-button trigger style="primary" variant="solid">
+          <ae-button trigger color="primary" variant="solid">
             <span>Open dropdown</span>
             <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
           </ae-button>
@@ -406,7 +406,7 @@ export const WithCheckboxes: Story = {
           [side]="side"
           [trigger]="trigger"
         >
-          <ae-button trigger style="primary" variant="solid">
+          <ae-button trigger color="primary" variant="solid">
             <span>Open checkboxes</span>
             <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
           </ae-button>
@@ -459,7 +459,7 @@ export const TriggerOnHover: Story = {
             }
           ]"
         >
-          <ae-button trigger style="primary" variant="solid">
+          <ae-button trigger color="primary" variant="solid">
             <span>Open on hover</span>
             <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
           </ae-button>

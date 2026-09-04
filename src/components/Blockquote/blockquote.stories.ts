@@ -8,7 +8,7 @@ const meta: Meta<BlockquoteComponent> = {
     layout: 'centered',
   },
   argTypes: {
-    variant: {
+    tone: {
       control: 'select',
       options: ['soft', 'solid'],
     },
@@ -23,12 +23,12 @@ type Story = StoryObj<BlockquoteComponent>;
 
 export const Default: Story = {
   args: {
-    variant: 'soft',
+    tone: 'soft',
   },
   render: (args) => ({
     props: args,
     template: `
-      <ae-blockquote [variant]="variant">
+      <ae-blockquote [tone]="tone">
         "The future belongs to those who can imagine it, design it, and execute it. It isn't something you await, but rather create."
       </ae-blockquote>
     `,
@@ -38,12 +38,12 @@ export const Default: Story = {
 export const WithAuthor: Story = {
   args: {
     author: 'Sheikh Mohammed bin Rashid Al Maktoum',
-    variant: 'soft',
+    tone: 'soft',
   },
   render: (args) => ({
     props: args,
     template: `
-      <ae-blockquote [author]="author" [variant]="variant">
+      <ae-blockquote [author]="author" [tone]="tone">
         "The future belongs to those who can imagine it, design it, and execute it. It isn't something you await, but rather create."
       </ae-blockquote>
     `,
@@ -53,12 +53,12 @@ export const WithAuthor: Story = {
 export const Solid: Story = {
   args: {
     author: 'Sheikh Mohammed bin Rashid Al Maktoum',
-    variant: 'solid',
+    tone: 'solid',
   },
   render: (args) => ({
     props: args,
     template: `
-      <ae-blockquote [author]="author" [variant]="variant">
+      <ae-blockquote [author]="author" [tone]="tone">
         "The future belongs to those who can imagine it, design it, and execute it. It isn't something you await, but rather create."
       </ae-blockquote>
     `,
@@ -68,12 +68,12 @@ export const Solid: Story = {
 export const ShortQuote: Story = {
   args: {
     author: 'Sheikh Zayed bin Sultan Al Nahyan',
-    variant: 'soft',
+    tone: 'soft',
   },
   render: (args) => ({
     props: args,
     template: `
-      <ae-blockquote [author]="author" [variant]="variant">
+      <ae-blockquote [author]="author" [tone]="tone">
         "Future generations will be living in a world that is very different from that to which we are accustomed."
       </ae-blockquote>
     `,

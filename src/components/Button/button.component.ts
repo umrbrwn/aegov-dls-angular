@@ -2,7 +2,7 @@ import { Component, input, computed, ChangeDetectionStrategy, booleanAttribute }
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
 
-export type ButtonStyle = 'primary' | 'secondary';
+export type ButtonColor = 'primary' | 'secondary';
 export type ButtonVariant = 'solid' | 'soft' | 'link' | 'outline' | 'outline-solid';
 export type ButtonSize = 'xs' | 'sm' | 'base' | 'lg';
 
@@ -38,7 +38,7 @@ const iconSizeClasses: Record<ButtonSize, string> = {
 };
 
 export function getButtonClasses(config: {
-  style?: ButtonStyle;
+  color?: ButtonColor;
   variant?: ButtonVariant;
   size?: ButtonSize;
   block?: boolean;
@@ -46,7 +46,7 @@ export function getButtonClasses(config: {
   disabled?: boolean;
   className?: string;
 }): string {
-  const s = config.style || 'primary';
+  const s = config.color || 'primary';
   const v = config.variant || 'solid';
   const sz = config.size || 'base';
   const variantClass = styleVariants[s]?.[v] || styleVariants.primary.solid;
@@ -118,7 +118,7 @@ export function getButtonClasses(config: {
   `]
 })
 export class ButtonComponent {
-  readonly style = input<ButtonStyle>('primary');
+  readonly color = input<ButtonColor>('primary');
   readonly variant = input<ButtonVariant>('solid');
   readonly size = input<ButtonSize>('base');
   readonly block = input<boolean, unknown>(false, { transform: booleanAttribute });
@@ -132,7 +132,7 @@ export class ButtonComponent {
 
   readonly computedClasses = computed(() =>
     getButtonClasses({
-      style: this.style(),
+      color: this.color(),
       variant: this.variant(),
       size: this.size(),
       block: this.block(),

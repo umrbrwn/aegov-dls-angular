@@ -13,7 +13,7 @@ import { IconComponent, type IconName } from '../../icons/icon.component';
 
 export type AlertVariant = 'info' | 'warning' | 'success' | 'error';
 export type AlertSize = 'sm' | 'base' | 'lg';
-export type AlertStyle = 'soft' | 'solid';
+export type AlertTone = 'soft' | 'solid';
 
 export interface AlertAction {
   text: string;
@@ -78,7 +78,7 @@ export interface AlertAction {
             <ae-icon
               name="x"
               [size]="iconSizes[size()]"
-              [class]="style() === 'solid' ? 'text-whitely-50' : ''"
+              [class]="tone() === 'solid' ? 'text-whitely-50' : ''"
             ></ae-icon>
           </button>
         }
@@ -96,7 +96,7 @@ export class AlertComponent {
   readonly variant = input<AlertVariant>('info');
   readonly title = input<string | undefined>(undefined);
   readonly size = input<AlertSize>('base');
-  readonly style = input<AlertStyle>('soft');
+  readonly tone = input<AlertTone>('soft');
   readonly action = input<AlertAction | undefined>(undefined);
   readonly showIcon = input<boolean, unknown>(true, { transform: booleanAttribute });
   readonly dismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
@@ -176,7 +176,7 @@ export class AlertComponent {
   readonly iconName = computed(() => this.variantStyles[this.variant()].icon);
 
   readonly alertClasses = computed(() => {
-    const vStyle = this.variantStyles[this.variant()][this.style()];
+    const vStyle = this.variantStyles[this.variant()][this.tone()];
     const sStyle = this.sizeStyles[this.size()];
     return cn(
       'relative flex items-start rounded-sm',
@@ -197,7 +197,7 @@ export class AlertComponent {
   );
 
   readonly actionLinkClasses = computed(() => {
-    const linkHover = this.variantStyles[this.variant()].link[this.style()];
+    const linkHover = this.variantStyles[this.variant()].link[this.tone()];
     return cn(
       'underline underline-offset-1 inline-flex items-center gap-2 font-medium hover:underline hover:underline-offset-2',
       linkHover

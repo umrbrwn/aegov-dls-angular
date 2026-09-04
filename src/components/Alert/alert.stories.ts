@@ -16,7 +16,7 @@ const meta: Meta<AlertComponent> = {
       control: 'select',
       options: ['sm', 'base', 'lg'],
     },
-    style: {
+    tone: {
       control: 'select',
       options: ['soft', 'solid'],
     },
@@ -29,7 +29,7 @@ const meta: Meta<AlertComponent> = {
   },
   args: {
     size: 'base',
-    style: 'soft',
+    tone: 'soft',
     showIcon: true,
     dismissible: false,
   },
@@ -49,7 +49,7 @@ export const Info: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -72,7 +72,7 @@ export const Warning: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -95,7 +95,7 @@ export const Success: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -118,7 +118,7 @@ export const Error: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -141,7 +141,7 @@ export const InfoWithIcon: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -164,7 +164,7 @@ export const WarningWithIcon: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -187,7 +187,7 @@ export const SuccessWithIcon: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -210,7 +210,7 @@ export const ErrorWithIcon: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -233,7 +233,7 @@ export const WithTitle: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -263,7 +263,7 @@ export const WithAction: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -286,7 +286,7 @@ export const WithDismiss: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -301,7 +301,7 @@ export const WithDismiss: Story = {
 export const Solid: Story = {
   args: {
     variant: 'error',
-    style: 'solid',
+    tone: 'solid',
   },
   render: (args) => ({
     props: args,
@@ -309,7 +309,7 @@ export const Solid: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -332,7 +332,7 @@ export const Complex: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -364,7 +364,7 @@ export const DismissibleInfo: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -387,7 +387,7 @@ export const DismissibleError: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -410,7 +410,7 @@ export const DismissibleSuccess: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"
@@ -433,7 +433,7 @@ export const DismissibleWarning: Story = {
       <ae-alert
         [variant]="variant"
         [size]="size"
-        [style]="style"
+        [tone]="tone"
         [showIcon]="showIcon"
         [dismissible]="dismissible"
         [title]="title"

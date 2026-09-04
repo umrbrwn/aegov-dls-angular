@@ -42,7 +42,7 @@ import { ButtonComponent, AlertComponent, InputComponent } from 'aegov-dls-angul
       Community-maintained Angular implementation of the UAE Government Design System.
     </ae-alert>
 
-    <ae-button style="primary" variant="solid" size="base">
+    <ae-button color="primary" variant="solid" size="base">
       Submit Application
     </ae-button>
   `
