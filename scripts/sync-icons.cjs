@@ -39,6 +39,9 @@ const defaultIconUsage = {
     'warning',
     'x-circle',
   ],
+  'light': [],
+  'thin': [],
+  'duotone': [],
 };
 
 function kebabToPascal(str) {
