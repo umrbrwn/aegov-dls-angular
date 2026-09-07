@@ -91,7 +91,7 @@ export const WithIcons: Story = {
             {
               items: [
                 { label: 'Profile', value: 'profile', icon: 'user' },
-                { label: 'Notifications', value: 'notifications', icon: 'bell' },
+                { label: 'Notifications', value: 'notifications', icon: 'bell-simple' },
                 { label: 'Settings', value: 'settings', icon: 'gear' },
                 { label: 'Logout', value: 'logout', icon: 'sign-out' }
               ]
@@ -367,7 +367,7 @@ export const WithHeaderDividerAndIcons: Story = {
           [groups]="[
             {
               items: [
-                { label: 'Alerts', value: 'item-1', icon: 'bell' },
+                { label: 'Alerts', value: 'item-1', icon: 'bell-simple' },
                 { label: 'Profile', value: 'item-2', icon: 'user' },
                 { label: 'Region', value: 'item-3', icon: 'globe' }
               ]

@@ -90,7 +90,7 @@ export const WithCustomIcons: Story = {
   args: {
     items: [
       { label: 'Dashboard', href: '#', icon: 'table' },
-      { label: 'Notifications', href: '#', icon: 'bell' },
+      { label: 'Notifications', href: '#', icon: 'bell-simple' },
       { label: 'News', href: '#', icon: 'newspaper' },
       { label: 'Current Page' },
     ],

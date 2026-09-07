@@ -127,7 +127,7 @@ export const WithIcons: Story = {
       {
         value: 'notifications',
         label: 'Notifications',
-        icon: 'bell',
+        icon: 'bell-simple',
         content: 'This is the content area for the tab "Notifications"',
       },
       {

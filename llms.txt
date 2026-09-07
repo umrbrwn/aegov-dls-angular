@@ -65,7 +65,7 @@ export class ExampleComponent {}
   - `rotateRtl`: `boolean` (automatically flips 180 degrees in RTL mode)
   - `class`: `string`
 - **Bundled Default Icons** (zero configuration required):
-  `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
+  `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `bell-simple`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
 - **Register Custom / Consumer Icons** (in `app.config.ts` or component):
 ```typescript
 import { provideAeIcons } from 'aegov-dls-angular';

@@ -10,6 +10,7 @@ const defaultIconUsage = {
     'arrow-counter-clockwise',
     'arrow-left',
     'arrow-right',
+    'bell-simple',
     'caret-double-left',
     'caret-double-right',
     'caret-down',
