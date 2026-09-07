@@ -698,6 +698,8 @@ export class AppComponent {
 ### 27. Hyperlink (`ae-hyperlink`, `a[ae-hyperlink]`)
 - **Import**: `import { HyperlinkComponent, HyperlinkVariant } from 'aegov-dls-angular';`
 - **Inputs**:
+  - `showIcon`: `boolean` (controls whether trailing icon is shown, default: `false`)
+  - `icon`: `string` (Phosphor icon name displayed when `showIcon` is `true`, default: `'caret-right'`)
   - `routerLink`: `string | any[]` (Angular SPA route navigation)
   - `queryParams`: `Params`
   - `fragment`: `string`
@@ -707,19 +709,30 @@ export class AppComponent {
   - `href`: `string` (external or standard anchor link, default: `'#'`)
   - `variant`: `'default' | 'cta' | 'soft' | 'secondary' | 'secondary-soft'` (default: `'default'`)
   - `external`: `boolean` (opens in new tab with `target="_blank"` and `rel="noopener noreferrer"`, default: `false`)
-  - `icon`: `boolean` (displays trailing chevron icon, default: `false`)
-  - `label`: `string` (or use projected content)
+  - `label`: `string` (or use inner template content via `<ng-content>`)
   - `target`: `string`
   - `rel`: `string`
   - `class`: `string`
 - **Usage**:
 ```html
-<ae-hyperlink routerLink="/services" variant="cta" [icon]="true">
+<!-- Custom icon (e.g. arrow-right) with router navigation -->
+<ae-hyperlink routerLink="/myapplications" variant="secondary" [showIcon]="true" icon="arrow-right">
+  View All
+</ae-hyperlink>
+
+<!-- Default caret-right icon with router navigation -->
+<ae-hyperlink routerLink="/services" variant="cta" [showIcon]="true">
   Browse Services
 </ae-hyperlink>
 
+<!-- External link opening in a new tab -->
 <ae-hyperlink href="https://u.ae" [external]="true">
   Visit Official Portal
+</ae-hyperlink>
+
+<!-- Standard inline text link without icon -->
+<ae-hyperlink routerLink="/privacy">
+  Privacy Policy
 </ae-hyperlink>
 ```
 

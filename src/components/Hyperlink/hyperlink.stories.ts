@@ -19,7 +19,8 @@ const meta: Meta<HyperlinkComponent> = {
     label: 'Hyperlink',
     href: 'https://example.com',
     variant: 'default',
-    icon: false,
+    showIcon: false,
+    icon: 'caret-right',
     external: false,
   },
   argTypes: {
@@ -33,8 +34,11 @@ const meta: Meta<HyperlinkComponent> = {
       control: 'select',
       options: ['default', 'cta', 'soft', 'secondary', 'secondary-soft'],
     },
-    icon: {
+    showIcon: {
       control: 'boolean',
+    },
+    icon: {
+      control: 'text',
     },
     external: {
       control: 'boolean',
@@ -49,13 +53,13 @@ export const Default: Story = {
   args: {
     label: 'Default Hyperlink',
     variant: 'default',
-    icon: false,
+    showIcon: false,
     external: false,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -63,13 +67,13 @@ export const CTA: Story = {
   args: {
     label: 'Call to Action Link',
     variant: 'cta',
-    icon: true,
+    showIcon: true,
     external: false,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -77,13 +81,13 @@ export const Soft: Story = {
   args: {
     label: 'Soft Interaction Link',
     variant: 'soft',
-    icon: false,
+    showIcon: false,
     external: false,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -91,13 +95,13 @@ export const Secondary: Story = {
   args: {
     label: 'Secondary Link',
     variant: 'secondary',
-    icon: false,
+    showIcon: false,
     external: false,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -105,13 +109,13 @@ export const SecondaryWithIcon: Story = {
   args: {
     label: 'Secondary Link with Icon',
     variant: 'secondary',
-    icon: true,
+    showIcon: true,
     external: false,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -119,13 +123,13 @@ export const ExternalLink: Story = {
   args: {
     label: 'External Link',
     variant: 'default',
-    icon: false,
+    showIcon: false,
     external: true,
     href: 'https://example.com',
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
   }),
 };
 
@@ -133,10 +137,24 @@ export const WithRouterLink: Story = {
   args: {
     label: 'Internal Route Link',
     variant: 'cta',
-    icon: true,
+    showIcon: true,
   },
   render: (args) => ({
     props: args,
-    template: `<ae-hyperlink [variant]="variant" [icon]="icon" routerLink="/services" [label]="label"></ae-hyperlink>`,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" routerLink="/services" [label]="label"></ae-hyperlink>`,
   }),
 };
+
+export const WithCustomIcon: Story = {
+  args: {
+    label: 'View All Applications',
+    variant: 'secondary',
+    showIcon: true,
+    icon: 'arrow-right',
+  },
+  render: (args) => ({
+    props: args,
+    template: `<ae-hyperlink [variant]="variant" [showIcon]="showIcon" [icon]="icon" routerLink="/myapplications" [label]="label"></ae-hyperlink>`,
+  }),
+};
+

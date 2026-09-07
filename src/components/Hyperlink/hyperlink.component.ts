@@ -28,8 +28,8 @@ const variantClasses: Record<HyperlinkVariant, string> = {
   template: `
     <ng-template #linkContent>
       {{ label() }}<ng-content></ng-content>
-      @if (icon()) {
-        <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+      @if (showIcon()) {
+        <ae-icon [name]="icon()" [size]="20" class="rtl:-scale-x-100"></ae-icon>
       }
       @if (external()) {
         <span class="sr-only"> (opens in new tab)</span>
@@ -87,7 +87,8 @@ export class HyperlinkComponent {
 
   readonly variant = input<HyperlinkVariant>('default');
   readonly external = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly icon = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly showIcon = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly icon = input<string>('caret-right');
   readonly target = input<string | undefined>(undefined);
   readonly rel = input<string | undefined>(undefined);
   readonly class = input<string>('');
