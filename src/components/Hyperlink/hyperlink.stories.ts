@@ -1,9 +1,17 @@
-import type { Meta, StoryObj } from '@storybook/angular';
+import { type Meta, type StoryObj, applicationConfig } from '@storybook/angular';
+import { provideRouter } from '@angular/router';
 import { HyperlinkComponent } from './hyperlink.component';
 
 const meta: Meta<HyperlinkComponent> = {
   title: 'Components/Hyperlink',
   component: HyperlinkComponent,
+  decorators: [
+    applicationConfig({
+      providers: [
+        provideRouter([])
+      ]
+    })
+  ],
   parameters: {
     layout: 'centered',
   },
@@ -118,5 +126,17 @@ export const ExternalLink: Story = {
   render: (args) => ({
     props: args,
     template: `<ae-hyperlink [variant]="variant" [icon]="icon" [external]="external" [href]="href" [label]="label"></ae-hyperlink>`,
+  }),
+};
+
+export const WithRouterLink: Story = {
+  args: {
+    label: 'Internal Route Link',
+    variant: 'cta',
+    icon: true,
+  },
+  render: (args) => ({
+    props: args,
+    template: `<ae-hyperlink [variant]="variant" [icon]="icon" routerLink="/services" [label]="label"></ae-hyperlink>`,
   }),
 };

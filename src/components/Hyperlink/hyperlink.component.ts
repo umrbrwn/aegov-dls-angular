@@ -6,6 +6,7 @@ import {
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { RouterModule, type Params, type QueryParamsHandling, type IsActiveMatchOptions } from '@angular/router';
 import { cn } from '../../utils/cn';
 import { IconComponent } from '../Icon/icon.component';
 
@@ -22,15 +23,10 @@ const variantClasses: Record<HyperlinkVariant, string> = {
 @Component({
   selector: 'ae-hyperlink, a[ae-hyperlink]',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, RouterModule, IconComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <a
-      [href]="href()"
-      [target]="external() ? '_blank' : (target() || null)"
-      [rel]="external() ? 'noopener noreferrer' : (rel() || null)"
-      [class]="computedClasses()"
-    >
+    <ng-template #linkContent>
       {{ label() }}<ng-content></ng-content>
       @if (icon()) {
         <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
@@ -38,7 +34,36 @@ const variantClasses: Record<HyperlinkVariant, string> = {
       @if (external()) {
         <span class="sr-only"> (opens in new tab)</span>
       }
-    </a>
+    </ng-template>
+
+    @if (hasRouterLink()) {
+      <a
+        [routerLink]="routerLink()!"
+        [queryParams]="queryParams() || null"
+        [fragment]="fragment() || undefined"
+        [queryParamsHandling]="queryParamsHandling() || null"
+        [preserveFragment]="preserveFragment()"
+        [skipLocationChange]="skipLocationChange()"
+        [replaceUrl]="replaceUrl()"
+        [state]="state()"
+        [routerLinkActive]="routerLinkActive() || ''"
+        [routerLinkActiveOptions]="routerLinkActiveOptions() || { exact: false }"
+        [target]="external() ? '_blank' : (target() || null)"
+        [rel]="external() ? 'noopener noreferrer' : (rel() || null)"
+        [class]="computedClasses()"
+      >
+        <ng-container *ngTemplateOutlet="linkContent"></ng-container>
+      </a>
+    } @else {
+      <a
+        [href]="href()"
+        [target]="external() ? '_blank' : (target() || null)"
+        [rel]="external() ? 'noopener noreferrer' : (rel() || null)"
+        [class]="computedClasses()"
+      >
+        <ng-container *ngTemplateOutlet="linkContent"></ng-container>
+      </a>
+    }
   `,
   styles: [`
     :host {
@@ -49,6 +74,17 @@ const variantClasses: Record<HyperlinkVariant, string> = {
 export class HyperlinkComponent {
   readonly label = input<string | undefined>(undefined);
   readonly href = input<string>('#');
+  readonly routerLink = input<string | any[] | null | undefined>(undefined);
+  readonly queryParams = input<Params | null | undefined>(undefined);
+  readonly fragment = input<string | undefined>(undefined);
+  readonly queryParamsHandling = input<QueryParamsHandling | null | undefined>(undefined);
+  readonly preserveFragment = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly skipLocationChange = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly replaceUrl = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly state = input<Record<string, any> | undefined>(undefined);
+  readonly routerLinkActive = input<string | string[] | undefined>(undefined);
+  readonly routerLinkActiveOptions = input<{ exact: boolean } | IsActiveMatchOptions | undefined>(undefined);
+
   readonly variant = input<HyperlinkVariant>('default');
   readonly external = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly icon = input<boolean, unknown>(false, { transform: booleanAttribute });
@@ -56,6 +92,7 @@ export class HyperlinkComponent {
   readonly rel = input<string | undefined>(undefined);
   readonly class = input<string>('');
 
+  readonly hasRouterLink = computed(() => this.routerLink() != null);
   readonly effectiveVariant = computed<HyperlinkVariant>(() => this.variant() || 'default');
 
   readonly computedClasses = computed(() =>
