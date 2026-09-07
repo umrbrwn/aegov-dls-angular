@@ -16,7 +16,7 @@ Must include the compiled Tailwind v4 CSS in the global stylesheet (`styles.css`
 ```
 
 3. **Standalone Component Import**:
-Import components directly from `'aegov-dls-angular'`:
+Always import components and types directly from `'aegov-dls-angular'`. Standalone architecture is used throughout; never import an `NgModule`.
 ```typescript
 import { Component } from '@angular/core';
 import { ButtonComponent, InputComponent, AlertComponent, IconComponent, NavigationComponent } from 'aegov-dls-angular';
@@ -32,24 +32,29 @@ export class ExampleComponent {}
 
 ---
 
-## Component Index & Quick Reference
+## Component Index & Reference
 
 ### 1. Button (`ae-button`, `button[ae-button]`, `a[ae-button]`)
-- **Import**: `import { ButtonComponent } from 'aegov-dls-angular';`
+- **Import**: `import { ButtonComponent, ButtonColor, ButtonVariant, ButtonSize } from 'aegov-dls-angular';`
+- **Selectors**: `<ae-button>`, `<button ae-button>`, `<a ae-button>`
 - **Inputs**:
   - `color`: `'primary' | 'secondary'` (default: `'primary'`)
   - `variant`: `'solid' | 'soft' | 'link' | 'outline' | 'outline-solid'` (default: `'solid'`)
   - `size`: `'xs' | 'sm' | 'base' | 'lg'` (default: `'base'`)
-  - `block`: `boolean` (full width)
-  - `disabled`: `boolean`
-  - `isIcon`: `boolean` (for square icon buttons)
-  - `href`: `string` (renders `<a>` tag when set)
+  - `block`: `boolean` (full width, default: `false`)
+  - `isIcon`: `boolean` (square icon button, default: `false`)
+  - `disabled`: `boolean` (default: `false`)
   - `type`: `'button' | 'submit' | 'reset'` (default: `'button'`)
+  - `href`: `string` (renders `<a>` tag inside when set)
+  - `target`: `string`
+  - `rel`: `string`
+  - `class`: `string`
 - **Usage**:
 ```html
 <ae-button color="primary" variant="solid" size="base">
   Submit Application
 </ae-button>
+
 <a ae-button href="/portal" color="secondary" variant="outline">
   Go to Portal
 </a>
@@ -58,15 +63,15 @@ export class ExampleComponent {}
 ### 2. Icon (`ae-icon`) & Icon Registry
 - **Import**: `import { IconComponent, provideAeIcons, AeIconRegistry } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `name`: `string` (e.g. `'check'`, `'x'`, `'caret-down'`, `'magnifying-glass'`, `'user'`, `'house'`, `'globe'`, `'person-arms-spread'`, `'warning-circle'`, `'check-circle'`, or custom registered icons)
-  - `svg`: `string` (direct SVG path content e.g. `[svg]="customSvgString"`)
+  - `name`: `string` (Phosphor icon name)
+  - `svg`: `string` (direct raw SVG path string)
   - `weight`: `'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone'` (default: `'regular'`)
   - `size`: `number | string` (default: `16`)
   - `rotateRtl`: `boolean` (automatically flips 180 degrees in RTL mode)
   - `class`: `string`
 - **Bundled Default Icons** (zero configuration required):
-  `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `bell-simple`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
-- **Register Custom / Consumer Icons** (in `app.config.ts` or component):
+  `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `bell-simple`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `file-text`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
+- **Register Custom Icons** (in `app.config.ts` or component providers):
 ```typescript
 import { provideAeIcons } from 'aegov-dls-angular';
 
@@ -81,60 +86,47 @@ export const appConfig = {
 ```
 - **Usage**:
 ```html
-<!-- Built-in icons work with zero configuration -->
 <ae-icon name="check" [size]="20" class="text-primary-600"></ae-icon>
 <ae-icon name="caret-down" weight="bold" [size]="16"></ae-icon>
 <ae-icon name="caret-right" [rotateRtl]="true" [size]="20"></ae-icon>
-
-<!-- Registered custom icons -->
-<ae-icon name="heart" [size]="24" class="text-red-500"></ae-icon>
-
-<!-- Direct SVG string -->
-<ae-icon [svg]="customSvg" [size]="24"></ae-icon>
 ```
 
 ### 3. Navigation (`ae-navigation`, `ae-nav-item`, `ae-main-menu`, `ae-secondary-menu`)
 - **Import**: `import { NavigationComponent, NavItemComponent, MainMenuComponent, SecondaryMenuComponent, NavItemData, NavDropdownGroup } from 'aegov-dls-angular';`
 - **Inputs on `ae-navigation`**:
-  - `items`: `NavItemData[]` (data-driven navigation items with optional mega-menu dropdowns)
-  - `breakpoint`: `'md' | 'lg' | 'xl' | '1100px'` (responsive mobile/desktop breakpoint, default: `'1100px'`)
-  - `drawerTitle`: `string` (mobile menu drawer header title, default: `'UAE Gov Menu'`)
+  - `items`: `NavItemData[]` (data-driven navigation items)
+  - `breakpoint`: `'md' | 'lg' | 'xl' | '1100px'` (default: `'1100px'`)
+  - `drawerTitle`: `string` (default: `'UAE Gov Menu'`)
   - `drawerToggleLabel`: `string` (default: `'Toggle main menu'`)
   - `drawerCloseLabel`: `string` (default: `'Close menu'`)
-  - `containerClass`: `string` (container wrapper styling)
+  - `containerClass`: `string`
   - `class`: `string`
 - **Slots on `ae-navigation`**:
-  - `[top-bar]` / `[slot=top-bar]`: Desktop branding header (logos, global ratings, search inputs)
+  - `[top-bar]` / `[slot=top-bar]`: Desktop branding header (logos, search inputs)
   - `[logo]` / `[slot=logo]`: Mobile header branding logo
   - `[mobile-actions]` / `[slot=mobile-actions]`: Persistent mobile action buttons
-  - `[drawer-header]`: Custom mobile drawer top bar header
+  - `[drawer-header]`: Custom mobile drawer header
   - `[drawer-body]`: Custom mobile drawer content projection
-  - `[drawer-footer]`: Mobile drawer footer utility links
+  - `[drawer-footer]`: Mobile drawer footer links
   - `ae-main-menu` / `[main-menu]`: Custom desktop main menu navigation
-  - `ae-secondary-menu` / `[secondary-menu]`: Custom desktop right-side utility icons (language, login, accessibility)
+  - `ae-secondary-menu` / `[secondary-menu]`: Custom desktop utility icons (language, login, accessibility)
 - **Features**:
-  - Hover-triggered mega-menu dropdowns with keyboard and click accessibility.
-  - Active and hover bottom indicator border on all main nav items (direct links and dropdown triggers).
-  - Child dropdown links underline on hover (`hover:underline`).
-  - Mobile full-screen drawer with collapsible accordion support for submenus.
-- **Usage (Data-Driven Mode)**:
+  - Supports both router SPA navigation via `routerLink` and external navigation via `href`.
+  - Mega-menu dropdowns with hover & click support.
+  - Active and hover indicator bottom border on all items.
+  - Mobile full-screen drawer with accordion menus.
+- **Usage**:
 ```typescript
 navItems: NavItemData[] = [
-  { label: 'Home', href: '/', icon: 'house' },
+  { label: 'Home', routerLink: '/', icon: 'house' },
   {
     label: 'Services',
     dropdown: [
       {
         title: 'Individual Services',
         items: [
-          { label: 'Digital Identity (UAE PASS)', href: '/services/uae-pass' },
-          { label: 'Residency Permits', href: '/services/residency' }
-        ]
-      },
-      {
-        title: 'Business Services',
-        items: [
-          { label: 'Commercial License', href: '/services/license' }
+          { label: 'Digital Identity (UAE PASS)', routerLink: '/services/uae-pass' },
+          { label: 'Residency Permits', routerLink: '/services/residency' }
         ]
       }
     ]
@@ -144,44 +136,37 @@ navItems: NavItemData[] = [
 ```
 ```html
 <ae-navigation [items]="navItems" breakpoint="1100px">
-  <!-- Desktop Top Bar -->
   <div slot="top-bar" class="container mx-auto px-4 py-3 flex items-center justify-between">
     <img src="/logo.svg" alt="UAE Gov" class="h-10">
   </div>
-
-  <!-- Mobile Logo -->
   <div slot="logo">
     <img src="/logo.svg" alt="UAE Gov" class="h-8">
   </div>
-
-  <!-- Desktop Secondary Actions -->
   <ae-secondary-menu secondary-menu>
     <button class="p-2 text-aeblack-700 hover:text-primary-700" title="User Login">
       <ae-icon name="user" [size]="20"></ae-icon>
-    </button>
-    <button class="p-2 text-aeblack-700 hover:text-primary-700" title="Accessibility">
-      <ae-icon name="person-arms-spread" [size]="20"></ae-icon>
-    </button>
-    <button class="p-2 text-aeblack-700 hover:text-primary-700" title="Language">
-      <ae-icon name="globe" [size]="20"></ae-icon>
     </button>
   </ae-secondary-menu>
 </ae-navigation>
 ```
 
 ### 4. Input (`ae-input`)
-- **Import**: `import { InputComponent } from 'aegov-dls-angular';`
-- **Features**: `ControlValueAccessor` compatible with `[(ngModel)]` and `[formControl]`.
+- **Import**: `import { InputComponent, InputSize, InputVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
 - **Inputs**:
-  - `type`: `'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url'` (default: `'text'`)
+  - `type`: `string` (`'text' | 'password' | 'email' | 'number' | 'search' | 'tel' | 'url'`, default: `'text'`)
   - `label`: `string`
   - `placeholder`: `string`
   - `helperText`: `string`
-  - `error`: `string` (shows validation error text & red border)
+  - `error`: `string` (displays error message and activates error styling)
   - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
   - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
-  - `disabled`: `boolean`
-  - `required`: `boolean`
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `name`: `string`
+  - `hasPrefix`: `boolean`
+  - `class`: `string`
 - **Slots**: `[prefix]`, `[suffix]`
 - **Usage**:
 ```html
@@ -195,16 +180,21 @@ navItems: NavItemData[] = [
 ```
 
 ### 5. Textarea (`ae-textarea`)
-- **Import**: `import { TextareaComponent } from 'aegov-dls-angular';`
+- **Import**: `import { TextareaComponent, TextareaSize, TextareaVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
 - **Inputs**:
   - `label`: `string`
   - `placeholder`: `string`
   - `rows`: `number` (default: `4`)
-  - `error`: `string`
   - `helperText`: `string`
-  - `disabled`: `boolean`
-  - `required`: `boolean`
-  - `size`: `'sm' | 'base' | 'lg'`
+  - `error`: `string`
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `name`: `string`
+  - `class`: `string`
 - **Usage**:
 ```html
 <ae-textarea
@@ -216,15 +206,20 @@ navItems: NavItemData[] = [
 ```
 
 ### 6. Select (`ae-select`)
-- **Import**: `import { SelectComponent, SelectOption } from 'aegov-dls-angular';`
+- **Import**: `import { SelectComponent, SelectOption, SelectSize, SelectVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
 - **Inputs**:
   - `options`: `SelectOption[]` (`{ value: string, label: string, disabled?: boolean }`)
   - `label`: `string`
-  - `placeholder`: `string`
-  - `error`: `string`
+  - `placeholder`: `string` (default: `'Select an option'`)
   - `helperText`: `string`
-  - `size`: `'sm' | 'base' | 'lg'`
-  - `disabled`: `boolean`
+  - `error`: `string`
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `class`: `string`
 - **Usage**:
 ```html
 <ae-select
@@ -238,54 +233,136 @@ navItems: NavItemData[] = [
 </ae-select>
 ```
 
-### 7. Alert (`ae-alert`)
-- **Import**: `import { AlertComponent } from 'aegov-dls-angular';`
+### 7. Checkbox (`ae-checkbox`)
+- **Import**: `import { CheckboxComponent, CheckboxSize, CheckboxVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
+- **Inputs**:
+  - `checked`: `boolean` (default: `false`)
+  - `label`: `string`
+  - `description`: `string`
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `name`: `string`
+  - `value`: `string`
+  - `class`: `string`
+- **Outputs**:
+  - `checkedChange`: `EventEmitter<boolean>`
+- **Usage**:
+```html
+<ae-checkbox
+  [(ngModel)]="agreed"
+  label="I agree to the Terms and Conditions"
+  description="Please read our privacy policy and terms before continuing.">
+</ae-checkbox>
+```
+
+### 8. Radio Group & Radio Item (`ae-radio-group`, `ae-radio-item`)
+- **Import**: `import { RadioGroupComponent, RadioItemComponent, RadioSize, RadioVariant, RadioOrientation } from 'aegov-dls-angular';`
+- **Features**: `ae-radio-group` implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
+- **Inputs on `ae-radio-group`**:
+  - `name`: `string`
+  - `value`: `string`
+  - `defaultValue`: `string`
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `orientation`: `'horizontal' | 'vertical'` (default: `'vertical'`)
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Outputs on `ae-radio-group`**:
+  - `change`: `EventEmitter<string>`
+- **Inputs on `ae-radio-item`**:
+  - `value`: `string` (required)
+  - `label`: `string` (or use projected content)
+  - `description`: `string`
+  - `disabled`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `class`: `string`
+- **Usage**:
+```html
+<ae-radio-group [(ngModel)]="plan" orientation="vertical">
+  <ae-radio-item value="standard" label="Standard Plan" description="Basic digital government services."></ae-radio-item>
+  <ae-radio-item value="premium" label="Premium Plan" description="Priority processing and dedicated support."></ae-radio-item>
+</ae-radio-group>
+```
+
+### 9. Toggle Switch (`ae-toggle`)
+- **Import**: `import { ToggleComponent, ToggleVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
+- **Inputs**:
+  - `checked`: `boolean` (default: `false`)
+  - `label`: `string`
+  - `variant`: `'default' | 'success' | 'mode' | 'secondary'` (default: `'default'`, `'mode'` shows sun/moon icons)
+  - `disabled`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Outputs**:
+  - `checkedChange`: `EventEmitter<boolean>`
+- **Usage**:
+```html
+<ae-toggle [(ngModel)]="notifications" label="Enable SMS Notifications"></ae-toggle>
+<ae-toggle [(ngModel)]="isDarkMode" variant="mode" label="Dark Mode"></ae-toggle>
+```
+
+### 10. Alert (`ae-alert`)
+- **Import**: `import { AlertComponent, AlertVariant, AlertSize, AlertTone, AlertAction } from 'aegov-dls-angular';`
 - **Inputs**:
   - `variant`: `'info' | 'warning' | 'success' | 'error'` (default: `'info'`)
   - `tone`: `'soft' | 'solid'` (default: `'soft'`)
   - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
   - `title`: `string`
-  - `dismissible`: `boolean`
   - `showIcon`: `boolean` (default: `true`)
+  - `dismissible`: `boolean` (default: `false`)
   - `action`: `{ text: string, href: string }`
-- **Outputs**: `(dismiss)`
+  - `class`: `string`
+- **Outputs**:
+  - `dismiss`: `EventEmitter<void>`
+  - `onDismiss`: `EventEmitter<void>`
 - **Usage**:
 ```html
-<ae-alert variant="success" title="Application Approved" [dismissible]="true">
+<ae-alert variant="success" tone="soft" title="Application Approved" [dismissible]="true">
   Your digital permit has been issued successfully.
 </ae-alert>
 ```
 
-### 8. Blockquote (`ae-blockquote`)
-- **Import**: `import { BlockquoteComponent } from 'aegov-dls-angular';`
+### 11. Banner (`ae-banner`)
+- **Import**: `import { BannerComponent, BannerVariant, BannerPosition, BannerAction } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `tone`: `'soft' | 'solid'` (default: `'soft'`)
-  - `author`: `string`
-  - `authorTitle`: `string`
-  - `cite`: `string`
-- **Features**: Soft tone automatically includes the Phosphor quotation icon mirrored horizontally (`“`) in LTR and adapted for RTL.
+  - `title`: `string`
+  - `variant`: `'default' | 'camel' | 'red' | 'dark' | 'primaryNotice' | 'secondaryNotice'` (default: `'default'`)
+  - `position`: `'top' | 'bottom' | 'static'` (default: `'static'`)
+  - `dismissible`: `boolean` (default: `false`)
+  - `action`: `{ text: string, href?: string, onClick?: () => void }`
+  - `class`: `string`
+- **Outputs**:
+  - `dismiss`: `EventEmitter<void>`
 - **Usage**:
 ```html
-<ae-blockquote author="Sheikh Mohammed bin Rashid Al Maktoum" tone="soft">
-  "The future belongs to those who can imagine it, design it, and execute it."
-</ae-blockquote>
+<ae-banner variant="camel" title="System Maintenance" [dismissible]="true" [action]="{ text: 'Learn More', href: '/maintenance' }">
+  Scheduled maintenance on Saturday from 2:00 AM to 4:00 AM GST.
+</ae-banner>
 ```
 
-### 9. Modal (`ae-modal`)
-- **Import**: `import { ModalComponent } from 'aegov-dls-angular';`
+### 12. Modal (`ae-modal`)
+- **Import**: `import { ModalComponent, ModalSize, ModalVariant } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `open`: `boolean` (controlled visibility)
+  - `isOpen`: `boolean` (controlled visibility, default: `false`)
   - `title`: `string`
   - `size`: `'sm' | 'md' | 'lg' | 'xl'` (default: `'md'`)
-  - `variant`: `'default' | 'danger'`
+  - `variant`: `'default' | 'danger'` (default: `'default'`)
   - `closeOnBackdrop`: `boolean` (default: `true`)
-  - `closeOnEsc`: `boolean` (default: `true`)
-- **Outputs**: `(close)`
+  - `class`: `string`
+  - `dialogClass`: `string`
+- **Outputs**:
+  - `close`: `EventEmitter<void>`
+  - `openChange`: `EventEmitter<boolean>`
 - **Slots**: `[trigger]`, default `<ng-content>`
 - **Usage**:
 ```html
-<ae-modal [open]="isModalOpen" (close)="isModalOpen = false" title="Confirm Action">
-  <p class="text-gray-600 mb-6">Are you sure you want to proceed with this request?</p>
+<ae-modal [isOpen]="isModalOpen" (close)="isModalOpen = false" title="Confirm Application">
+  <p class="text-gray-600 mb-6">Are you sure you want to submit your final application?</p>
   <div class="flex justify-end gap-3">
     <ae-button variant="outline" color="secondary" (click)="isModalOpen = false">Cancel</ae-button>
     <ae-button color="primary" (click)="confirmAction()">Confirm</ae-button>
@@ -293,14 +370,15 @@ navItems: NavItemData[] = [
 </ae-modal>
 ```
 
-### 10. Toast (`ae-toast`, `ToastService`)
-- **Import**: `import { ToastComponent, ToastService } from 'aegov-dls-angular';`
+### 13. Toast (`ae-toast`, `ToastService`)
+- **Import**: `import { ToastComponent, ToastService, ToastMessage } from 'aegov-dls-angular';`
 - **Service API**:
   - `toastService.success(message, title?)`
   - `toastService.error(message, title?)`
   - `toastService.info(message, title?)`
   - `toastService.warning(message, title?)`
-  - `toastService.show({ message, title, variant, duration })`
+  - `toastService.show({ message, title?, variant?, duration? })`
+  - `toastService.dismiss(id)`
 - **App Setup**: Place `<ae-toast></ae-toast>` once in `app.component.html`.
 - **Usage**:
 ```typescript
@@ -324,13 +402,44 @@ export class AppComponent {
 }
 ```
 
-### 11. Tabs (`ae-tabs`)
-- **Import**: `import { TabsComponent, TabItem } from 'aegov-dls-angular';`
+### 14. Accordion (`ae-accordion`, `ae-accordion-item`)
+- **Import**: `import { AccordionComponent, AccordionItemComponent, AccordionItemData } from 'aegov-dls-angular';`
+- **Inputs on `ae-accordion`**:
+  - `items`: `AccordionItemData[]` (data-driven mode, optional)
+  - `multiple`: `boolean` (allow multiple open panels, default: `false`)
+  - `collapsible`: `boolean` (allow closing all panels, default: `true`)
+  - `defaultValue`: `string | string[]` (initial open item value)
+  - `class`: `string`
+- **Outputs on `ae-accordion`**:
+  - `valueChange`: `EventEmitter<string | string[]>`
+  - `onValueChange`: `EventEmitter<string | string[]>`
+- **Inputs on `ae-accordion-item`**:
+  - `value`: `string` (required unique identifier)
+  - `title`: `string` (required title text)
+  - `children`: `string` (optional body text)
+  - `icon`: `IconName` (default: `'caret-down'`)
+  - `iconRotateDeg`: `number` (default: `180`)
+- **Usage (Component Mode)**:
+```html
+<ae-accordion [multiple]="false">
+  <ae-accordion-item value="prereq" title="What are the prerequisites?">
+    Valid Emirates ID and registered UAE PASS account.
+  </ae-accordion-item>
+  <ae-accordion-item value="duration" title="How long does processing take?">
+    Instant issuance for digital government services.
+  </ae-accordion-item>
+</ae-accordion>
+```
+
+### 15. Tabs (`ae-tabs`)
+- **Import**: `import { TabsComponent, TabItem, TabsVariant } from 'aegov-dls-angular';`
 - **Inputs**:
   - `items`: `TabItem[]` (`{ value: string, label: string, content?: string, icon?: IconName }`)
-  - `variant`: `'default' | 'pills' | 'compact'`
-  - `defaultValue`: `string`
-- **Outputs**: `(tabChange)`
+  - `variant`: `'default' | 'pills' | 'compact'` (default: `'default'`)
+  - `defaultValue`: `string` (initial active tab value)
+  - `class`: `string`
+- **Outputs**:
+  - `tabChange`: `EventEmitter<string>`
 - **Usage**:
 ```html
 <ae-tabs
@@ -338,58 +447,23 @@ export class AppComponent {
   [items]="[
     { value: 'personal', label: 'Personal Info', content: 'Personal details form' },
     { value: 'documents', label: 'Documents', content: 'Uploaded documents list' }
-  ]">
+  ]"
+  (tabChange)="onTabSelected($event)">
 </ae-tabs>
 ```
 
-### 12. Accordion (`ae-accordion`, `ae-accordion-item`)
-- **Import**: `import { AccordionComponent, AccordionItemComponent } from 'aegov-dls-angular';`
-- **Inputs on `ae-accordion`**:
-  - `type`: `'single' | 'multiple'` (default: `'single'`)
-  - `variant`: `'default' | 'card' | 'bordered'`
-  - `items`: `AccordionItemData[]` (optional data-driven mode)
-- **Inputs on `ae-accordion-item`**:
-  - `value`: `string` (required)
-  - `title`: `string` (required)
-  - `icon`: `IconName` (default: `'caret-down'`)
-- **Usage**:
-```html
-<ae-accordion type="single">
-  <ae-accordion-item value="item-1" title="What are the prerequisites?">
-    Valid Emirates ID and registered UAE PASS account.
-  </ae-accordion-item>
-  <ae-accordion-item value="item-2" title="How long does processing take?">
-    Instant issuance for digital services.
-  </ae-accordion-item>
-</ae-accordion>
-```
-
-### 13. Checkbox & Radio & Toggle
-- **Imports**: `CheckboxComponent`, `RadioComponent`, `RadioGroupComponent`, `ToggleComponent`
-- **Usage**:
-```html
-<!-- Checkbox -->
-<ae-checkbox [(ngModel)]="agreed" label="I agree to the Terms and Conditions"></ae-checkbox>
-
-<!-- Radio Group -->
-<ae-radio-group [(ngModel)]="plan" name="plan" label="Select Plan">
-  <ae-radio value="basic" label="Basic"></ae-radio>
-  <ae-radio value="premium" label="Premium"></ae-radio>
-</ae-radio-group>
-
-<!-- Toggle Switch -->
-<ae-toggle [(ngModel)]="notifications" label="Enable SMS Notifications"></ae-toggle>
-```
-
-### 14. Dropdown (`ae-dropdown`)
-- **Import**: `import { DropdownComponent, DropdownGroupData } from 'aegov-dls-angular';`
+### 16. Dropdown (`ae-dropdown`)
+- **Import**: `import { DropdownComponent, DropdownGroupData, DropdownItemData, DropdownAlign, DropdownSide } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `groups`: `DropdownGroupData[]`
+  - `groups`: `DropdownGroupData[]` (`{ label?: string, items: { label: string, value: string, icon?: IconName, disabled?: boolean }[] }`)
   - `header`: `string`
-  - `align`: `'start' | 'center' | 'end'`
-  - `side`: `'top' | 'right' | 'bottom' | 'left'`
-  - `triggerType`: `'click' | 'hover'`
-- **Outputs**: `(select)`
+  - `align`: `'start' | 'center' | 'end'` (default: `'start'`)
+  - `side`: `'top' | 'right' | 'bottom' | 'left'` (default: `'bottom'`)
+  - `trigger`: `'click' | 'hover'` (default: `'click'`)
+  - `class`: `string`
+- **Outputs**:
+  - `select`: `EventEmitter<string>`
+- **Slots**: `[trigger]`, default `<ng-content>`
 - **Usage**:
 ```html
 <ae-dropdown
@@ -404,118 +478,249 @@ export class AppComponent {
 </ae-dropdown>
 ```
 
-### 15. Card (`ae-card`, `ae-card-header`, `ae-card-footer`)
-- **Import**: `import { CardComponent, CardHeaderComponent, CardFooterComponent } from 'aegov-dls-angular';`
-- **Inputs on `ae-card`**:
-  - `variant`: `'default' | 'flat' | 'outline' | 'bordered'`
-  - `elevation`: `'none' | 'sm' | 'base' | 'md' | 'lg'`
+### 17. Tooltip Directive (`[aeTooltip]`) & Component (`ae-tooltip`)
+- **Import**: `import { TooltipDirective, TooltipComponent, TooltipSide, TooltipAlign } from 'aegov-dls-angular';`
+- **Directive Usage**:
+  - `aeTooltip`: `string` (required tooltip text)
+  - `tooltipSide`: `'top' | 'right' | 'bottom' | 'left'` (default: `'top'`)
+```html
+<ae-button aeTooltip="Click to download your permit" tooltipSide="top">
+  Download
+</ae-button>
+```
+- **Component Usage**:
+  - `content`: `string`
+  - `side`: `'top' | 'right' | 'bottom' | 'left'` (default: `'top'`)
+  - `align`: `'start' | 'center' | 'end'` (default: `'center'`)
+  - `isOpen`: `boolean`
+```html
+<ae-tooltip content="Verified UAE Government Organization" side="top">
+  <span class="cursor-pointer font-bold">Ministry of Economy</span>
+</ae-tooltip>
+```
+
+### 18. Popover (`ae-popover`)
+- **Import**: `import { PopoverComponent, PopoverTrigger, PopoverSide, PopoverAlign } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `side`: `'top' | 'right' | 'bottom' | 'left'` (default: `'bottom'`)
+  - `align`: `'start' | 'center' | 'end'` (default: `'center'`)
+  - `trigger`: `'click' | 'hover'` (default: `'click'`)
+  - `sideOffset`: `number` (default: `5`)
+  - `isOpen`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Outputs**:
+  - `openChange`: `EventEmitter<boolean>`
+- **Slots**: `[trigger]`, default `<ng-content>`
 - **Usage**:
 ```html
-<ae-card variant="bordered" elevation="sm">
-  <ae-card-header title="Service Overview" subtitle="Updated today"></ae-card-header>
-  <p class="text-gray-700">Detailed information about the selected government service.</p>
-  <ae-card-footer>
-    <ae-button color="primary" size="sm">Apply Now</ae-button>
-  </ae-card-footer>
+<ae-popover side="bottom" align="center" trigger="click">
+  <ae-button slot="trigger" variant="outline">View Details</ae-button>
+  <div class="p-3 text-sm">
+    <h4 class="font-bold mb-1">Service Fee</h4>
+    <p class="text-gray-600">AED 150 inclusive of VAT.</p>
+  </div>
+</ae-popover>
+```
+
+### 19. Card (`ae-card`, `ae-card-link`, `ae-card-stack`)
+- **Import**: `import { CardComponent, CardLinkComponent, CardStackComponent, CardVariant, CardSize, CardStackDirection } from 'aegov-dls-angular';`
+- **Inputs on `ae-card`**:
+  - `variant`: `'default' | 'news' | 'service' | 'creative'` (default: `'default'`)
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `bordered`: `boolean` (default: `false`)
+  - `glow`: `boolean` (default: `false`, enables hover glow shadow)
+  - `noRadius`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Inputs on `ae-card-link`**:
+  - `href`: `string` (default: `'#'`)
+  - `class`: `string`
+- **Inputs on `ae-card-stack`**:
+  - `direction`: `'horizontal' | 'vertical' | 'matrix'` (default: `'horizontal'`)
+  - `columns`: `number` (default: `3`)
+  - `collapsed`: `boolean` (default: `false`)
+  - `gap`: `number` (default: `4`)
+  - `class`: `string`
+- **Usage**:
+```html
+<ae-card variant="default" size="base" bordered glow>
+  <h5 class="text-h5 font-extrabold">Service Overview</h5>
+  <p class="text-gray-600">Detailed information about the selected government service.</p>
+  <ae-card-link href="/services">View details</ae-card-link>
 </ae-card>
 ```
 
-### 16. Breadcrumbs (`ae-breadcrumbs`)
-- **Import**: `import { BreadcrumbsComponent, BreadcrumbItem } from 'aegov-dls-angular';`
-- **Inputs**: `items: BreadcrumbItem[]` (`{ label: string, href?: string, current?: boolean }`)
+### 20. Breadcrumbs (`ae-breadcrumbs`)
+- **Import**: `import { BreadcrumbsComponent, BreadcrumbItemData, BreadcrumbSeparator } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `items`: `BreadcrumbItemData[]` (`{ label: string, href?: string, icon?: string }`)
+  - `separator`: `'slash' | 'caret'` (default: `'slash'`)
+  - `showHomeIcon`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Note**: The last item in `items` is automatically rendered as the current active breadcrumb page.
 - **Usage**:
 ```html
-<ae-breadcrumbs [items]="[
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/services' },
-  { label: 'Residency', current: true }
-]"></ae-breadcrumbs>
+<ae-breadcrumbs
+  separator="slash"
+  [showHomeIcon]="true"
+  [items]="[
+    { label: 'Home', href: '/' },
+    { label: 'Services', href: '/services' },
+    { label: 'Residency' }
+  ]">
+</ae-breadcrumbs>
 ```
 
-### 17. Pagination (`ae-pagination`)
+### 21. Pagination (`ae-pagination`)
 - **Import**: `import { PaginationComponent } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `total`: `number` (total items)
-  - `pageSize`: `number` (items per page, default: `10`)
-  - `currentPage`: `number` (1-indexed)
-- **Outputs**: `(pageChange)`
+  - `totalPages`: `number` (total number of pages, default: `1`)
+  - `currentPage`: `number` (active page number, 1-indexed, default: `1`)
+  - `showFirstLast`: `boolean` (display First and Last navigation buttons, default: `false`)
+  - `class`: `string`
+- **Outputs**:
+  - `pageChange`: `EventEmitter<number>`
 - **Usage**:
 ```html
 <ae-pagination
-  [total]="100"
-  [pageSize]="10"
-  [currentPage]="page"
-  (pageChange)="page = $event">
+  [totalPages]="10"
+  [currentPage]="currentPage"
+  [showFirstLast]="true"
+  (pageChange)="onPageChange($event)">
 </ae-pagination>
 ```
 
-### 18. Steps (`ae-steps`)
-- **Import**: `import { StepsComponent, StepItem } from 'aegov-dls-angular';`
+### 22. Steps (`ae-steps`)
+- **Import**: `import { StepsComponent, StepItem, StepsSize, StepsOrientation } from 'aegov-dls-angular';`
 - **Inputs**:
-  - `steps`: `StepItem[]` (`{ title: string, description?: string, icon?: IconName }`)
-  - `currentStep`: `number` (0-indexed or 1-indexed)
-  - `direction`: `'horizontal' | 'vertical'`
+  - `steps`: `StepItem[]` (`{ label: string, href?: string }`)
+  - `currentStep`: `number` (0-indexed current active step, default: `0`)
+  - `orientation`: `'horizontal' | 'vertical'` (default: `'horizontal'`)
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `showLabels`: `boolean` (displays step label text next to or under numbers, default: `false`)
+  - `disabled`: `boolean` (default: `false`)
+  - `class`: `string`
 - **Usage**:
 ```html
 <ae-steps
   [currentStep]="1"
+  orientation="horizontal"
+  [showLabels]="true"
   [steps]="[
-    { title: 'Identity Verification' },
-    { title: 'Application Form' },
-    { title: 'Payment & Confirmation' }
+    { label: 'Identity Verification' },
+    { label: 'Application Details' },
+    { label: 'Payment & Confirmation' }
   ]">
 </ae-steps>
 ```
 
-### 19. Tooltip (`ae-tooltip`, `[aeTooltip]`) & Popover (`ae-popover`)
-- **Imports**: `TooltipComponent`, `TooltipDirective`, `PopoverComponent`
-- **Usage**:
-```html
-<!-- Tooltip directive -->
-<ae-button aeTooltip="Click to download your permit" tooltipPosition="top">Download</ae-button>
-
-<!-- Popover -->
-<ae-popover position="bottom">
-  <ae-button slot="trigger">View Details</ae-button>
-  <div class="p-3 text-sm">Detailed popover content...</div>
-</ae-popover>
-```
-
-### 20. File Upload (`ae-file-upload`)
-- **Import**: `import { FileUploadComponent } from 'aegov-dls-angular';`
-- **Inputs**: `label`, `accept`, `multiple`, `maxSize`, `helperText`, `error`
-- **Outputs**: `(filesChange)`
+### 23. File Upload (`ae-file-upload`)
+- **Import**: `import { FileUploadComponent, FileUploadVariant } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `variant`: `'default' | 'simple' | 'card' | 'withPreview' | 'dragDrop'` (default: `'default'`)
+  - `label`: `string` (default: `'Upload file'`)
+  - `maxFiles`: `number` (default: `1`)
+  - `accept`: `string` (standard accept attribute e.g. `".pdf,.png"`)
+  - `acceptedFileTypes`: `Record<string, string[]> | string`
+  - `disabled`: `boolean` (default: `false`)
+  - `class`: `string`
+- **Outputs**:
+  - `filesSelected`: `EventEmitter<File[]>`
 - **Usage**:
 ```html
 <ae-file-upload
-  label="Upload Passport Copy"
-  accept=".pdf,.jpg,.png"
-  helperText="PDF or Image up to 5MB"
-  (filesChange)="onFilesSelected($event)">
+  variant="dragDrop"
+  label="Upload Documents"
+  accept=".pdf,.png,.jpg"
+  [maxFiles]="3"
+  (filesSelected)="onFilesUploaded($event)">
 </ae-file-upload>
 ```
 
-### 21. Range Slider (`ae-range-slider`)
-- **Import**: `import { RangeSliderComponent } from 'aegov-dls-angular';`
-- **Inputs**: `min`, `max`, `step`, `label`, `value`
+### 24. Range Slider (`ae-range-slider`)
+- **Import**: `import { RangeSliderComponent, RangeSliderSize, RangeSliderVariant } from 'aegov-dls-angular';`
+- **Features**: Implements `ControlValueAccessor` (`[(ngModel)]` and `[formControl]`).
+- **Inputs**:
+  - `min`: `number` (default: `0`)
+  - `max`: `number` (default: `100`)
+  - `step`: `number` (default: `1`)
+  - `label`: `string`
+  - `helperText`: `string`
+  - `error`: `string`
+  - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
+  - `variant`: `'primary' | 'secondary'` (default: `'primary'`)
+  - `disabled`: `boolean` (default: `false`)
+  - `required`: `boolean` (default: `false`)
+  - `id`: `string`
+  - `class`: `string`
 - **Usage**:
 ```html
 <ae-range-slider
   label="Investment Amount (AED)"
   [min]="1000"
-  [max]="100000"
+  [max]="50000"
   [step]="500"
   [(ngModel)]="amount">
 </ae-range-slider>
 ```
 
-### 22. Avatar (`ae-avatar`), Banner (`ae-banner`), Hyperlink (`ae-hyperlink`)
-- **Imports**: `AvatarComponent`, `BannerComponent`, `HyperlinkComponent`
+### 25. Avatar (`ae-avatar`)
+- **Import**: `import { AvatarComponent, AvatarSize, AvatarVariant, AvatarStatus } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `src`: `string` (image URL)
+  - `alt`: `string` (default: `'Avatar'`)
+  - `fallback`: `string` (text/initials shown if `src` fails or is omitted)
+  - `size`: `'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl'` (default: `'base'`)
+  - `variant`: `'square' | 'rounded-sm' | 'rounded' | 'circle'` (default: `'square'`)
+  - `status`: `'online' | 'offline' | 'none'` (default: `'none'`)
+  - `class`: `string`
 - **Usage**:
 ```html
-<ae-avatar src="/avatar.jpg" alt="User" size="lg" status="online"></ae-avatar>
-<ae-banner variant="warning" title="System Maintenance">Scheduled on Saturday at 2 AM.</ae-banner>
-<ae-hyperlink href="https://u.ae" external="true">Visit Official Portal</ae-hyperlink>
+<ae-avatar src="/avatar.jpg" alt="User" size="lg" variant="circle" status="online"></ae-avatar>
+<ae-avatar fallback="JD" size="base" variant="rounded"></ae-avatar>
+```
+
+### 26. Blockquote (`ae-blockquote`)
+- **Import**: `import { BlockquoteComponent, BlockquoteTone } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `author`: `string`
+  - `authorTitle`: `string`
+  - `cite`: `string`
+  - `tone`: `'soft' | 'solid'` (default: `'soft'`)
+  - `class`: `string`
+- **Features**: Soft tone automatically includes the Phosphor quotation icon mirrored horizontally (`“`) in LTR and adapted for RTL.
+- **Usage**:
+```html
+<ae-blockquote author="Sheikh Mohammed bin Rashid Al Maktoum" tone="soft">
+  "The future belongs to those who can imagine it, design it, and execute it."
+</ae-blockquote>
+```
+
+### 27. Hyperlink (`ae-hyperlink`, `a[ae-hyperlink]`)
+- **Import**: `import { HyperlinkComponent, HyperlinkVariant } from 'aegov-dls-angular';`
+- **Inputs**:
+  - `routerLink`: `string | any[]` (Angular SPA route navigation)
+  - `queryParams`: `Params`
+  - `fragment`: `string`
+  - `queryParamsHandling`: `QueryParamsHandling` (`'merge' | 'preserve' | ''`)
+  - `routerLinkActive`: `string | string[]`
+  - `routerLinkActiveOptions`: `{ exact: boolean } | IsActiveMatchOptions`
+  - `href`: `string` (external or standard anchor link, default: `'#'`)
+  - `variant`: `'default' | 'cta' | 'soft' | 'secondary' | 'secondary-soft'` (default: `'default'`)
+  - `external`: `boolean` (opens in new tab with `target="_blank"` and `rel="noopener noreferrer"`, default: `false`)
+  - `icon`: `boolean` (displays trailing chevron icon, default: `false`)
+  - `label`: `string` (or use projected content)
+  - `target`: `string`
+  - `rel`: `string`
+  - `class`: `string`
+- **Usage**:
+```html
+<ae-hyperlink routerLink="/services" variant="cta" [icon]="true">
+  Browse Services
+</ae-hyperlink>
+
+<ae-hyperlink href="https://u.ae" [external]="true">
+  Visit Official Portal
+</ae-hyperlink>
 ```
 
 ---
@@ -527,3 +732,4 @@ export class AppComponent {
 3. **Use Phosphor Icon names**: Use valid icon names for `leftIcon`, `rightIcon`, or `<ae-icon name="...">` (e.g. `'check'`, `'x'`, `'arrow-right'`, `'magnifying-glass'`, `'eye'`, `'eye-slash'`, `'user'`, `'house'`, `'globe'`, `'person-arms-spread'`).
 4. **Use exact button color literal types**: `color="primary"` or `color="secondary"`. Variant types: `variant="solid" | "soft" | "link" | "outline" | "outline-solid"`.
 5. **Form components implement ControlValueAccessor**: Use `[(ngModel)]` or `[formControl]` directly with `<ae-input>`, `<ae-textarea>`, `<ae-select>`, `<ae-checkbox>`, `<ae-radio-group>`, `<ae-toggle>`, `<ae-range-slider>`.
+6. **Navigation and Hyperlink support SPA routing**: Use `routerLink` on `<ae-hyperlink>` and `NavItemData` for Angular SPA routes, or `href` for external links.
