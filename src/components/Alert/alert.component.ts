@@ -60,7 +60,7 @@ export interface AlertAction {
                     [class]="actionLinkClasses()"
                   >
                     {{ act.text }}
-                    <ae-icon name="caret-right" [size]="actionIconSizes[size()]"></ae-icon>
+                    <ae-icon name="caret-right" [size]="actionIconSizes[size()]" [rotateRtl]="true"></ae-icon>
                   </a>
                 </div>
               }

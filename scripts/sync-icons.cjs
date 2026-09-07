@@ -7,6 +7,8 @@ const defaultIconsOutputPath = path.resolve(__dirname, '../src/components/Icon/d
 // Built-in default icons required across aegov-dls-angular components
 const defaultIconUsage = {
   regular: [
+    'arrow-counter-clockwise',
+    'arrow-left',
     'arrow-right',
     'caret-double-left',
     'caret-double-right',
@@ -18,15 +20,19 @@ const defaultIconUsage = {
     'check',
     'eye-slash',
     'eye',
+    'globe',
     'house',
     'image',
     'info',
     'list',
     'magnifying-glass',
     'moon',
+    'person-arms-spread',
+    'quotes',
     'sun',
     'upload-simple',
     'user',
+    'warning-circle',
     'warning',
     'x-circle',
     'x',

@@ -1,11 +1,22 @@
-import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
+import { type Meta, type StoryObj, moduleMetadata, applicationConfig } from '@storybook/angular';
 import { CardComponent, CardLinkComponent, CardStackComponent } from './card.component';
 import { IconComponent } from '../Icon/icon.component';
+import { provideAeIcons } from '../Icon/icon-registry.service';
+
+const demoIcons: Record<string, string> = {
+  'note': '<path d="M213.66,82.34l-56-56A8,8,0,0,0,152,24H56A16,16,0,0,0,40,40V216a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V88A8,8,0,0,0,213.66,82.34ZM160,51.31,188.69,80H160ZM200,216H56V40h88V88a8,8,0,0,0,8,8h48V216Z"/>',
+  'bookmark': '<path d="M192,24H64A16,16,0,0,0,48,40V224a8,8,0,0,0,12.65,6.51L128,183.3l67.35,47.21A8,8,0,0,0,208,224V40A16,16,0,0,0,192,24Zm0,181.84-59.35-41.6a8,8,0,0,0-9.3,0L64,205.84V40H192Z"/>'
+};
 
 const meta: Meta<CardComponent> = {
   title: 'Components/Card',
   component: CardComponent,
   decorators: [
+    applicationConfig({
+      providers: [
+        provideAeIcons(demoIcons)
+      ]
+    }),
     moduleMetadata({
       imports: [CardComponent, CardLinkComponent, CardStackComponent, IconComponent],
     }),

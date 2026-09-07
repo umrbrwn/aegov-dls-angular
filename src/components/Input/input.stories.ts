@@ -1,12 +1,23 @@
-import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
+import { type Meta, type StoryObj, moduleMetadata, applicationConfig } from '@storybook/angular';
 import { InputComponent } from './input.component';
 import { IconComponent } from '../Icon/icon.component';
 import { DropdownComponent } from '../Dropdown/dropdown.component';
+import { provideAeIcons } from '../Icon/icon-registry.service';
+
+const demoIcons: Record<string, string> = {
+  'envelope-simple': '<path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM208,192H48V64H208V192Zm-7.79-114.72-72.21,54.16-72.21-54.16a8,8,0,0,0-9.58,12.78l77,57.75a8,8,0,0,0,9.58,0l77-57.75a8,8,0,0,0-9.58-12.78Z"/>',
+  'phone': '<path d="M222.37,158.46l-47.11-21.11a16,16,0,0,0-15.71,2.53L136.21,158A132.88,132.88,0,0,1,98,119.79l18.12-23.34A16,16,0,0,0,118.65,80.74L97.54,33.63A16,16,0,0,0,82.8,24H48A24,24,0,0,0,24,48,200,200,0,0,0,224,248a24,24,0,0,0,24-24V173.2A16,16,0,0,0,222.37,158.46ZM232,224a8,8,0,0,1-8,8A184.21,184.21,0,0,1,40,48a8,8,0,0,1,8-8H82.8a.49.49,0,0,1,.45.29L104.36,87.4a.5.5,0,0,1-.08.49L83.85,114.47a8,8,0,0,0-.46,9.26,148.66,148.66,0,0,0,54.88,54.88,8,8,0,0,0,9.26-.46l26.58-20.43a.5.5,0,0,1,.49-.08l47.11,21.11a.49.49,0,0,1,.29.45V224Z"/>'
+};
 
 const meta: Meta<InputComponent> = {
   title: 'Components/Input',
   component: InputComponent,
   decorators: [
+    applicationConfig({
+      providers: [
+        provideAeIcons(demoIcons)
+      ]
+    }),
     moduleMetadata({
       imports: [InputComponent, IconComponent, DropdownComponent],
     }),
