@@ -37,18 +37,22 @@ export interface NavItemData {
   visible?: boolean;
 }
 
+export type NavBreakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
 const TOP_BAR_BREAKPOINTS: Record<string, string> = {
+  sm: 'max-sm:hidden',
   md: 'max-md:hidden',
   lg: 'max-lg:hidden',
   xl: 'max-xl:hidden',
-  '1100px': 'max-[1099px]:hidden',
+  '2xl': 'max-2xl:hidden',
 };
 
 const MOBILE_BREAKPOINTS: Record<string, string> = {
+  sm: 'sm:hidden',
   md: 'md:hidden',
   lg: 'lg:hidden',
   xl: 'xl:hidden',
-  '1100px': 'min-[1100px]:hidden',
+  '2xl': '2xl:hidden',
 };
 
 @Component({
@@ -497,7 +501,7 @@ export class SecondaryMenuComponent {
 export class NavigationComponent {
   readonly class = input<string>('');
   readonly containerClass = input<string>('container mx-auto px-4 sm:px-6 lg:px-8');
-  readonly breakpoint = input<'md' | 'lg' | 'xl' | '1100px'>('1100px');
+  readonly breakpoint = input<NavBreakpoint>('xl');
   readonly drawerTitle = input<string>('UAE Gov Menu');
   readonly drawerToggleLabel = input<string>('Toggle main menu');
   readonly drawerCloseLabel = input<string>('Close menu');
@@ -507,15 +511,15 @@ export class NavigationComponent {
   readonly expandedMobileItems = signal<Set<string>>(new Set());
 
   readonly topBarClasses = computed(() =>
-    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-[1099px]:hidden')
+    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden')
   );
 
   readonly mobileHeaderClasses = computed(() =>
-    cn(MOBILE_BREAKPOINTS[this.breakpoint()] ?? 'min-[1100px]:hidden')
+    cn(MOBILE_BREAKPOINTS[this.breakpoint()] ?? 'xl:hidden')
   );
 
   readonly desktopClasses = computed(() =>
-    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-[1099px]:hidden', this.class())
+    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden', this.class())
   );
 
   toggleMobileItem(label: string): void {

@@ -92,10 +92,10 @@ export const appConfig = {
 ```
 
 ### 3. Navigation (`ae-navigation`, `ae-nav-item`, `ae-main-menu`, `ae-secondary-menu`)
-- **Import**: `import { NavigationComponent, NavItemComponent, MainMenuComponent, SecondaryMenuComponent, NavItemData, NavDropdownGroup } from 'aegov-dls-angular';`
+- **Import**: `import { NavigationComponent, NavItemComponent, MainMenuComponent, SecondaryMenuComponent, NavItemData, NavDropdownGroup, NavBreakpoint } from 'aegov-dls-angular';`
 - **Inputs on `ae-navigation`**:
   - `items`: `NavItemData[]` (data-driven navigation items)
-  - `breakpoint`: `'md' | 'lg' | 'xl' | '1100px'` (default: `'1100px'`)
+  - `breakpoint`: `'sm' | 'md' | 'lg' | 'xl' | '2xl'` (default: `'xl'`)
   - `drawerTitle`: `string` (default: `'UAE Gov Menu'`)
   - `drawerToggleLabel`: `string` (default: `'Toggle main menu'`)
   - `drawerCloseLabel`: `string` (default: `'Close menu'`)
@@ -135,7 +135,7 @@ navItems: NavItemData[] = [
 ];
 ```
 ```html
-<ae-navigation [items]="navItems" breakpoint="1100px">
+<ae-navigation [items]="navItems" breakpoint="xl">
   <div slot="top-bar" class="container mx-auto px-4 py-3 flex items-center justify-between">
     <img src="/logo.svg" alt="UAE Gov" class="h-10">
   </div>

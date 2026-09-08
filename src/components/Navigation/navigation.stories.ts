@@ -218,7 +218,7 @@ const meta: Meta<NavigationComponent> = {
     }
   },
   args: {
-    breakpoint: '1100px',
+    breakpoint: 'xl',
     drawerTitle: 'UAE Government Menu',
     containerClass: 'container mx-auto px-4 sm:px-6 lg:px-8',
     drawerToggleLabel: 'Toggle main menu',
