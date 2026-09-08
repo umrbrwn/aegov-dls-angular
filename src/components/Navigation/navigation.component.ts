@@ -58,7 +58,7 @@ const MOBILE_BREAKPOINTS: Record<string, string> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (type() === 'secondary') {
-      <li class="inline-flex items-center shrink-0">
+      <li class="inline-flex items-center shrink-0 h-full">
         @if (routerLink()) {
           <a
             [routerLink]="routerLink()!"
@@ -88,7 +88,7 @@ const MOBILE_BREAKPOINTS: Record<string, string> = {
       </li>
     } @else if (dropdown() && dropdown()!.length > 0) {
       <li
-        class="relative group"
+        class="relative group h-full flex items-stretch shrink-0"
         (mouseenter)="openDropdown()"
         (mouseleave)="closeDropdown()"
       >
@@ -153,7 +153,7 @@ const MOBILE_BREAKPOINTS: Record<string, string> = {
         }
       </li>
     } @else {
-      <li class="relative inline-flex items-center shrink-0">
+      <li class="relative inline-flex items-stretch shrink-0 h-full">
         @if (routerLink()) {
           <a
             [routerLink]="routerLink()!"
@@ -183,7 +183,9 @@ const MOBILE_BREAKPOINTS: Record<string, string> = {
   `,
   styles: [`
     :host {
-      display: inline-block;
+      display: inline-flex;
+      align-self: stretch;
+      height: 100%;
     }
   `]
 })
@@ -203,7 +205,7 @@ export class NavItemComponent {
   readonly isOpen = signal<boolean>(false);
 
   private readonly baseItemClasses =
-    'inline-flex items-center gap-2 border-b-2 border-transparent px-2.5 xl:px-3.5 py-4 font-bold text-sm transition-colors no-underline ' +
+    'inline-flex items-center gap-2 border-b-2 border-transparent px-2.5 xl:px-3.5 py-4 font-bold text-sm whitespace-nowrap shrink-0 h-full transition-colors no-underline -mb-px ' +
     'hover:border-primary-800 hover:text-primary-800 focus-visible:ring-primary-support-400 focus-visible:ring-2 focus-visible:ring-inset outline-hidden';
 
   readonly triggerClasses = computed(() =>
@@ -246,13 +248,15 @@ export class NavItemComponent {
   `,
   styles: [`
     :host {
-      display: block;
+      display: flex;
+      align-self: stretch;
+      height: 100%;
     }
   `]
 })
 export class MainMenuComponent {
   readonly class = input<string>('');
-  readonly menuClasses = computed(() => cn('flex items-center flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0', this.class()));
+  readonly menuClasses = computed(() => cn('flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 h-full', this.class()));
 }
 
 @Component({
@@ -262,20 +266,22 @@ export class MainMenuComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div [class]="menuClasses()">
-      <ul class="flex items-center flex-nowrap gap-1 list-none m-0 p-0">
+      <ul class="flex items-center flex-nowrap gap-1 list-none m-0 p-0 h-full">
         <ng-content></ng-content>
       </ul>
     </div>
   `,
   styles: [`
     :host {
-      display: block;
+      display: flex;
+      align-self: stretch;
+      height: 100%;
     }
   `]
 })
 export class SecondaryMenuComponent {
   readonly class = input<string>('');
-  readonly menuClasses = computed(() => cn('header-navs-right flex items-center shrink-0 ms-auto', this.class()));
+  readonly menuClasses = computed(() => cn('header-navs-right flex items-center shrink-0 ms-auto h-full', this.class()));
 }
 
 @Component({
@@ -450,10 +456,10 @@ export class SecondaryMenuComponent {
     <div [class]="desktopClasses()">
       <div class="bg-aeblack-50 border-b border-aeblack-100">
         <div [class]="containerClass()">
-          <div class="w-full flex items-center justify-between gap-4">
+          <div class="w-full flex items-stretch justify-between gap-4">
             <!-- Auto-rendered Navigation Items (Data-Driven Mode) -->
             @if (items().length > 0) {
-              <ul class="flex items-center flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 min-w-0">
+              <ul class="flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 min-w-0 h-full">
                 @for (item of items(); track item.label) {
                   @if (item.visible !== false) {
                     <ae-nav-item
