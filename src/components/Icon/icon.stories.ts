@@ -63,7 +63,7 @@ const meta: Meta<IconComponent> = {
     size: {
       control: 'number',
     },
-    rotateRtl: {
+    flipRtl: {
       control: 'boolean',
       description: 'Rotate the icon 180 degrees when rendered in RTL mode',
     },
@@ -72,7 +72,7 @@ const meta: Meta<IconComponent> = {
     name: 'check',
     weight: 'regular',
     size: 24,
-    rotateRtl: false,
+    flipRtl: false,
   },
 };
 
@@ -91,7 +91,7 @@ export const Default: Story = {
     name: 'caret-right',
     weight: 'regular',
     size: 32,
-    rotateRtl: false,
+    flipRtl: false,
     dir: 'ltr',
   } as any,
   render: (args) => ({
@@ -103,7 +103,7 @@ export const Default: Story = {
           <span class="uppercase font-mono text-primary-600 font-bold">{{ dir }}</span>
         </div>
         <div>
-          <ae-icon [name]="name" [weight]="weight" [size]="size" [rotateRtl]="rotateRtl" class="text-primary-600"></ae-icon>
+          <ae-icon [name]="name" [weight]="weight" [size]="size" [flipRtl]="flipRtl" class="text-primary-600"></ae-icon>
         </div>
       </div>
     `,
@@ -115,7 +115,7 @@ export const DirectSvgInput: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     props: {
@@ -139,7 +139,7 @@ export const ConsumerRegisteredIcons: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     template: `
@@ -166,7 +166,7 @@ export const BuiltInIconSet: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     props: {
@@ -194,7 +194,7 @@ export const IconWeights: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     props: {
@@ -247,7 +247,7 @@ export const ColorInheritance: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     template: `
@@ -282,7 +282,7 @@ export const RtlSupport: Story = {
     name: { table: { disable: true } },
     weight: { table: { disable: true } },
     size: { table: { disable: true } },
-    rotateRtl: { table: { disable: true } },
+    flipRtl: { table: { disable: true } },
   },
   render: () => ({
     props: {
@@ -293,7 +293,7 @@ export const RtlSupport: Story = {
         <div>
           <h2 class="text-lg font-bold text-gray-900">RTL Auto-Rotation (180deg)</h2>
           <p class="text-sm text-gray-500 mt-1">
-            Setting <code>[rotateRtl]="true"</code> automatically applies <code>rtl:rotate-180</code> when the icon or its parent container is in RTL mode.
+            Setting <code>[flipRtl]="true"</code> automatically applies <code>rtl:rotate-180</code> when the icon or its parent container is in RTL mode.
           </p>
         </div>
 
@@ -307,7 +307,7 @@ export const RtlSupport: Story = {
             <div class="flex gap-4 items-center">
               @for (icon of directionalIcons; track icon) {
                 <div class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                  <ae-icon [name]="icon" [size]="24" [rotateRtl]="true" class="text-primary-600"></ae-icon>
+                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" class="text-primary-600"></ae-icon>
                   <span class="text-xs text-gray-500">{{ icon }}</span>
                 </div>
               }
@@ -323,7 +323,7 @@ export const RtlSupport: Story = {
             <div class="flex gap-4 items-center">
               @for (icon of directionalIcons; track icon) {
                 <div class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-white border border-primary-100">
-                  <ae-icon [name]="icon" [size]="24" [rotateRtl]="true" class="text-primary-600"></ae-icon>
+                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" class="text-primary-600"></ae-icon>
                   <span class="text-xs text-gray-500">{{ icon }}</span>
                 </div>
               }

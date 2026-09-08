@@ -67,7 +67,7 @@ export class ExampleComponent {}
   - `svg`: `string` (direct raw SVG path string)
   - `weight`: `'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone'` (default: `'regular'`)
   - `size`: `number | string` (default: `16`)
-  - `rotateRtl`: `boolean` (automatically flips 180 degrees in RTL mode)
+  - `flipRtl`: `boolean` (automatically flips 180 degrees in RTL mode)
   - `class`: `string`
 - **Bundled Default Icons** (zero configuration required):
   `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `bell-simple`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `file-text`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
@@ -88,7 +88,7 @@ export const appConfig = {
 ```html
 <ae-icon name="check" [size]="20" class="text-primary-600"></ae-icon>
 <ae-icon name="caret-down" weight="bold" [size]="16"></ae-icon>
-<ae-icon name="caret-right" [rotateRtl]="true" [size]="20"></ae-icon>
+<ae-icon name="caret-right" [flipRtl]="true" [size]="20"></ae-icon>
 ```
 
 ### 3. Navigation (`ae-navigation`, `ae-nav-item`, `ae-main-menu`, `ae-secondary-menu`)

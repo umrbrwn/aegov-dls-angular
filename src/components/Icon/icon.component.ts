@@ -70,7 +70,7 @@ export class IconComponent {
   /**
    * Automatically rotate the icon 180 degrees when in RTL (right-to-left) mode
    */
-  readonly rotateRtl = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly flipRtl = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   /**
    * Additional CSS classes (e.g. 'text-primary-600', 'fill-current')
@@ -85,7 +85,7 @@ export class IconComponent {
   readonly computedClass = computed(() =>
     cn(
       'shrink-0 inline-block',
-      this.rotateRtl() && 'rtl:rotate-180',
+      this.flipRtl() && 'rtl:-scale-x-100',
       this.class()
     )
   );
