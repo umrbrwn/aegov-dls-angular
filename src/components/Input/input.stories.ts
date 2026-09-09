@@ -65,6 +65,15 @@ const meta: Meta<InputComponent> = {
     error: {
       control: 'text',
     },
+    icon: {
+      control: 'text',
+      description: 'Phosphor icon name to render inside the input',
+    },
+    iconPosition: {
+      control: 'select',
+      options: ['prefix', 'suffix'],
+      description: 'Position of the custom icon',
+    },
   },
 };
 
@@ -84,7 +93,7 @@ export const Basic: Story = {
   },
   render: (args) => ({
     props: args,
-    template: `<ae-input [label]="label" [placeholder]="placeholder" [id]="id" [size]="size" [variant]="variant" [type]="type" [disabled]="disabled" [required]="required" [helperText]="helperText" [error]="error"></ae-input>`,
+    template: `<ae-input [label]="label" [placeholder]="placeholder" [id]="id" [size]="size" [variant]="variant" [type]="type" [disabled]="disabled" [required]="required" [helperText]="helperText" [error]="error" [icon]="icon" [iconPosition]="iconPosition"></ae-input>`,
   }),
 };
 
@@ -141,22 +150,6 @@ export const Password: Story = {
   }),
 };
 
-export const Search: Story = {
-  args: {
-    type: 'search',
-    placeholder: 'Search...',
-    id: 'search',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-input [type]="type" [placeholder]="placeholder" [id]="id" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required"></ae-input>`,
-  }),
-};
-
 export const Sizes: Story = {
   argTypes: {
     size: { table: { disable: true } },
@@ -186,19 +179,50 @@ export const WithIcons: Story = {
     variant: 'primary',
     disabled: false,
     required: false,
-    placeholder: 'Enter info...',
   },
   render: (args) => ({
     props: args,
     template: `
-      <div class="flex flex-col space-y-4">
-        <ae-input label="Email" type="email" [placeholder]="placeholder" id="email-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
-          <ae-icon prefix name="envelope-simple" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
-        </ae-input>
-        <ae-input label="Username" [placeholder]="placeholder" id="username-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
-          <ae-icon prefix name="user" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
-        </ae-input>
-        <ae-input label="Phone" type="text" [placeholder]="placeholder" id="phone-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
+      <div class="flex flex-col space-y-4 w-80">
+        <ae-input
+          type="search"
+          placeholder="Search..."
+          icon="magnifying-glass"
+          [size]="size"
+          [variant]="variant"
+          [disabled]="disabled"
+          [required]="required"
+        ></ae-input>
+        <ae-input
+          label="Email"
+          type="email"
+          placeholder="Enter your email"
+          icon="envelope-simple"
+          [size]="size"
+          [variant]="variant"
+          [disabled]="disabled"
+          [required]="required"
+        ></ae-input>
+        <ae-input
+          label="Website"
+          type="url"
+          placeholder="https://example.com"
+          icon="globe"
+          iconPosition="suffix"
+          [size]="size"
+          [variant]="variant"
+          [disabled]="disabled"
+          [required]="required"
+        ></ae-input>
+        <ae-input
+          label="Phone"
+          type="tel"
+          placeholder="50 123 4567"
+          [size]="size"
+          [variant]="variant"
+          [disabled]="disabled"
+          [required]="required"
+        >
           <ae-icon prefix name="phone" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
         </ae-input>
       </div>

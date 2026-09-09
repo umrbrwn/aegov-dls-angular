@@ -165,6 +165,10 @@ navItems: NavItemData[] = [
   - `required`: `boolean` (default: `false`)
   - `id`: `string`
   - `name`: `string`
+  - `icon`: `string` (Phosphor icon name)
+  - `iconPosition`: `'prefix' | 'suffix'` (default: `'prefix'`)
+  - `iconSize`: `number` (optional, auto-scales with input size)
+  - `iconClassName`: `string` (default: `'text-gray-400'`)
   - `hasPrefix`: `boolean`
   - `className`: `string`
 - **Slots**: `[prefix]`, `[suffix]`

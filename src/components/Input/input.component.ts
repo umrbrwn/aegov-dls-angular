@@ -10,10 +10,11 @@ import {
 import { CommonModule } from '@angular/common';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
+import { IconComponent, type IconName } from '../Icon/icon.component';
 
 export type InputSize = 'sm' | 'base' | 'lg';
 export type InputVariant = 'primary' | 'secondary';
+export type InputIconPosition = 'prefix' | 'suffix';
 
 @Component({
   selector: 'ae-input',
@@ -43,9 +44,9 @@ export type InputVariant = 'primary' | 'secondary';
           <ng-content select="[prefix], [slot=prefix]"></ng-content>
         </div>
 
-        @if (type() === 'search' && !hasPrefix()) {
+        @if (icon() && iconPosition() === 'prefix') {
           <div class="flex select-none items-center ps-4 text-gray-500">
-            <ae-icon name="magnifying-glass" [size]="24" className="text-gray-400"></ae-icon>
+            <ae-icon [name]="icon()!" [size]="effectiveIconSize()" [className]="iconClassName()"></ae-icon>
           </div>
         }
 
@@ -61,6 +62,12 @@ export type InputVariant = 'primary' | 'secondary';
           (input)="onInputChange($event)"
           (blur)="onTouched()"
         />
+
+        @if (icon() && iconPosition() === 'suffix') {
+          <div class="flex select-none items-center pe-4 text-gray-500">
+            <ae-icon [name]="icon()!" [size]="effectiveIconSize()" [className]="iconClassName()"></ae-icon>
+          </div>
+        }
 
         <div class="flex select-none items-center pe-4 text-gray-500 empty:hidden">
           <ng-content select="[suffix], [slot=suffix]"></ng-content>
@@ -110,6 +117,10 @@ export class InputComponent implements ControlValueAccessor {
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly className = input<string>('');
   readonly hasPrefix = input<boolean, unknown>(false, { transform: booleanAttribute });
+  readonly icon = input<IconName | string | undefined>(undefined);
+  readonly iconPosition = input<InputIconPosition>('prefix');
+  readonly iconSize = input<number | undefined>(undefined);
+  readonly iconClassName = input<string>('text-gray-400');
 
   readonly value = signal<string>('');
   readonly showPassword = signal<boolean>(false);
@@ -123,6 +134,19 @@ export class InputComponent implements ControlValueAccessor {
 
   readonly effectiveSize = computed<InputSize>(() => this.size() || 'base');
   readonly effectiveVariant = computed<InputVariant>(() => this.variant() || 'primary');
+
+  readonly effectiveIconSize = computed<number>(() => {
+    const custom = this.iconSize();
+    if (custom !== undefined) {
+      return custom;
+    }
+    const iconSizes: Record<InputSize, number> = {
+      sm: 16,
+      base: 20,
+      lg: 24
+    };
+    return iconSizes[this.effectiveSize()] ?? 20;
+  });
 
   readonly sizeClasses = {
     sm: 'h-10 text-sm',
