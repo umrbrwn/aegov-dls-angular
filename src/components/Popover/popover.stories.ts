@@ -55,7 +55,7 @@ export const Basic: Story = {
       <div class="p-20 flex justify-center">
         <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
           <button trigger class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs border border-gray-300 hover:bg-gray-50 cursor-pointer">
-            <ae-icon name="list" [size]="16" class="mr-2"></ae-icon>
+            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
             Open Popover
           </button>
           <div class="flex flex-col gap-4">
@@ -88,7 +88,7 @@ export const WithForm: Story = {
       <div class="p-20 flex justify-center">
         <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
           <button trigger class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs border border-gray-300 hover:bg-gray-50 cursor-pointer">
-            <ae-icon name="list" [size]="16" class="mr-2"></ae-icon>
+            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
             Settings
           </button>
           <form class="flex flex-col gap-4 min-w-[240px]">
@@ -178,7 +178,7 @@ export const HoverTrigger: Story = {
       <div class="p-20 flex justify-center">
         <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
           <button trigger class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-primary-500 cursor-pointer">
-            <ae-icon name="list" [size]="16" class="mr-2"></ae-icon>
+            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
             Hover Me
           </button>
           <div class="flex flex-col gap-4">

@@ -89,7 +89,7 @@ export class RadioGroupComponent implements ControlValueAccessor {
   readonly orientation = input<RadioOrientation>('vertical');
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly change = output<string>();
 
@@ -119,7 +119,7 @@ export class RadioGroupComponent implements ControlValueAccessor {
     cn(
       'space-y-6',
       this.effectiveOrientation() === 'horizontal' && 'flex space-x-8 space-y-0 rtl:space-x-reverse',
-      this.class()
+      this.className()
     )
   );
 
@@ -203,7 +203,7 @@ export class RadioItemComponent {
   readonly label = input<string | undefined>(undefined);
   readonly description = input<string | undefined>(undefined);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   private readonly generatedId = `radio-${Math.random().toString(36).slice(2, 9)}`;
   readonly computedId = computed(() => this.id() || this.generatedId);
@@ -215,7 +215,7 @@ export class RadioItemComponent {
   readonly variant = computed(() => this.group?.effectiveVariant() || 'primary');
 
   readonly wrapperClasses = computed(() =>
-    cn('flex rtl:flex-row-reverse rtl:text-right items-start gap-4 cursor-pointer w-full', this.class())
+    cn('flex rtl:flex-row-reverse rtl:text-right items-start gap-4 cursor-pointer w-full', this.className())
   );
 
   readonly buttonClasses = computed(() =>

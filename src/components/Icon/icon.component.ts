@@ -75,7 +75,7 @@ export class IconComponent {
   /**
    * Additional CSS classes (e.g. 'text-primary-600', 'fill-current')
    */
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly sanitizedSvg = computed<SafeHtml>(() => {
     const rawSvg = this.svg() || (this.name() ? this.registry.getIcon(this.name()!, this.weight()) : '') || '';
@@ -86,7 +86,7 @@ export class IconComponent {
     cn(
       'shrink-0 inline-block',
       this.flipRtl() && 'rtl:-scale-x-100',
-      this.class()
+      this.className()
     )
   );
 }

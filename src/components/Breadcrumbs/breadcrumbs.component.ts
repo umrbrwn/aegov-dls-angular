@@ -23,7 +23,7 @@ export type BreadcrumbSeparator = 'slash' | 'caret';
   template: `
     <nav
       aria-label="Breadcrumb"
-      [class]="class()"
+      [class]="className()"
       itemscope
       itemtype="https://schema.org/BreadcrumbList"
     >
@@ -38,9 +38,9 @@ export type BreadcrumbSeparator = 'slash' | 'caret';
             @if (isLast) {
               <span aria-current="page" class="text-sm font-semibold text-gray-800 max-w-[160px] truncate" itemprop="name">
                 @if (isFirst && showHomeIcon()) {
-                  <ae-icon name="house" [size]="16" class="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <ae-icon name="house" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
                 } @else if (item.icon) {
-                  <ae-icon [name]="item.icon" [size]="16" class="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <ae-icon [name]="item.icon" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
                 }
                 <span itemprop="name" class="truncate">{{ item.label }}</span>
               </span>
@@ -51,9 +51,9 @@ export type BreadcrumbSeparator = 'slash' | 'caret';
                 itemprop="item"
               >
                 @if (isFirst && showHomeIcon()) {
-                  <ae-icon name="house" [size]="16" class="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <ae-icon name="house" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
                 } @else if (item.icon) {
-                  <ae-icon [name]="item.icon" [size]="16" class="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <ae-icon [name]="item.icon" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
                 }
                 <span itemprop="name" class="truncate">{{ item.label }}</span>
               </a>
@@ -61,7 +61,7 @@ export type BreadcrumbSeparator = 'slash' | 'caret';
 
             @if (!isLast) {
               @if (separator() === 'caret') {
-                <ae-icon name="caret-right" [size]="16" class="text-gray-400 mx-2 rtl:scale-x-[-1]"></ae-icon>
+                <ae-icon name="caret-right" [size]="16" className="text-gray-400 mx-2 rtl:scale-x-[-1]"></ae-icon>
               } @else {
                 <span class="mx-2 text-gray-400" aria-hidden="true">/</span>
               }
@@ -82,5 +82,5 @@ export class BreadcrumbsComponent {
   readonly items = input<BreadcrumbItemData[]>([]);
   readonly separator = input<BreadcrumbSeparator>('slash');
   readonly showHomeIcon = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 }

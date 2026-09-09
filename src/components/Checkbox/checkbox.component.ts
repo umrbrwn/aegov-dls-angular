@@ -45,7 +45,7 @@ export type CheckboxVariant = 'primary' | 'secondary';
       >
         @if (isChecked()) {
           <span class="flex items-center justify-center text-whitely-50">
-            <ae-icon name="check" [size]="iconSizes[effectiveSize()]" class="stroke-[3]"></ae-icon>
+            <ae-icon name="check" [size]="iconSizes[effectiveSize()]" className="stroke-[3]"></ae-icon>
           </span>
         }
       </button>
@@ -86,7 +86,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly checked = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly checkedChange = output<boolean>();
 
@@ -110,7 +110,7 @@ export class CheckboxComponent implements ControlValueAccessor {
   private readonly generatedId = `checkbox-${Math.random().toString(36).slice(2, 9)}`;
   readonly computedId = computed(() => this.id() || this.generatedId);
 
-  readonly wrapperClasses = computed(() => cn('flex items-start gap-4', this.class()));
+  readonly wrapperClasses = computed(() => cn('flex items-start gap-4', this.className()));
 
   readonly buttonClasses = computed(() => {
     const s = this.effectiveSize();

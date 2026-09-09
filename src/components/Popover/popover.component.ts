@@ -43,7 +43,7 @@ export type PopoverAlign = 'start' | 'center' | 'end';
             class="absolute right-3 rtl:left-3 rtl:right-auto top-3 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
             aria-label="Close popover"
           >
-            <ae-icon name="x" [size]="16" class="text-gray-500"></ae-icon>
+            <ae-icon name="x" [size]="16" className="text-gray-500"></ae-icon>
           </button>
 
           <div class="pr-6">
@@ -65,7 +65,7 @@ export class PopoverComponent {
   readonly align = input<PopoverAlign>('center');
   readonly sideOffset = input<number>(5);
   readonly isOpen = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly openChange = output<boolean>();
 
@@ -112,7 +112,7 @@ export class PopoverComponent {
       'absolute z-50 w-72 rounded-lg bg-white p-4 shadow-lg border border-gray-200 animate-fadeIn',
       sideClass,
       alignClass,
-      this.class()
+      this.className()
     );
   });
 

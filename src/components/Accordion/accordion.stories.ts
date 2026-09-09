@@ -5,17 +5,17 @@ const defaultItems = [
   {
     value: '1',
     title: 'What is the meaning of a design system?',
-    children: 'A Design System is a comprehensive set of standards, documentation, principles, and components that guide the creation of a digital product\'s user interface (UI). It acts as a single source of truth for designers, developers, and other stakeholders, ensuring consistency across different parts of a product and even across different products within the same brand. The goal is to accelerate the design and development process, improve user experience, and maintain a coherent visual and functional language.',
+    content: 'A Design System is a comprehensive set of standards, documentation, principles, and components that guide the creation of a digital product\'s user interface (UI). It acts as a single source of truth for designers, developers, and other stakeholders, ensuring consistency across different parts of a product and even across different products within the same brand. The goal is to accelerate the design and development process, improve user experience, and maintain a coherent visual and functional language.',
   },
   {
     value: '2',
     title: 'What are components?',
-    children: 'Components are a crucial part of any design system. They are reusable parts of a UI, like buttons, form fields, or navigation menus, and they\'re defined both in terms of their appearance and their behavior.',
+    content: 'Components are a crucial part of any design system. They are reusable parts of a UI, like buttons, form fields, or navigation menus, and they\'re defined both in terms of their appearance and their behavior.',
   },
   {
     value: '3',
     title: 'What else is part of a design system?',
-    children: 'A well-structured design system will also include usage guidelines for each component, detailing when and how it should be used. Besides components, a design system often includes standards for layout, typography, color, iconography, and more. Furthermore, it addresses non-visual factors like accessibility, performance, and localization.',
+    content: 'A well-structured design system will also include usage guidelines for each component, detailing when and how it should be used. Besides components, a design system often includes standards for layout, typography, color, iconography, and more. Furthermore, it addresses non-visual factors like accessibility, performance, and localization.',
   },
 ];
 
@@ -130,17 +130,37 @@ export const Nested: Story = {
             {
               value: 'parent-1',
               title: 'Parent Accordion 1',
-              children: 'This is the main content of parent accordion 1.'
+              content: 'This is the main content of parent accordion 1.'
             },
             {
               value: 'parent-2',
               title: 'Parent Accordion 2',
-              children: 'Content of parent accordion 2'
+              content: 'Content of parent accordion 2'
             }
           ]"
           defaultValue="parent-1"
         ></ae-accordion>
       </div>
+    `,
+  }),
+};
+
+// Declarative Accordion Items with Projected Content
+export const Declarative: Story = {
+  render: () => ({
+    template: `
+      <ae-accordion defaultValue="item-1">
+        <ae-accordion-item value="item-1" title="What is a design system?">
+          <p class="text-gray-600 leading-relaxed">
+            A Design System is a comprehensive set of standards, documentation, principles, and components that guide the creation of a digital product's UI.
+          </p>
+        </ae-accordion-item>
+        <ae-accordion-item value="item-2" title="Why use content projection?">
+          <p class="text-gray-600 leading-relaxed">
+            In Angular, content projection via <code>&lt;ng-content&gt;</code> is the idiomatic way to project rich templates, custom markup, or interactive components into accordion panels.
+          </p>
+        </ae-accordion-item>
+      </ae-accordion>
     `,
   }),
 };

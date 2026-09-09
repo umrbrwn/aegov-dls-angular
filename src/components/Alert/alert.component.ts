@@ -37,7 +37,7 @@ export interface AlertAction {
               [name]="iconName()"
               [size]="iconSizes[size()]"
               weight="fill"
-              class="fill-current"
+              className="fill-current"
             ></ae-icon>
           </div>
         }
@@ -78,7 +78,7 @@ export interface AlertAction {
             <ae-icon
               name="x"
               [size]="iconSizes[size()]"
-              [class]="tone() === 'solid' ? 'text-whitely-50' : ''"
+              [className]="tone() === 'solid' ? 'text-whitely-50' : ''"
             ></ae-icon>
           </button>
         }
@@ -100,7 +100,7 @@ export class AlertComponent {
   readonly action = input<AlertAction | undefined>(undefined);
   readonly showIcon = input<boolean, unknown>(true, { transform: booleanAttribute });
   readonly dismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly dismiss = output<void>();
   readonly onDismiss = output<void>();
@@ -182,7 +182,7 @@ export class AlertComponent {
       'relative flex items-start rounded-sm',
       vStyle,
       sStyle.container,
-      this.class()
+      this.className()
     );
   });
 

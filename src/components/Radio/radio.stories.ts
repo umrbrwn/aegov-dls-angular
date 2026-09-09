@@ -287,10 +287,10 @@ export const AsList: Story = {
     template: `
       <div class="space-y-4 max-w-xl">
         <ae-radio-group [size]="size" [variant]="variant" [orientation]="orientation" [disabled]="disabled" [required]="required" [defaultValue]="defaultValue" (change)="change($event)">
-          <ae-radio-item value="controlled1" label="Abdullah Al Mehri" class="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
-          <ae-radio-item value="controlled2" label="Maryam Al Kamali" class="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
-          <ae-radio-item value="controlled3" label="Shehzad Obaid" class="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
-          <ae-radio-item value="controlled4" label="Ramakrishnan Iyer" class="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
+          <ae-radio-item value="controlled1" label="Abdullah Al Mehri" className="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
+          <ae-radio-item value="controlled2" label="Maryam Al Kamali" className="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
+          <ae-radio-item value="controlled3" label="Shehzad Obaid" className="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
+          <ae-radio-item value="controlled4" label="Ramakrishnan Iyer" className="border-b border-gray-200 pb-5 px-2"></ae-radio-item>
         </ae-radio-group>
       </div>
     `,

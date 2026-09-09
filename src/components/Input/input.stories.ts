@@ -193,13 +193,13 @@ export const WithIcons: Story = {
     template: `
       <div class="flex flex-col space-y-4">
         <ae-input label="Email" type="email" [placeholder]="placeholder" id="email-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
-          <ae-icon prefix name="envelope-simple" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" class="text-gray-400"></ae-icon>
+          <ae-icon prefix name="envelope-simple" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
         </ae-input>
         <ae-input label="Username" [placeholder]="placeholder" id="username-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
-          <ae-icon prefix name="user" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" class="text-gray-400"></ae-icon>
+          <ae-icon prefix name="user" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
         </ae-input>
         <ae-input label="Phone" type="text" [placeholder]="placeholder" id="phone-prefix" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required">
-          <ae-icon prefix name="phone" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" class="text-gray-400"></ae-icon>
+          <ae-icon prefix name="phone" [size]="size === 'sm' ? 16 : size === 'lg' ? 24 : 20" className="text-gray-400"></ae-icon>
         </ae-input>
       </div>
     `,
@@ -306,7 +306,7 @@ export const WithDropdownPrefix: Story = {
             >
               <div trigger class="flex items-center gap-1 cursor-pointer select-none py-1">
                 <span class="text-primary-700 font-semibold text-sm">{{ countryCode }}</span>
-                <ae-icon name="caret-down" [size]="14" class="text-aegold-700"></ae-icon>
+                <ae-icon name="caret-down" [size]="14" className="text-aegold-700"></ae-icon>
               </div>
             </ae-dropdown>
           </div>
@@ -358,7 +358,7 @@ export const ArabicRTL: Story = {
             >
               <div trigger class="flex items-center gap-1 cursor-pointer select-none py-1">
                 <span class="text-primary-700 font-semibold text-sm">{{ countryCode }}</span>
-                <ae-icon name="caret-down" [size]="14" class="text-aegold-700"></ae-icon>
+                <ae-icon name="caret-down" [size]="14" className="text-aegold-700"></ae-icon>
               </div>
             </ae-dropdown>
           </div>

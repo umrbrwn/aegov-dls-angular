@@ -62,7 +62,7 @@ export type SelectVariant = 'primary' | 'secondary';
         <ae-icon
           [name]="isOpen() ? 'caret-up' : 'caret-down'"
           [size]="20"
-          class="text-aegold-700 font-bold transition-transform"
+          className="text-aegold-700 font-bold transition-transform"
         ></ae-icon>
       </button>
 
@@ -80,7 +80,7 @@ export type SelectVariant = 'primary' | 'secondary';
                 <span class="flex-1">{{ option.label }}</span>
                 @if (value() === option.value) {
                   <span class="absolute right-2 rtl:left-2 rtl:right-auto flex items-center justify-center">
-                    <ae-icon name="check" [size]="16" class="text-primary-600 font-bold"></ae-icon>
+                    <ae-icon name="check" [size]="16" className="text-primary-600 font-bold"></ae-icon>
                   </span>
                 }
               </div>
@@ -114,7 +114,7 @@ export class SelectComponent implements ControlValueAccessor {
   readonly id = input<string | undefined>(undefined);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly value = signal<string | undefined>(undefined);
   readonly isOpen = signal<boolean>(false);
@@ -173,7 +173,7 @@ export class SelectComponent implements ControlValueAccessor {
       variantClasses[variantKey],
       this.sizeClasses[this.effectiveSize()],
       this.disabled() && 'opacity-40 cursor-not-allowed',
-      this.class()
+      this.className()
     );
   });
 

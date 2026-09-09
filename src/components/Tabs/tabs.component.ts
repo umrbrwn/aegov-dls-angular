@@ -78,7 +78,7 @@ export class TabsComponent {
   readonly variant = input<TabsVariant>('default');
   readonly items = input<TabItem[]>([]);
   readonly defaultValue = input<string | undefined>(undefined);
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly tabChange = output<string>();
 
@@ -96,7 +96,7 @@ export class TabsComponent {
   });
 
   readonly rootClasses = computed(() =>
-    cn('w-full', this.class())
+    cn('w-full', this.className())
   );
 
   readonly listClasses = computed(() =>

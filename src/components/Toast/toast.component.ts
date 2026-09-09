@@ -48,13 +48,13 @@ import { ToastService } from './toast.service';
         >
           <div class="flex items-start gap-3">
             @if (toast.variant === 'success') {
-              <ae-icon name="check-circle" [size]="20" class="text-aegreen-600 mt-0.5"></ae-icon>
+              <ae-icon name="check-circle" [size]="20" className="text-aegreen-600 mt-0.5"></ae-icon>
             } @else if (toast.variant === 'error') {
-              <ae-icon name="x-circle" [size]="20" class="text-aered-600 mt-0.5"></ae-icon>
+              <ae-icon name="x-circle" [size]="20" className="text-aered-600 mt-0.5"></ae-icon>
             } @else if (toast.variant === 'warning') {
-              <ae-icon name="warning" [size]="20" class="text-camel-600 mt-0.5"></ae-icon>
+              <ae-icon name="warning" [size]="20" className="text-camel-600 mt-0.5"></ae-icon>
             } @else {
-              <ae-icon name="info" [size]="20" class="text-techblue-600 mt-0.5"></ae-icon>
+              <ae-icon name="info" [size]="20" className="text-techblue-600 mt-0.5"></ae-icon>
             }
             <div>
               @if (toast.title) {

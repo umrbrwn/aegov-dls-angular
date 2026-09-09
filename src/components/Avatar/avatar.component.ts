@@ -35,7 +35,7 @@ export type AvatarStatus = 'online' | 'offline' | 'none';
           </div>
         } @else {
           <div class="flex h-full w-full items-center justify-center bg-gray-100">
-            <ae-icon name="user" [size]="iconSizes[size()]" class="text-gray-400"></ae-icon>
+            <ae-icon name="user" [size]="iconSizes[size()]" className="text-gray-400"></ae-icon>
           </div>
         }
       </div>
@@ -60,7 +60,7 @@ export class AvatarComponent {
   readonly variant = input<AvatarVariant>('square');
   readonly shape = input<string | undefined>(undefined); // alias for backwards compatibility
   readonly status = input<AvatarStatus>('none');
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly imageError = signal<boolean>(false);
 
@@ -128,7 +128,7 @@ export class AvatarComponent {
       'relative inline-flex items-center justify-center overflow-hidden',
       this.sizeStyles[this.size()],
       this.effectiveVariant() === 'rounded-sm' ? 'rounded-full' : this.borderRadiusStyles[this.size()],
-      this.class()
+      this.className()
     )
   );
 

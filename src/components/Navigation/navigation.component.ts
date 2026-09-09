@@ -109,7 +109,7 @@ const MOBILE_BREAKPOINTS: Record<string, string> = {
           <ae-icon
             name="caret-down"
             [size]="16"
-            class="transition-transform duration-200"
+            className="transition-transform duration-200"
             [class.rotate-180]="isOpen()"
           ></ae-icon>
         </button>
@@ -259,8 +259,8 @@ export class NavItemComponent {
   `]
 })
 export class MainMenuComponent {
-  readonly class = input<string>('');
-  readonly menuClasses = computed(() => cn('flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 h-full', this.class()));
+  readonly className = input<string>('');
+  readonly menuClasses = computed(() => cn('flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 h-full', this.className()));
 }
 
 @Component({
@@ -284,8 +284,8 @@ export class MainMenuComponent {
   `]
 })
 export class SecondaryMenuComponent {
-  readonly class = input<string>('');
-  readonly menuClasses = computed(() => cn('header-navs-right flex items-center shrink-0 ms-auto h-full', this.class()));
+  readonly className = input<string>('');
+  readonly menuClasses = computed(() => cn('header-navs-right flex items-center shrink-0 ms-auto h-full', this.className()));
 }
 
 @Component({
@@ -363,14 +363,14 @@ export class SecondaryMenuComponent {
                               >
                                 <div class="flex items-center gap-3">
                                   @if (item.icon) {
-                                    <ae-icon [name]="item.icon" [size]="20" class="text-primary-700"></ae-icon>
+                                    <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
                                   }
                                   <span>{{ item.label }}</span>
                                 </div>
                                 <ae-icon
                                   name="caret-down"
                                   [size]="16"
-                                  class="text-aeblack-500 transition-transform duration-200"
+                                  className="text-aeblack-500 transition-transform duration-200"
                                   [class.rotate-180]="isMobileItemExpanded(item.label)"
                                 ></ae-icon>
                               </button>
@@ -417,7 +417,7 @@ export class SecondaryMenuComponent {
                               class="flex items-center gap-3 px-3 py-2.5 text-base font-bold text-aeblack-800 hover:bg-aeblack-50 hover:text-primary-800 rounded-md transition-colors no-underline text-start"
                             >
                               @if (item.icon) {
-                                <ae-icon [name]="item.icon" [size]="20" class="text-primary-700"></ae-icon>
+                                <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
                               }
                               <span>{{ item.label }}</span>
                             </a>
@@ -429,7 +429,7 @@ export class SecondaryMenuComponent {
                               class="flex items-center gap-3 px-3 py-2.5 text-base font-bold text-aeblack-800 hover:bg-aeblack-50 hover:text-primary-800 rounded-md transition-colors no-underline text-start"
                             >
                               @if (item.icon) {
-                                <ae-icon [name]="item.icon" [size]="20" class="text-primary-700"></ae-icon>
+                                <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
                               }
                               <span>{{ item.label }}</span>
                             </a>
@@ -499,7 +499,7 @@ export class SecondaryMenuComponent {
   `]
 })
 export class NavigationComponent {
-  readonly class = input<string>('');
+  readonly className = input<string>('');
   readonly containerClass = input<string>('container mx-auto px-4 sm:px-6 lg:px-8');
   readonly breakpoint = input<NavBreakpoint>('xl');
   readonly drawerTitle = input<string>('UAE Gov Menu');
@@ -519,7 +519,7 @@ export class NavigationComponent {
   );
 
   readonly desktopClasses = computed(() =>
-    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden', this.class())
+    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden', this.className())
   );
 
   toggleMobileItem(label: string): void {

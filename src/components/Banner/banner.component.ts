@@ -48,7 +48,7 @@ export interface BannerAction {
                 (click)="onActionClick($event, act)"
               >
                 {{ act.text }}
-                <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+                <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
               </a>
             }
             @if (effectiveDismissible()) {
@@ -78,7 +78,7 @@ export interface BannerAction {
                   (click)="onActionClick($event, act)"
                 >
                   {{ act.text }}
-                  <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+                  <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
                 </a>
               </div>
             }
@@ -116,7 +116,7 @@ export class BannerComponent {
   readonly isDismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly dismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly centered = input<boolean, unknown>(true, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly dismiss = output<void>();
 
@@ -168,7 +168,7 @@ export class BannerComponent {
       this.variantStyles[this.variant()],
       this.positionStyles[this.position()],
       this.isNotice() && 'flex flex-col md:flex-row justify-between gap-4 items-center',
-      this.class()
+      this.className()
     )
   );
 

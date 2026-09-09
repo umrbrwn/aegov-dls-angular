@@ -43,9 +43,9 @@ export type ToggleVariant = 'default' | 'success' | 'mode' | 'secondary';
         <span [class]="thumbClasses()">
           @if (variant() === 'mode') {
             @if (isChecked()) {
-              <ae-icon name="moon" [size]="16" class="text-whitely-50"></ae-icon>
+              <ae-icon name="moon" [size]="16" className="text-whitely-50"></ae-icon>
             } @else {
-              <ae-icon name="sun" [size]="16" class="text-aeblack-950"></ae-icon>
+              <ae-icon name="sun" [size]="16" className="text-aeblack-950"></ae-icon>
             }
           }
         </span>
@@ -69,7 +69,7 @@ export class ToggleComponent implements ControlValueAccessor {
   readonly label = input<string | undefined>(undefined);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly checked = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly checkedChange = output<boolean>();
 
@@ -103,7 +103,7 @@ export class ToggleComponent implements ControlValueAccessor {
   };
 
   readonly wrapperClasses = computed(() =>
-    cn('relative inline-flex cursor-pointer items-center', this.class())
+    cn('relative inline-flex cursor-pointer items-center', this.className())
   );
 
   readonly rootClasses = computed(() => {

@@ -101,7 +101,7 @@ export class DropdownComponent {
   readonly align = input<DropdownAlign>('start');
   readonly side = input<DropdownSide>('bottom');
   readonly trigger = input<'click' | 'hover'>('click');
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly select = output<string>();
 
@@ -146,7 +146,7 @@ export class DropdownComponent {
       'absolute z-50 min-w-[240px] max-h-60 overflow-y-auto rounded-lg bg-white border border-gray-200 p-1 shadow-xl animate-fadeIn',
       sideClass,
       alignClass,
-      this.class()
+      this.className()
     );
   });
 

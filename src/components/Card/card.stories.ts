@@ -60,7 +60,7 @@ export const Default: Story = {
     props: args,
     template: `
       <ae-card [size]="size" [bordered]="bordered" [glow]="glow">
-        <ae-icon name="note" [size]="size === 'sm' ? 28 : size === 'lg' ? 56 : 40" class="text-primary-500"></ae-icon>
+        <ae-icon name="note" [size]="size === 'sm' ? 28 : size === 'lg' ? 56 : 40" className="text-primary-500"></ae-icon>
         <h5 [class]="size === 'sm' ? 'text-h6 font-extrabold' : size === 'lg' ? 'text-h4 font-extrabold' : 'text-h5 font-extrabold'">
           The title of the card
         </h5>
@@ -171,21 +171,21 @@ export const Sizes: Story = {
     template: `
       <div class="space-y-4">
         <ae-card size="sm" [bordered]="bordered" [glow]="glow">
-          <ae-icon name="note" [size]="28" class="text-primary-500"></ae-icon>
+          <ae-icon name="note" [size]="28" className="text-primary-500"></ae-icon>
           <h6 class="text-h6 font-extrabold">Small Card</h6>
           <p>A small sized card with compact content.</p>
           <ae-card-link href="#">View details</ae-card-link>
         </ae-card>
         
         <ae-card size="base" [bordered]="bordered" [glow]="glow">
-          <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+          <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
           <h5 class="text-h5 font-extrabold">Base Card</h5>
           <p>A base sized card with standard content.</p>
           <ae-card-link href="#">View details</ae-card-link>
         </ae-card>
         
         <ae-card size="lg" [bordered]="bordered" [glow]="glow">
-          <ae-icon name="note" [size]="56" class="text-primary-500"></ae-icon>
+          <ae-icon name="note" [size]="56" className="text-primary-500"></ae-icon>
           <h4 class="text-h4 font-extrabold">Large Card</h4>
           <p>A large sized card with expanded content.</p>
           <ae-card-link href="#">View details</ae-card-link>
@@ -207,20 +207,20 @@ export const StackedCards: Story = {
         <div class="space-y-2">
           <h3 class="text-lg font-semibold">Horizontal Stack (Collapsed)</h3>
           <ae-card-stack direction="horizontal" [collapsed]="true">
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 1</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 2</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 3</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
@@ -231,20 +231,20 @@ export const StackedCards: Story = {
         <div class="space-y-2">
           <h3 class="text-lg font-semibold">Vertical Stack (Collapsed)</h3>
           <ae-card-stack direction="vertical" [collapsed]="true">
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 1</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 2</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 3</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
@@ -268,20 +268,20 @@ export const ArabicHorizontalStack: Story = {
         <div class="space-y-2">
           <h3 class="text-lg font-semibold">Horizontal Stack (Collapsed)</h3>
           <ae-card-stack direction="horizontal" [collapsed]="true">
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 1</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 2</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
             </ae-card>
-            <ae-card class="bg-white" [bordered]="true">
-              <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+            <ae-card className="bg-white" [bordered]="true">
+              <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
               <h5 class="text-h5 font-extrabold">Card 3</h5>
               <p>A card in a collapsed stack.</p>
               <ae-card-link href="#">View details</ae-card-link>
@@ -302,20 +302,20 @@ export const CardsWithGap: Story = {
   render: () => ({
     template: `
       <ae-card-stack direction="horizontal" [gap]="4">
-        <ae-card class="bg-white" [bordered]="true">
-          <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+        <ae-card className="bg-white" [bordered]="true">
+          <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
           <h5 class="text-h5 font-extrabold">Card 1</h5>
           <p>A card with gap spacing.</p>
           <ae-card-link href="#">View details</ae-card-link>
         </ae-card>
-        <ae-card class="bg-white" [bordered]="true">
-          <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+        <ae-card className="bg-white" [bordered]="true">
+          <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
           <h5 class="text-h5 font-extrabold">Card 2</h5>
           <p>A card with gap spacing.</p>
           <ae-card-link href="#">View details</ae-card-link>
         </ae-card>
-        <ae-card class="bg-white" [bordered]="true">
-          <ae-icon name="note" [size]="40" class="text-primary-500"></ae-icon>
+        <ae-card className="bg-white" [bordered]="true">
+          <ae-icon name="note" [size]="40" className="text-primary-500"></ae-icon>
           <h5 class="text-h5 font-extrabold">Card 3</h5>
           <p>A card with gap spacing.</p>
           <ae-card-link href="#">View details</ae-card-link>
@@ -334,7 +334,7 @@ export const ImageOnLeft: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <ae-card [size]="size" [bordered]="bordered" [glow]="glow" class="p-0">
+      <ae-card [size]="size" [bordered]="bordered" [glow]="glow" className="p-0">
         <div class="flex flex-col md:flex-row items-stretch gap-0">
           <div class="shrink-0 w-full md:w-1/3">
             <img
@@ -347,7 +347,7 @@ export const ImageOnLeft: Story = {
             <span class="text-sm font-semibold text-gray-500 mb-2">What's new</span>
             <h3 [class]="size === 'sm' ? 'text-h5 font-extrabold mb-2' : size === 'lg' ? 'text-h3 font-extrabold mb-4' : 'text-h4 font-extrabold mb-3'">Sustainable by design</h3>
             <p [class]="size === 'sm' ? 'text-sm text-gray-700 mb-4' : size === 'lg' ? 'text-lg text-gray-700 mb-8' : 'text-base text-gray-700 mb-6'">Sustainable web design is the practice of designing and developing websites that have a low environmental impact.</p>
-            <ae-card-link href="#" class="text-primary-700 font-semibold">Read More</ae-card-link>
+            <ae-card-link href="#" className="text-primary-700 font-semibold">Read More</ae-card-link>
           </div>
         </div>
       </ae-card>

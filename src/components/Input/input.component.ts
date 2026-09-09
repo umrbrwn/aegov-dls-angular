@@ -45,7 +45,7 @@ export type InputVariant = 'primary' | 'secondary';
 
         @if (type() === 'search' && !hasPrefix()) {
           <div class="flex select-none items-center ps-4 text-gray-500">
-            <ae-icon name="magnifying-glass" [size]="24" class="text-gray-400"></ae-icon>
+            <ae-icon name="magnifying-glass" [size]="24" className="text-gray-400"></ae-icon>
           </div>
         }
 
@@ -108,7 +108,7 @@ export class InputComponent implements ControlValueAccessor {
   readonly name = input<string | undefined>(undefined);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
   readonly hasPrefix = input<boolean, unknown>(false, { transform: booleanAttribute });
 
   readonly value = signal<string>('');
@@ -158,7 +158,7 @@ export class InputComponent implements ControlValueAccessor {
       'relative flex rounded-lg shadow-xs ring-2 ring-inset focus-within:ring-2 focus-within:ring-inset bg-whitely-50',
       variantClasses[variantKey],
       this.disabled() && 'opacity-40',
-      this.class()
+      this.className()
     );
   });
 

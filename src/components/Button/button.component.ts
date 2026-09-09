@@ -128,7 +128,7 @@ export class ButtonComponent {
   readonly href = input<string | undefined>(undefined);
   readonly target = input<string | undefined>(undefined);
   readonly rel = input<string | undefined>(undefined);
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly computedClasses = computed(() =>
     getButtonClasses({
@@ -138,7 +138,7 @@ export class ButtonComponent {
       block: this.block(),
       isIcon: this.isIcon(),
       disabled: this.disabled(),
-      className: this.class()
+      className: this.className()
     })
   );
 }

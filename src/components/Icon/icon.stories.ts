@@ -103,7 +103,7 @@ export const Default: Story = {
           <span class="uppercase font-mono text-primary-600 font-bold">{{ dir }}</span>
         </div>
         <div>
-          <ae-icon [name]="name" [weight]="weight" [size]="size" [flipRtl]="flipRtl" class="text-primary-600"></ae-icon>
+          <ae-icon [name]="name" [weight]="weight" [size]="size" [flipRtl]="flipRtl" className="text-primary-600"></ae-icon>
         </div>
       </div>
     `,
@@ -126,7 +126,7 @@ export const DirectSvgInput: Story = {
         <h2 class="text-lg font-bold text-gray-900">Direct SVG Rendering (Zero-Lookup)</h2>
         <p class="text-sm text-gray-500">Consumers can pass raw SVG path strings directly via [svg] input without registering in AeIconRegistry.</p>
         <div class="flex items-center gap-4 pt-2">
-          <ae-icon [svg]="mySvg" [size]="32" class="text-red-500"></ae-icon>
+          <ae-icon [svg]="mySvg" [size]="32" className="text-red-500"></ae-icon>
           <span class="text-sm font-medium text-gray-700">Custom Heart rendered via [svg] input</span>
         </div>
       </div>
@@ -179,7 +179,7 @@ export const BuiltInIconSet: Story = {
         <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
           @for (icon of icons; track icon) {
             <div class="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 bg-white hover:shadow-md hover:border-primary-200 transition-all group">
-              <ae-icon [name]="icon" [size]="32" class="text-gray-700 group-hover:text-primary-600 mb-2 transition-colors"></ae-icon>
+              <ae-icon [name]="icon" [size]="32" className="text-gray-700 group-hover:text-primary-600 mb-2 transition-colors"></ae-icon>
               <span class="text-xs text-gray-500 font-medium text-center truncate max-w-full" [title]="icon">{{ icon }}</span>
             </div>
           }
@@ -209,7 +209,7 @@ export const IconWeights: Story = {
           <div class="flex flex-wrap gap-4">
             @for (icon of regularIcons; track icon) {
               <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-gray-50 border border-gray-100 min-w-[72px]">
-                <ae-icon [name]="icon" weight="regular" [size]="28" class="text-primary-600"></ae-icon>
+                <ae-icon [name]="icon" weight="regular" [size]="28" className="text-primary-600"></ae-icon>
                 <span class="text-[11px] text-gray-500 font-medium text-center truncate max-w-full">{{ icon }}</span>
               </div>
             }
@@ -220,7 +220,7 @@ export const IconWeights: Story = {
           <div class="flex flex-wrap gap-4">
             @for (icon of boldIcons; track icon) {
               <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-gray-50 border border-gray-100 min-w-[72px]">
-                <ae-icon [name]="icon" weight="bold" [size]="28" class="text-primary-600"></ae-icon>
+                <ae-icon [name]="icon" weight="bold" [size]="28" className="text-primary-600"></ae-icon>
                 <span class="text-[11px] text-gray-500 font-medium text-center truncate max-w-full">{{ icon }}</span>
               </div>
             }
@@ -231,7 +231,7 @@ export const IconWeights: Story = {
           <div class="flex flex-wrap gap-4">
             @for (icon of fillIcons; track icon) {
               <div class="flex flex-col items-center gap-1 p-2 rounded-lg bg-gray-50 border border-gray-100 min-w-[72px]">
-                <ae-icon [name]="icon" weight="fill" [size]="28" class="text-primary-600"></ae-icon>
+                <ae-icon [name]="icon" weight="fill" [size]="28" className="text-primary-600"></ae-icon>
                 <span class="text-[11px] text-gray-500 font-medium text-center truncate max-w-full">{{ icon }}</span>
               </div>
             }
@@ -307,7 +307,7 @@ export const RtlSupport: Story = {
             <div class="flex gap-4 items-center">
               @for (icon of directionalIcons; track icon) {
                 <div class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-gray-50 border border-gray-100">
-                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" class="text-primary-600"></ae-icon>
+                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" className="text-primary-600"></ae-icon>
                   <span class="text-xs text-gray-500">{{ icon }}</span>
                 </div>
               }
@@ -323,7 +323,7 @@ export const RtlSupport: Story = {
             <div class="flex gap-4 items-center">
               @for (icon of directionalIcons; track icon) {
                 <div class="flex flex-col items-center gap-1.5 p-3 rounded-lg bg-white border border-primary-100">
-                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" class="text-primary-600"></ae-icon>
+                  <ae-icon [name]="icon" [size]="24" [flipRtl]="true" className="text-primary-600"></ae-icon>
                   <span class="text-xs text-gray-500">{{ icon }}</span>
                 </div>
               }

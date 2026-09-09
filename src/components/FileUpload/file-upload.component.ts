@@ -42,7 +42,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
               style="primary"
               variant="link"
               [disabled]="disabled()"
-              class="px-4 py-2 rounded-none border-r self-stretch flex items-center justify-center"
+              className="px-4 py-2 rounded-none border-r self-stretch flex items-center justify-center"
               (click)="triggerFileInput(fileInput)"
             >
               {{ label() }}
@@ -61,7 +61,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
             @if (previewUrl()) {
               <img [src]="previewUrl()" alt="Preview" class="h-full w-full object-cover" />
             } @else {
-              <ae-icon name="image" [size]="24" class="text-gray-400"></ae-icon>
+              <ae-icon name="image" [size]="24" className="text-gray-400"></ae-icon>
             }
           </div>
           <ae-button
@@ -88,7 +88,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
             <ae-icon
               name="upload-simple"
               [size]="32"
-              [class]="isDragActive() ? 'text-primary-500 mb-2' : 'text-gray-400 mb-2'"
+              [className]="isDragActive() ? 'text-primary-500 mb-2' : 'text-gray-400 mb-2'"
             ></ae-icon>
             <span [class]="isDragActive() ? 'font-semibold text-primary-600' : 'font-semibold text-gray-600'">
               {{ label() }}
@@ -111,7 +111,7 @@ const MAX_FILE_SIZE = 50 * 1024 * 1024; // 50MB
           [disabled]="disabled()"
           (click)="triggerFileInput(fileInput)"
         >
-          <ae-icon name="upload-simple" [size]="18" class="me-2"></ae-icon>
+          <ae-icon name="upload-simple" [size]="18" className="me-2"></ae-icon>
           {{ label() }}
         </ae-button>
       }
@@ -162,7 +162,7 @@ export class FileUploadComponent {
     'image/gif': []
   });
   readonly accept = input<string | undefined>(undefined);
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly filesSelected = output<File[]>();
 
@@ -171,7 +171,7 @@ export class FileUploadComponent {
   readonly previewUrl = signal<string | null>(null);
   readonly isDragActive = signal<boolean>(false);
 
-  readonly wrapperClasses = computed(() => cn('w-full', this.class()));
+  readonly wrapperClasses = computed(() => cn('w-full', this.className()));
 
   readonly acceptString = computed(() => {
     if (this.accept()) return this.accept()!;

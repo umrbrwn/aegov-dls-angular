@@ -42,7 +42,7 @@ export type StepsOrientation = 'horizontal' | 'vertical';
                   [attr.tabindex]="isStepDisabled(idx) ? -1 : null"
                 >
                   @if (idx < currentStep()) {
-                    <ae-icon name="check" [size]="iconSize()" class="stroke-[3]"></ae-icon>
+                    <ae-icon name="check" [size]="iconSize()" className="stroke-[3]"></ae-icon>
                   } @else {
                     <span>{{ idx + 1 }}</span>
                   }
@@ -86,7 +86,7 @@ export type StepsOrientation = 'horizontal' | 'vertical';
                   [attr.tabindex]="isStepDisabled(idx) ? -1 : null"
                 >
                   @if (idx < currentStep()) {
-                    <ae-icon name="check" [size]="iconSize()" class="stroke-[3]"></ae-icon>
+                    <ae-icon name="check" [size]="iconSize()" className="stroke-[3]"></ae-icon>
                   } @else {
                     <span>{{ idx + 1 }}</span>
                   }
@@ -129,7 +129,7 @@ export class StepsComponent {
   readonly orientation = input<StepsOrientation>('horizontal');
   readonly showLabels = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly effectiveSize = computed<StepsSize>(() => this.size() || 'base');
   readonly effectiveOrientation = computed<StepsOrientation>(() => this.orientation() || 'horizontal');
@@ -153,7 +153,7 @@ export class StepsComponent {
   });
 
   readonly navClasses = computed(() =>
-    cn('relative w-full', this.isVertical() ? 'flex flex-col' : 'w-full', this.class())
+    cn('relative w-full', this.isVertical() ? 'flex flex-col' : 'w-full', this.className())
   );
 
   isStepDisabled(idx: number): boolean {

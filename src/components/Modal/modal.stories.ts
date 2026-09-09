@@ -85,13 +85,13 @@ export const Success: Story = {
         <ae-button trigger variant="solid">Success Modal</ae-button>
         <div class="text-center">
           <div class="mx-auto w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-            <ae-icon name="check" [size]="24" class="text-green-600"></ae-icon>
+            <ae-icon name="check" [size]="24" className="text-green-600"></ae-icon>
           </div>
           <h3 class="mt-4 text-lg font-semibold text-gray-900">Payment successful</h3>
           <p class="mt-2 text-gray-600">
             Your payment has been successfully processed
           </p>
-          <ae-button (click)="modalRef.closeModal()" class="w-full mt-6" variant="solid">Continue</ae-button>
+          <ae-button (click)="modalRef.closeModal()" className="w-full mt-6" variant="solid">Continue</ae-button>
         </div>
       </ae-modal>
     `,
@@ -112,7 +112,7 @@ export const Alert: Story = {
         <ae-button trigger variant="outline">Alert Modal</ae-button>
         <div class="sm:flex sm:items-start">
           <div class="mx-auto flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-100 sm:mx-0">
-            <ae-icon name="warning" [size]="24" class="text-red-600"></ae-icon>
+            <ae-icon name="warning" [size]="24" className="text-red-600"></ae-icon>
           </div>
           <div class="mt-3 text-center sm:ml-4 sm:mt-0 sm:text-left rtl:text-right sm:rtl:ml-0 sm:rtl:mr-4">
             <h3 class="text-lg font-semibold text-gray-900">
@@ -156,7 +156,7 @@ export const BottomRight: Story = {
         <ae-button trigger variant="solid">Open Bottom Right Modal</ae-button>
         <div class="flex items-start">
           <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-yellow-100">
-            <ae-icon name="check" [size]="24" class="text-yellow-700"></ae-icon>
+            <ae-icon name="check" [size]="24" className="text-yellow-700"></ae-icon>
           </div>
           <div class="ml-4 rtl:mr-4 rtl:ml-0">
             <h3 class="text-lg font-semibold text-yellow-900">Deactivate account</h3>

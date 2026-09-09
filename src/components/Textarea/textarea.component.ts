@@ -83,7 +83,7 @@ export class TextareaComponent implements ControlValueAccessor {
   readonly rows = input<number>(4);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly value = signal<string>('');
 
@@ -124,7 +124,7 @@ export class TextareaComponent implements ControlValueAccessor {
       'relative flex rounded-lg shadow-xs ring-2 ring-inset focus-within:ring-2 focus-within:ring-inset bg-whitely-50',
       variantClasses[variantKey],
       this.disabled() && 'opacity-40',
-      this.class()
+      this.className()
     );
   });
 

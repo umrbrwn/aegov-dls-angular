@@ -23,7 +23,7 @@ export type BlockquoteTone = 'solid' | 'soft';
     >
       @if (tone() === 'soft') {
         <div class="absolute start-0 top-0 h-12 w-12 text-gray-800 flex items-center justify-center -scale-x-100 rtl:scale-x-100">
-          <ae-icon name="quotes" [size]="48" class="text-gray-800"></ae-icon>
+          <ae-icon name="quotes" [size]="48" className="text-gray-800"></ae-icon>
         </div>
       }
 
@@ -59,7 +59,7 @@ export class BlockquoteComponent {
   readonly author = input<string | undefined>(undefined);
   readonly authorTitle = input<string | undefined>(undefined);
   readonly tone = input<BlockquoteTone>('soft');
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly quoteClasses = computed(() =>
     cn(
@@ -67,7 +67,7 @@ export class BlockquoteComponent {
       this.tone() === 'solid'
         ? 'bg-primary-50 border-l-10 rtl:border-l-0 rtl:border-r-10 border-primary-500 ps-10 pe-10'
         : 'pl-14 rtl:pl-0 rtl:pr-14',
-      this.class()
+      this.className()
     )
   );
 }

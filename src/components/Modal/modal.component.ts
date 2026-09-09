@@ -50,7 +50,7 @@ export type ModalVariant = 'default' | 'danger';
               class="rounded-lg p-1.5 hover:bg-gray-100 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-400 cursor-pointer"
               aria-label="Close modal"
             >
-              <ae-icon name="x" [size]="20" class="text-gray-500"></ae-icon>
+              <ae-icon name="x" [size]="20" className="text-gray-500"></ae-icon>
             </button>
           </div>
         }
@@ -73,7 +73,7 @@ export class ModalComponent {
   readonly variant = input<ModalVariant>('default');
   readonly closeOnBackdrop = input<boolean, unknown>(true, { transform: booleanAttribute });
   readonly isOpen = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
   readonly dialogClass = input<string>('');
 
   readonly openChange = output<boolean>();
@@ -107,7 +107,7 @@ export class ModalComponent {
       'focus:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-500 animate-fadeIn',
       this.sizeClasses[this.effectiveSize()],
       this.dialogClass(),
-      this.class()
+      this.className()
     )
   );
 

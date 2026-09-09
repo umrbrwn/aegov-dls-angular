@@ -46,7 +46,7 @@ export class TooltipComponent {
   readonly side = input<TooltipSide>('top');
   readonly align = input<TooltipAlign>('center');
   readonly isOpen = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly isHovered = signal<boolean>(false);
 
@@ -66,7 +66,7 @@ export class TooltipComponent {
     return cn(
       'absolute z-50 rounded-md bg-gray-900 px-4 py-2 text-sm text-white shadow-md whitespace-nowrap animate-fadeIn',
       sidePositions[this.effectiveSide()],
-      this.class()
+      this.className()
     );
   });
 

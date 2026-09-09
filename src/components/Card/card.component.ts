@@ -59,7 +59,7 @@ const styles = {
       [class]="linkClasses()"
     >
       <ng-content></ng-content>
-      <ae-icon name="caret-right" [size]="20" class="ml-2 rtl:-scale-x-100"></ae-icon>
+      <ae-icon name="caret-right" [size]="20" className="ml-2 rtl:-scale-x-100"></ae-icon>
     </a>
   `,
   styles: [`
@@ -70,10 +70,10 @@ const styles = {
 })
 export class CardLinkComponent {
   readonly href = input<string>('#');
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly linkClasses = computed(() =>
-    cn('inline-flex items-center text-primary-600 hover:text-primary-800 font-medium', this.class())
+    cn('inline-flex items-center text-primary-600 hover:text-primary-800 font-medium', this.className())
   );
 }
 
@@ -99,7 +99,7 @@ export class CardStackComponent {
   readonly collapsed = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly gap = input<number>(4);
   readonly columns = input<number>(3);
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly stackClasses = computed(() =>
     cn(
@@ -108,7 +108,7 @@ export class CardStackComponent {
       this.direction() === 'vertical' && 'grid-flow-row',
       this.direction() === 'matrix' && `grid-cols-${this.columns()}`,
       !this.collapsed() && `gap-${this.gap()}`,
-      this.class()
+      this.className()
     )
   );
 }
@@ -135,7 +135,7 @@ export class CardComponent {
   readonly bordered = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly glow = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly noRadius = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly cardClasses = computed(() => {
     const s = this.size();
@@ -149,7 +149,7 @@ export class CardComponent {
       this.glow() && styles.glow,
       v !== 'creative' && styles.sizes[s].padding,
       v !== 'news' && styles.sizes[s].gap,
-      this.class()
+      this.className()
     );
   });
 }

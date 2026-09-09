@@ -27,7 +27,7 @@ import { IconComponent } from '../Icon/icon.component';
           [disabled]="current() === 1"
           class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 disabled:opacity-50 cursor-pointer"
         >
-          <ae-icon name="caret-left" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+          <ae-icon name="caret-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
           <span>Previous</span>
         </button>
         <span class="text-sm">Page {{ current() }} of {{ totalPages() }}</span>
@@ -38,7 +38,7 @@ import { IconComponent } from '../Icon/icon.component';
           class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 disabled:opacity-50 cursor-pointer"
         >
           <span>Next</span>
-          <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+          <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
         </button>
       </div>
 
@@ -51,7 +51,7 @@ import { IconComponent } from '../Icon/icon.component';
             [disabled]="current() === 1"
             class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
           >
-            <ae-icon name="caret-double-left" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+            <ae-icon name="caret-double-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
             <span class="hidden lg:inline">First</span>
           </button>
         }
@@ -62,7 +62,7 @@ import { IconComponent } from '../Icon/icon.component';
           [disabled]="current() === 1"
           class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
         >
-          <ae-icon name="caret-left" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+          <ae-icon name="caret-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
           <span class="hidden lg:inline">Previous</span>
         </button>
 
@@ -89,7 +89,7 @@ import { IconComponent } from '../Icon/icon.component';
           class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
         >
           <span class="hidden lg:inline">Next</span>
-          <ae-icon name="caret-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+          <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
         </button>
 
         @if (showFirstLast()) {
@@ -100,7 +100,7 @@ import { IconComponent } from '../Icon/icon.component';
             class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
           >
             <span class="hidden lg:inline">Last</span>
-            <ae-icon name="caret-double-right" [size]="20" class="rtl:-scale-x-100"></ae-icon>
+            <ae-icon name="caret-double-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
           </button>
         }
       </div>
@@ -116,7 +116,7 @@ export class PaginationComponent {
   readonly currentPage = input<number>(1);
   readonly totalPages = input<number>(1);
   readonly showFirstLast = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly pageChange = output<number>();
 
@@ -131,7 +131,7 @@ export class PaginationComponent {
   readonly current = computed(() => this.activePage() || 1);
 
   readonly wrapperClasses = computed(() =>
-    cn('flex items-center justify-center', this.class())
+    cn('flex items-center justify-center', this.className())
   );
 
   readonly pageNumbers = computed(() => {

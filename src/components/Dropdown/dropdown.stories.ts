@@ -65,7 +65,7 @@ export const Default: Story = {
         >
           <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -100,7 +100,7 @@ export const WithIcons: Story = {
         >
           <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -149,7 +149,7 @@ export const WithGroups: Story = {
         >
           <ae-button trigger color="secondary" variant="solid">
             <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -191,7 +191,7 @@ export const ArabicDropdown: Story = {
         >
           <ae-button trigger color="secondary" variant="solid">
             <span>حدد خياراً</span>
-            <ae-icon name="caret-down" [size]="16" class="mr-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="16" className="mr-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -223,9 +223,9 @@ export const LanguageSelector: Story = {
           ]"
         >
           <ae-button trigger variant="outline" color="secondary">
-            <ae-icon name="globe" [size]="16" class="mr-2"></ae-icon>
+            <ae-icon name="globe" [size]="16" className="mr-2"></ae-icon>
             <span>Language</span>
-            <ae-icon name="caret-down" [size]="16" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -383,7 +383,7 @@ export const WithHeaderDividerAndIcons: Story = {
         >
           <ae-button trigger color="primary" variant="solid">
             <span>Open dropdown</span>
-            <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>
@@ -408,7 +408,7 @@ export const WithCheckboxes: Story = {
         >
           <ae-button trigger color="primary" variant="solid">
             <span>Open checkboxes</span>
-            <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
           </ae-button>
           <div dropdown-content class="p-4 min-w-[320px] flex flex-col gap-4">
             <ae-checkbox
@@ -461,7 +461,7 @@ export const TriggerOnHover: Story = {
         >
           <ae-button trigger color="primary" variant="solid">
             <span>Open on hover</span>
-            <ae-icon name="caret-down" [size]="20" class="ml-2"></ae-icon>
+            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
           </ae-button>
         </ae-dropdown>
       </div>

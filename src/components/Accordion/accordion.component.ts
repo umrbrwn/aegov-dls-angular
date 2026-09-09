@@ -17,7 +17,7 @@ import { IconComponent, type IconName } from '../Icon/icon.component';
 export interface AccordionItemData {
   value: string;
   title: string;
-  children?: string;
+  content?: string;
   icon?: IconName;
   iconRotateDeg?: number;
 }
@@ -41,7 +41,7 @@ export interface AccordionItemData {
             [name]="icon()"
             [size]="20"
             weight="bold"
-            class="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
+            className="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
             [style.transform]="isOpen() ? 'rotate(' + iconRotateDeg() + 'deg)' : 'rotate(0deg)'"
           ></ae-icon>
         </button>
@@ -49,8 +49,8 @@ export interface AccordionItemData {
       @if (isOpen()) {
         <div class="accordion-content overflow-hidden animate-fadeIn">
           <div class="pb-5 pt-5 ps-3 pe-3 text-gray-700 [&_.accordion-wrapper]:px-4">
-            @if (children()) {
-              {{ children() }}
+            @if (content()) {
+              {{ content() }}
             } @else {
               <ng-content></ng-content>
             }
@@ -70,7 +70,7 @@ export class AccordionItemComponent {
 
   readonly value = input.required<string>();
   readonly title = input.required<string>();
-  readonly children = input<string | undefined>(undefined);
+  readonly content = input<string | undefined>(undefined);
   readonly icon = input<IconName>('caret-down');
   readonly iconRotateDeg = input<number>(180);
 
@@ -114,7 +114,7 @@ export class AccordionItemComponent {
                   [name]="item.icon || 'caret-down'"
                   [size]="20"
                   weight="bold"
-                  class="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
+                  className="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
                   [style.transform]="isItemOpen(item.value) ? 'rotate(' + (item.iconRotateDeg ?? 180) + 'deg)' : 'rotate(0deg)'"
                 ></ae-icon>
               </button>
@@ -122,7 +122,7 @@ export class AccordionItemComponent {
             @if (isItemOpen(item.value)) {
               <div class="overflow-hidden animate-fadeIn">
                 <div class="pb-5 pt-5 ps-3 pe-3 text-gray-700 [&_.accordion-wrapper]:px-4">
-                  {{ item.children }}
+                  {{ item.content }}
                 </div>
               </div>
             }
@@ -145,7 +145,7 @@ export class AccordionComponent {
   readonly multiple = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly collapsible = input<boolean, unknown>(true, { transform: booleanAttribute });
   readonly defaultValue = input<string | string[] | undefined>(undefined);
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly valueChange = output<string | string[]>();
   readonly onValueChange = output<string | string[]>();
@@ -169,7 +169,7 @@ export class AccordionComponent {
     });
   }
 
-  readonly wrapperClasses = computed(() => cn('accordion-wrapper w-full', this.class()));
+  readonly wrapperClasses = computed(() => cn('accordion-wrapper w-full', this.className()));
 
   isItemOpen(val: string): boolean {
     return this.openValues().includes(val);

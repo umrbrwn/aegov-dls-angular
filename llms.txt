@@ -48,7 +48,7 @@ export class ExampleComponent {}
   - `href`: `string` (renders `<a>` tag inside when set)
   - `target`: `string`
   - `rel`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-button color="primary" variant="solid" size="base">
@@ -68,7 +68,7 @@ export class ExampleComponent {}
   - `weight`: `'regular' | 'bold' | 'fill' | 'light' | 'thin' | 'duotone'` (default: `'regular'`)
   - `size`: `number | string` (default: `16`)
   - `flipRtl`: `boolean` (automatically flips 180 degrees in RTL mode)
-  - `class`: `string`
+  - `className`: `string`
 - **Bundled Default Icons** (zero configuration required):
   `arrow-counter-clockwise`, `arrow-left`, `arrow-right`, `bell-simple`, `caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check-circle`, `check`, `eye-slash`, `eye`, `file-text`, `globe`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `person-arms-spread`, `quotes`, `sun`, `upload-simple`, `user`, `warning-circle`, `warning`, `x-circle`, `x` (plus bold `caret-down` and fill variants for alerts/toasts).
 - **Register Custom Icons** (in `app.config.ts` or component providers):
@@ -100,7 +100,7 @@ export const appConfig = {
   - `drawerToggleLabel`: `string` (default: `'Toggle main menu'`)
   - `drawerCloseLabel`: `string` (default: `'Close menu'`)
   - `containerClass`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Slots on `ae-navigation`**:
   - `[top-bar]` / `[slot=top-bar]`: Desktop branding header (logos, search inputs)
   - `[logo]` / `[slot=logo]`: Mobile header branding logo
@@ -166,7 +166,7 @@ navItems: NavItemData[] = [
   - `id`: `string`
   - `name`: `string`
   - `hasPrefix`: `boolean`
-  - `class`: `string`
+  - `className`: `string`
 - **Slots**: `[prefix]`, `[suffix]`
 - **Usage**:
 ```html
@@ -194,7 +194,7 @@ navItems: NavItemData[] = [
   - `required`: `boolean` (default: `false`)
   - `id`: `string`
   - `name`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-textarea
@@ -219,7 +219,7 @@ navItems: NavItemData[] = [
   - `disabled`: `boolean` (default: `false`)
   - `required`: `boolean` (default: `false`)
   - `id`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-select
@@ -247,7 +247,7 @@ navItems: NavItemData[] = [
   - `id`: `string`
   - `name`: `string`
   - `value`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `checkedChange`: `EventEmitter<boolean>`
 - **Usage**:
@@ -271,7 +271,7 @@ navItems: NavItemData[] = [
   - `orientation`: `'horizontal' | 'vertical'` (default: `'vertical'`)
   - `disabled`: `boolean` (default: `false`)
   - `required`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs on `ae-radio-group`**:
   - `change`: `EventEmitter<string>`
 - **Inputs on `ae-radio-item`**:
@@ -280,7 +280,7 @@ navItems: NavItemData[] = [
   - `description`: `string`
   - `disabled`: `boolean` (default: `false`)
   - `id`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-radio-group [(ngModel)]="plan" orientation="vertical">
@@ -297,7 +297,7 @@ navItems: NavItemData[] = [
   - `label`: `string`
   - `variant`: `'default' | 'success' | 'mode' | 'secondary'` (default: `'default'`, `'mode'` shows sun/moon icons)
   - `disabled`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `checkedChange`: `EventEmitter<boolean>`
 - **Usage**:
@@ -316,7 +316,7 @@ navItems: NavItemData[] = [
   - `showIcon`: `boolean` (default: `true`)
   - `dismissible`: `boolean` (default: `false`)
   - `action`: `{ text: string, href: string }`
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `dismiss`: `EventEmitter<void>`
   - `onDismiss`: `EventEmitter<void>`
@@ -335,7 +335,7 @@ navItems: NavItemData[] = [
   - `position`: `'top' | 'bottom' | 'static'` (default: `'static'`)
   - `dismissible`: `boolean` (default: `false`)
   - `action`: `{ text: string, href?: string, onClick?: () => void }`
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `dismiss`: `EventEmitter<void>`
 - **Usage**:
@@ -353,7 +353,7 @@ navItems: NavItemData[] = [
   - `size`: `'sm' | 'md' | 'lg' | 'xl'` (default: `'md'`)
   - `variant`: `'default' | 'danger'` (default: `'default'`)
   - `closeOnBackdrop`: `boolean` (default: `true`)
-  - `class`: `string`
+  - `className`: `string`
   - `dialogClass`: `string`
 - **Outputs**:
   - `close`: `EventEmitter<void>`
@@ -409,14 +409,14 @@ export class AppComponent {
   - `multiple`: `boolean` (allow multiple open panels, default: `false`)
   - `collapsible`: `boolean` (allow closing all panels, default: `true`)
   - `defaultValue`: `string | string[]` (initial open item value)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs on `ae-accordion`**:
   - `valueChange`: `EventEmitter<string | string[]>`
   - `onValueChange`: `EventEmitter<string | string[]>`
 - **Inputs on `ae-accordion-item`**:
   - `value`: `string` (required unique identifier)
   - `title`: `string` (required title text)
-  - `children`: `string` (optional body text)
+  - `content`: `string` (optional body text)
   - `icon`: `IconName` (default: `'caret-down'`)
   - `iconRotateDeg`: `number` (default: `180`)
 - **Usage (Component Mode)**:
@@ -437,7 +437,7 @@ export class AppComponent {
   - `items`: `TabItem[]` (`{ value: string, label: string, content?: string, icon?: IconName }`)
   - `variant`: `'default' | 'pills' | 'compact'` (default: `'default'`)
   - `defaultValue`: `string` (initial active tab value)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `tabChange`: `EventEmitter<string>`
 - **Usage**:
@@ -460,7 +460,7 @@ export class AppComponent {
   - `align`: `'start' | 'center' | 'end'` (default: `'start'`)
   - `side`: `'top' | 'right' | 'bottom' | 'left'` (default: `'bottom'`)
   - `trigger`: `'click' | 'hover'` (default: `'click'`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `select`: `EventEmitter<string>`
 - **Slots**: `[trigger]`, default `<ng-content>`
@@ -507,7 +507,7 @@ export class AppComponent {
   - `trigger`: `'click' | 'hover'` (default: `'click'`)
   - `sideOffset`: `number` (default: `5`)
   - `isOpen`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `openChange`: `EventEmitter<boolean>`
 - **Slots**: `[trigger]`, default `<ng-content>`
@@ -530,16 +530,16 @@ export class AppComponent {
   - `bordered`: `boolean` (default: `false`)
   - `glow`: `boolean` (default: `false`, enables hover glow shadow)
   - `noRadius`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Inputs on `ae-card-link`**:
   - `href`: `string` (default: `'#'`)
-  - `class`: `string`
+  - `className`: `string`
 - **Inputs on `ae-card-stack`**:
   - `direction`: `'horizontal' | 'vertical' | 'matrix'` (default: `'horizontal'`)
   - `columns`: `number` (default: `3`)
   - `collapsed`: `boolean` (default: `false`)
   - `gap`: `number` (default: `4`)
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-card variant="default" size="base" bordered glow>
@@ -555,7 +555,7 @@ export class AppComponent {
   - `items`: `BreadcrumbItemData[]` (`{ label: string, href?: string, icon?: string }`)
   - `separator`: `'slash' | 'caret'` (default: `'slash'`)
   - `showHomeIcon`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Note**: The last item in `items` is automatically rendered as the current active breadcrumb page.
 - **Usage**:
 ```html
@@ -576,7 +576,7 @@ export class AppComponent {
   - `totalPages`: `number` (total number of pages, default: `1`)
   - `currentPage`: `number` (active page number, 1-indexed, default: `1`)
   - `showFirstLast`: `boolean` (display First and Last navigation buttons, default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `pageChange`: `EventEmitter<number>`
 - **Usage**:
@@ -598,7 +598,7 @@ export class AppComponent {
   - `size`: `'sm' | 'base' | 'lg'` (default: `'base'`)
   - `showLabels`: `boolean` (displays step label text next to or under numbers, default: `false`)
   - `disabled`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-steps
@@ -622,7 +622,7 @@ export class AppComponent {
   - `accept`: `string` (standard accept attribute e.g. `".pdf,.png"`)
   - `acceptedFileTypes`: `Record<string, string[]> | string`
   - `disabled`: `boolean` (default: `false`)
-  - `class`: `string`
+  - `className`: `string`
 - **Outputs**:
   - `filesSelected`: `EventEmitter<File[]>`
 - **Usage**:
@@ -651,7 +651,7 @@ export class AppComponent {
   - `disabled`: `boolean` (default: `false`)
   - `required`: `boolean` (default: `false`)
   - `id`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-range-slider
@@ -672,7 +672,7 @@ export class AppComponent {
   - `size`: `'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl'` (default: `'base'`)
   - `variant`: `'square' | 'rounded-sm' | 'rounded' | 'circle'` (default: `'square'`)
   - `status`: `'online' | 'offline' | 'none'` (default: `'none'`)
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <ae-avatar src="/avatar.jpg" alt="User" size="lg" variant="circle" status="online"></ae-avatar>
@@ -686,7 +686,7 @@ export class AppComponent {
   - `authorTitle`: `string`
   - `cite`: `string`
   - `tone`: `'soft' | 'solid'` (default: `'soft'`)
-  - `class`: `string`
+  - `className`: `string`
 - **Features**: Soft tone automatically includes the Phosphor quotation icon mirrored horizontally (`“`) in LTR and adapted for RTL.
 - **Usage**:
 ```html
@@ -712,7 +712,7 @@ export class AppComponent {
   - `label`: `string` (or use inner template content via `<ng-content>`)
   - `target`: `string`
   - `rel`: `string`
-  - `class`: `string`
+  - `className`: `string`
 - **Usage**:
 ```html
 <!-- Custom icon (e.g. arrow-right) with router navigation -->

@@ -107,7 +107,7 @@ export class RangeSliderComponent implements ControlValueAccessor {
   readonly id = input<string | undefined>(undefined);
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly class = input<string>('');
+  readonly className = input<string>('');
 
   readonly value = signal<number>(20);
   readonly isFocused = signal<boolean>(false);
@@ -162,7 +162,7 @@ export class RangeSliderComponent implements ControlValueAccessor {
   readonly effectiveSize = computed<RangeSliderSize>(() => this.size() || 'base');
   readonly effectiveVariant = computed<RangeSliderVariant>(() => this.variant() || 'primary');
 
-  readonly wrapperClasses = computed(() => cn('w-full', this.class()));
+  readonly wrapperClasses = computed(() => cn('w-full', this.className()));
 
   readonly labelClasses = computed(() => {
     const s = this.sizeStyles[this.effectiveSize()];
