@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
 
 export type ButtonColor = 'primary' | 'secondary';
-export type ButtonVariant = 'solid' | 'soft' | 'link' | 'outline' | 'outline-solid';
+export type ButtonVariant = 'solid' | 'soft' | 'link' | 'outline';
 export type ButtonSize = 'xs' | 'sm' | 'base' | 'lg';
 
 const styleVariants = {
@@ -11,15 +11,13 @@ const styleVariants = {
     solid: 'bg-primary-600 text-whitely-50 hover:bg-primary-500 hover:text-primary-50 hover:ring-4 hover:ring-primary-100 hover:shadow-primary-100 focus-visible:ring-primary-support-300',
     soft: 'bg-primary-50 hover:bg-primary-100 text-primary-700 hover:text-primary-600 focus-visible:ring-primary-support-400 hover:shadow-none focus-visible:ring-offset-0 disabled:opacity-50',
     link: 'text-primary-600 hover:bg-primary-50 focus-visible:ring-primary-support-400 focus-visible:border-primary-support-400 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0',
-    outline: 'text-primary-600 hover:bg-primary-50 border-primary-600 focus-visible:border-primary-support-400 focus-visible:ring-primary-support-400 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0',
-    'outline-solid': 'text-primary-600 hover:bg-primary-50 border-primary-600 focus-visible:border-primary-support-400 focus-visible:ring-primary-support-400 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0'
+    outline: 'text-primary-600 hover:bg-primary-50 border border-primary-600 focus-visible:border-primary-support-400 focus-visible:ring-primary-support-400 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0'
   },
   secondary: {
     solid: 'bg-secondary-800 text-secondary-50 hover:bg-secondary-950 hover:text-secondary-100 hover:ring-4 hover:ring-secondary-100 hover:shadow-secondary-100 focus-visible:ring-secondary-support-300',
     soft: 'bg-secondary-50 hover:bg-secondary-100 text-secondary-800 hover:text-secondary-800 hover:shadow-none focus-visible:ring-offset-0 disabled:opacity-50',
     link: 'text-secondary-800 hover:bg-secondary-50 focus-visible:border-secondary-support-300 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0',
-    outline: 'text-secondary-800 hover:bg-secondary-100 border-secondary-800 focus-visible:border-secondary-support-300 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0',
-    'outline-solid': 'text-secondary-800 hover:bg-secondary-100 border-secondary-800 focus-visible:border-secondary-support-300 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0'
+    outline: 'text-secondary-800 hover:bg-secondary-100 border border-secondary-800 focus-visible:border-secondary-support-300 bg-transparent hover:shadow-none focus-visible:ring-1 focus-visible:ring-offset-0'
   }
 };
 
@@ -58,7 +56,7 @@ export function getButtonClasses(config: {
 
   return cn(
     'inline-flex shrink-0 cursor-pointer select-none flex-wrap items-center justify-center text-center no-underline transition duration-200 ease-in-out',
-    'rounded-lg border-2 border-transparent font-medium focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2',
+    'rounded-lg border border-transparent font-medium focus:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2',
     'disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-30 disabled:shadow-none!',
     variantClass,
     sizeClass,

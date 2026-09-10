@@ -39,7 +39,7 @@ export class ExampleComponent {}
 - **Selectors**: `<ae-button>`, `<button ae-button>`, `<a ae-button>`
 - **Inputs**:
   - `color`: `'primary' | 'secondary'` (default: `'primary'`)
-  - `variant`: `'solid' | 'soft' | 'link' | 'outline' | 'outline-solid'` (default: `'solid'`)
+  - `variant`: `'solid' | 'soft' | 'link' | 'outline'` (default: `'solid'`)
   - `size`: `'xs' | 'sm' | 'base' | 'lg'` (default: `'base'`)
   - `block`: `boolean` (full width, default: `false`)
   - `isIcon`: `boolean` (square icon button, default: `false`)
@@ -747,6 +747,6 @@ export class AppComponent {
 1. **Always use standalone imports**: Never attempt to import an `NgModule` (e.g. do NOT do `AegovModule`). Import the exact component class needed (e.g. `[ButtonComponent, InputComponent, NavigationComponent]`).
 2. **Always include the Tailwind CSS import**: Global styles must contain `@import "aegov-dls-angular/styles/tailwind.css";`.
 3. **Use Phosphor Icon names**: Use valid icon names for `leftIcon`, `rightIcon`, or `<ae-icon name="...">` (e.g. `'check'`, `'x'`, `'arrow-right'`, `'magnifying-glass'`, `'eye'`, `'eye-slash'`, `'user'`, `'house'`, `'globe'`, `'person-arms-spread'`).
-4. **Use exact button color literal types**: `color="primary"` or `color="secondary"`. Variant types: `variant="solid" | "soft" | "link" | "outline" | "outline-solid"`.
+4. **Use exact button color literal types**: `color="primary"` or `color="secondary"`. Variant types: `variant="solid" | "soft" | "link" | "outline"`.
 5. **Form components implement ControlValueAccessor**: Use `[(ngModel)]` or `[formControl]` directly with `<ae-input>`, `<ae-textarea>`, `<ae-select>`, `<ae-checkbox>`, `<ae-radio-group>`, `<ae-toggle>`, `<ae-range-slider>`.
 6. **Navigation and Hyperlink support SPA routing**: Use `routerLink` on `<ae-hyperlink>` and `NavItemData` for Angular SPA routes, or `href` for external links.
