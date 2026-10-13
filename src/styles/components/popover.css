@@ -1,0 +1,32 @@
+.aegov-popover {
+  background-color: var(--color-whitely-50);
+  @apply rounded-lg shadow-xl z-50 opacity-0 invisible;
+
+  & .popover-header {
+    color: var(--color-aeblack-900);
+    border-color: var(--color-aeblack-50);
+    @apply border-b px-3 py-2;
+  }
+
+  & .popover-body {
+    color: var(--color-aeblack-700);
+
+    & a {
+      @apply text-inherit active:text-inherit visited:text-inherit hover:text-inherit no-underline;
+    }
+  }
+
+  .popover-item {
+    --popover-item-bg-hover: var(--color-secondary-50);
+
+    @apply flex items-center gap-3 rounded-none px-3 py-2 text-inherit active:text-inherit visited:text-inherit hover:text-inherit no-underline;
+
+    &:hover {
+      background-color: var(--popover-item-bg-hover);
+    }
+
+    & svg {
+      @apply h-5 w-5 text-current;
+    }
+  }
+}

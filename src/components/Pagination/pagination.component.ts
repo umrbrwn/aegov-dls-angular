@@ -10,98 +10,142 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
+import { IconDirective } from '../Icon/icon.directive';
+
+export interface PageItem {
+  type: 'page' | 'ellipsis';
+  pageNumber?: number;
+  isCurrent?: boolean;
+  isSmaller?: boolean;
+  isLarger?: boolean;
+}
 
 @Component({
   selector: 'ae-pagination',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="wrapperClasses()">
-      <!-- Mobile Pagination -->
-      <div class="flex w-full items-center justify-between sm:hidden">
-        <button
-          type="button"
-          (click)="onSelect(current() - 1)"
-          [disabled]="current() === 1"
-          class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 disabled:opacity-50 cursor-pointer"
+    <div [class]="containerClasses()">
+      <!-- ========================================== -->
+      <!-- MOBILE PAGINATION (sm:hidden) -->
+      <!-- ========================================== -->
+      <div class="aegov-pagination flex flex-1 justify-between items-center sm:hidden" role="navigation" aria-label="Mobile Pagination">
+        <a
+          [href]="createPageHref(current() - 1)"
+          class="aegov-pagination-previous"
+          [class.pointer-events-none]="current() <= 1"
+          [class.opacity-40]="current() <= 1"
+          [attr.aria-disabled]="current() <= 1 ? 'true' : null"
+          (click)="onPageClick(current() - 1, $event)"
         >
-          <ae-icon name="caret-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-          <span>Previous</span>
-        </button>
-        <span class="text-sm">Page {{ current() }} of {{ totalPages() }}</span>
-        <button
-          type="button"
-          (click)="onSelect(current() + 1)"
-          [disabled]="current() === totalPages()"
-          class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 disabled:opacity-50 cursor-pointer"
+          <svg aeIcon name="caret-left" [size]="20" class="rtl:-scale-x-100"></svg>
+          <span>{{ previousLabel() }}</span>
+        </a>
+
+        <span class="pages font-normal text-aeblack-800 text-sm">
+          {{ pageLabel() }} {{ current() }} {{ ofLabel() }} {{ totalPages() }}
+        </span>
+
+        <a
+          [href]="createPageHref(current() + 1)"
+          class="aegov-pagination-next"
+          [class.pointer-events-none]="current() >= totalPages()"
+          [class.opacity-40]="current() >= totalPages()"
+          [attr.aria-disabled]="current() >= totalPages()"
+          (click)="onPageClick(current() + 1, $event)"
         >
-          <span>Next</span>
-          <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-        </button>
+          <span>{{ nextLabel() }}</span>
+          <svg aeIcon name="caret-right" [size]="20" class="rtl:-scale-x-100"></svg>
+        </a>
       </div>
 
-      <!-- Desktop Pagination -->
-      <div class="hidden sm:flex sm:items-center sm:gap-1">
+      <!-- ========================================== -->
+      <!-- DESKTOP PAGINATION (max-sm:hidden) -->
+      <!-- ========================================== -->
+      <div class="aegov-pagination max-sm:hidden" role="navigation" aria-label="Desktop Pagination">
+        <!-- Optional First Page Button -->
         @if (showFirstLast()) {
-          <button
-            type="button"
-            (click)="onSelect(1)"
-            [disabled]="current() === 1"
-            class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
+          <a
+            [href]="createPageHref(1)"
+            class="aegov-pagination-first"
+            aria-label="First Page"
+            [class.pointer-events-none]="current() <= 1"
+            [class.opacity-40]="current() <= 1"
+            [attr.aria-disabled]="current() <= 1 ? 'true' : null"
+            (click)="onPageClick(1, $event)"
           >
-            <ae-icon name="caret-double-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-            <span class="hidden lg:inline">First</span>
-          </button>
+            <svg aeIcon name="caret-double-left" [size]="20" class="rtl:-scale-x-100"></svg>
+            <span>{{ firstLabel() }}</span>
+          </a>
         }
 
-        <button
-          type="button"
-          (click)="onSelect(current() - 1)"
-          [disabled]="current() === 1"
-          class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
+        <!-- Previous Page Button -->
+        <a
+          [href]="createPageHref(current() - 1)"
+          class="aegov-pagination-previous"
+          rel="prev"
+          aria-label="Previous Page"
+          [class.pointer-events-none]="current() <= 1"
+          [class.opacity-40]="current() <= 1"
+          [attr.aria-disabled]="current() <= 1 ? 'true' : null"
+          (click)="onPageClick(current() - 1, $event)"
         >
-          <ae-icon name="caret-left" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-          <span class="hidden lg:inline">Previous</span>
-        </button>
+          <svg aeIcon name="caret-left" [size]="20" class="rtl:-scale-x-100"></svg>
+          <span>{{ previousLabel() }}</span>
+        </a>
 
-        <div class="flex items-center gap-1">
-          @for (page of pageNumbers(); track $index) {
-            @if (page === '...') {
-              <span class="px-2 text-gray-400 select-none">...</span>
-            } @else {
-              <button
-                type="button"
-                (click)="onSelect(+page)"
-                [class]="pageButtonClasses(+page)"
-              >
-                {{ page }}
-              </button>
-            }
+        <!-- Page Numbers List -->
+        @for (item of calculatedPages(); track $index) {
+          @if (item.type === 'ellipsis') {
+            <span class="aegov-pagination-extend select-none">...</span>
+          } @else if (item.isCurrent) {
+            <span aria-current="page" class="aegov-pagination-current select-none">
+              {{ item.pageNumber }}
+            </span>
+          } @else {
+            <a
+              [href]="createPageHref(item.pageNumber!)"
+              class="aegov-pagination-page cursor-pointer"
+              [class.aegov-pagination-smaller]="item.isSmaller"
+              [class.aegov-pagination-larger]="item.isLarger"
+              [title]="'Page ' + item.pageNumber"
+              (click)="onPageClick(item.pageNumber!, $event)"
+            >
+              {{ item.pageNumber }}
+            </a>
           }
-        </div>
+        }
 
-        <button
-          type="button"
-          (click)="onSelect(current() + 1)"
-          [disabled]="current() === totalPages()"
-          class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
+        <!-- Next Page Button -->
+        <a
+          [href]="createPageHref(current() + 1)"
+          class="aegov-pagination-next"
+          rel="next"
+          aria-label="Next Page"
+          [class.pointer-events-none]="current() >= totalPages()"
+          [class.opacity-40]="current() >= totalPages()"
+          [attr.aria-disabled]="current() >= totalPages() ? 'true' : null"
+          (click)="onPageClick(current() + 1, $event)"
         >
-          <span class="hidden lg:inline">Next</span>
-          <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-        </button>
+          <span>{{ nextLabel() }}</span>
+          <svg aeIcon name="caret-right" [size]="20" class="rtl:-scale-x-100"></svg>
+        </a>
 
+        <!-- Optional Last Page Button -->
         @if (showFirstLast()) {
-          <button
-            type="button"
-            (click)="onSelect(totalPages())"
-            [disabled]="current() === totalPages()"
-            class="inline-flex items-center gap-2 px-2 py-1 text-gray-700 hover:text-primary-600 disabled:opacity-50 cursor-pointer"
+          <a
+            [href]="createPageHref(totalPages())"
+            class="aegov-pagination-last"
+            aria-label="Last Page"
+            [class.pointer-events-none]="current() >= totalPages()"
+            [class.opacity-40]="current() >= totalPages()"
+            [attr.aria-disabled]="current() >= totalPages() ? 'true' : null"
+            (click)="onPageClick(totalPages(), $event)"
           >
-            <span class="hidden lg:inline">Last</span>
-            <ae-icon name="caret-double-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-          </button>
+            <span>{{ lastLabel() }}</span>
+            <svg aeIcon name="caret-double-right" [size]="20" class="rtl:-scale-x-100"></svg>
+          </a>
         }
       </div>
     </div>
@@ -109,72 +153,193 @@ import { IconComponent } from '../Icon/icon.component';
   styles: [`
     :host {
       display: block;
+      width: 100%;
     }
   `]
 })
 export class PaginationComponent {
+  /**
+   * The currently active page index (1-based)
+   */
   readonly currentPage = input<number>(1);
+
+  /**
+   * Total number of available pages
+   */
   readonly totalPages = input<number>(1);
+
+  /**
+   * Whether to display "First" and "Last" page navigation buttons
+   */
   readonly showFirstLast = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Previous button text label
+   */
+  readonly previousLabel = input<string>('Previous');
+
+  /**
+   * Next button text label
+   */
+  readonly nextLabel = input<string>('Next');
+
+  /**
+   * First button text label
+   */
+  readonly firstLabel = input<string>('First');
+
+  /**
+   * Last button text label
+   */
+  readonly lastLabel = input<string>('Last');
+
+  /**
+   * Mobile page label (e.g. 'Page')
+   */
+  readonly pageLabel = input<string>('Page');
+
+  /**
+   * Mobile of label (e.g. 'of')
+   */
+  readonly ofLabel = input<string>('of');
+
+  /**
+   * URL pattern template for page links (e.g. '?page={page}' or '#page-{page}')
+   */
+  readonly pageUrlTemplate = input<string | undefined>(undefined);
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
+  /**
+   * Event emitted when page changes
+   */
   readonly pageChange = output<number>();
+  readonly onPageChange = output<number>();
 
-  readonly activePage = signal<number>(1);
+  private readonly internalPage = signal<number>(1);
 
   constructor() {
     effect(() => {
-      this.activePage.set(this.currentPage());
+      this.internalPage.set(this.currentPage() || 1);
     });
   }
 
-  readonly current = computed(() => this.activePage() || 1);
-
-  readonly wrapperClasses = computed(() =>
-    cn('flex items-center justify-center', this.className())
-  );
-
-  readonly pageNumbers = computed(() => {
-    const total = this.totalPages();
-    const current = this.current();
-    const pages: (number | string)[] = [];
-
-    if (total > 7) {
-      if (current <= 3) {
-        for (let i = 1; i <= 5; i++) pages.push(i);
-        pages.push('...');
-        pages.push(total);
-      } else if (current >= total - 2) {
-        pages.push(1);
-        pages.push('...');
-        for (let i = total - 4; i <= total; i++) pages.push(i);
-      } else {
-        pages.push(1);
-        pages.push('...');
-        for (let i = current - 1; i <= current + 1; i++) pages.push(i);
-        pages.push('...');
-        pages.push(total);
-      }
-    } else {
-      for (let i = 1; i <= total; i++) pages.push(i);
-    }
-
-    return pages;
+  protected readonly current = computed<number>(() => {
+    const p = this.internalPage();
+    const total = Math.max(1, this.totalPages());
+    return Math.min(Math.max(1, p), total);
   });
 
-  pageButtonClasses(page: number): string {
-    const isCurrent = this.current() === page;
-    return cn(
-      'inline-flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium cursor-pointer transition-colors',
-      isCurrent
-        ? 'bg-primary-550 text-white shadow-xs'
-        : 'text-gray-700 hover:bg-primary-50 hover:text-primary-600'
-    );
+  protected readonly containerClasses = computed<string>(() =>
+    cn('flex items-center justify-center w-full', this.className())
+  );
+
+  protected readonly calculatedPages = computed<PageItem[]>(() => {
+    const total = Math.max(1, this.totalPages());
+    const curr = this.current();
+    const items: PageItem[] = [];
+
+    if (total <= 7) {
+      for (let i = 1; i <= total; i++) {
+        items.push({
+          type: 'page',
+          pageNumber: i,
+          isCurrent: i === curr,
+          isSmaller: i < curr,
+          isLarger: i > curr,
+        });
+      }
+    } else {
+      if (curr <= 3) {
+        // e.g. 1 2 3 4 5 ... 17
+        for (let i = 1; i <= Math.min(5, total); i++) {
+          items.push({
+            type: 'page',
+            pageNumber: i,
+            isCurrent: i === curr,
+            isSmaller: i < curr,
+            isLarger: i > curr,
+          });
+        }
+        if (total > 5) {
+          items.push({ type: 'ellipsis' });
+          items.push({
+            type: 'page',
+            pageNumber: total,
+            isCurrent: false,
+            isLarger: true,
+          });
+        }
+      } else if (curr >= total - 2) {
+        // e.g. 1 ... 13 14 15 16 17
+        items.push({
+          type: 'page',
+          pageNumber: 1,
+          isCurrent: false,
+          isSmaller: true,
+        });
+        items.push({ type: 'ellipsis' });
+        for (let i = total - 4; i <= total; i++) {
+          items.push({
+            type: 'page',
+            pageNumber: i,
+            isCurrent: i === curr,
+            isSmaller: i < curr,
+            isLarger: i > curr,
+          });
+        }
+      } else {
+        // e.g. 1 ... 9 10 11 ... 17
+        items.push({
+          type: 'page',
+          pageNumber: 1,
+          isCurrent: false,
+          isSmaller: true,
+        });
+        items.push({ type: 'ellipsis' });
+        for (let i = curr - 1; i <= curr + 1; i++) {
+          items.push({
+            type: 'page',
+            pageNumber: i,
+            isCurrent: i === curr,
+            isSmaller: i < curr,
+            isLarger: i > curr,
+          });
+        }
+        items.push({ type: 'ellipsis' });
+        items.push({
+          type: 'page',
+          pageNumber: total,
+          isCurrent: false,
+          isLarger: true,
+        });
+      }
+    }
+
+    return items;
+  });
+
+  protected createPageHref(page: number): string {
+    const tpl = this.pageUrlTemplate();
+    if (tpl) {
+      return tpl.replace('{page}', page.toString());
+    }
+    return '#';
   }
 
-  onSelect(page: number): void {
-    if (page < 1 || page > this.totalPages() || page === this.current()) return;
-    this.activePage.set(page);
+  protected onPageClick(page: number, event: MouseEvent): void {
+    if (!this.pageUrlTemplate()) {
+      event.preventDefault();
+    }
+    const total = Math.max(1, this.totalPages());
+    if (page < 1 || page > total || page === this.current()) {
+      return;
+    }
+    this.internalPage.set(page);
     this.pageChange.emit(page);
+    this.onPageChange.emit(page);
   }
 }

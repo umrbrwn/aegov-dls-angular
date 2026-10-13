@@ -6,7 +6,12 @@
     "cssUrl": "inline"
   },
   "assets": [
-    "llms.txt"
+    "skills",
+    {
+      "input": "src/styles",
+      "glob": "**/*",
+      "output": "styles"
+    }
   ],
   "allowedNonPeerDependencies": [
     "clsx",

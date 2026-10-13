@@ -1,0 +1,66 @@
+.aegov-banner {
+  /* --- 1. STRUCTURAL STYLES --- */
+  @apply relative px-4 py-3;
+
+  /* --- 2. DYNAMIC COLOR PROPERTIES --- */
+  background-color: var(--banner-bg);
+  border-color: var(--banner-border);
+  --banner-fg: var(--banner-text-color);
+  --banner-link-fg: var(--banner-text-color);
+  --banner-link-hover-fg: var(--banner-text-color-hover);
+
+  /* --- 3. DEFAULT COLOR SCHEME (Camel) --- */
+  --banner-bg: var(--color-camel-50);
+  --banner-border: var(--color-camel-500);
+  --banner-text-color: var(--color-camel-600);
+  --banner-text-color-hover: var(--color-camel-700);
+  --banner-focus-ring: var(--color-camel-400);
+
+  & .aegov-link {
+    @apply m-0 flex-shrink-0 p-0;
+  }
+
+  .container {
+    @apply px-0;
+  }
+
+  & .banner-dismiss {
+    @apply p-0.5 hover:opacity-60;
+
+    & > svg {
+      @apply h-5 w-5;
+    }
+  }
+}
+
+.banner-top {
+  @apply border-b-2;
+}
+
+.banner-bottom {
+  @apply border-t-2;
+}
+
+.banner-content {
+  color: var(--banner-fg);
+  @apply text-base;
+}
+
+.banner-link {
+  color: var(--banner-link-fg);
+
+  &:focus-visible {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--banner-focus-ring);
+  }
+
+  &:hover {
+    color: var(--banner-link-hover-fg);
+  }
+}
+
+.banner-notice {
+  @apply gap-4 flex flex-col justify-between w-full md:flex-row;
+}

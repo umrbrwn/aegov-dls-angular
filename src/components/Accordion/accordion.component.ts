@@ -11,8 +11,7 @@ import {
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../Icon/icon.component';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
 
 export interface AccordionItemData {
   value: string;
@@ -25,38 +24,43 @@ export interface AccordionItemData {
 @Component({
   selector: 'ae-accordion-item',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="border-b border-gray-200 [.accordion-wrapper_&:last-child]:border-0">
-      <div class="w-full">
+    <div class="accordion-item" [class.border-none!]="borderNone()">
+      <div class="accordion-title" [id]="'aegov-accordion-head-' + value()">
         <button
           type="button"
+          [class.accordion-active]="isOpen()"
+          [class.accordion-inactive]="!isOpen()"
           [attr.aria-expanded]="isOpen()"
-          class="group flex w-full items-center justify-between pe-3 ps-3 pb-5 pt-5 text-left text-base font-semibold text-gray-900 aria-expanded:text-aegold-600 hover:text-aegold-600 focus:text-aegold-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-400 hover:transition-colors duration-150 cursor-pointer"
+          [attr.aria-controls]="'aegov-accordion-body-' + value()"
           (click)="toggle()"
         >
           <span>{{ title() }}</span>
-          <ae-icon
-            [name]="icon()"
+          <svg
+            aeIcon
+            [name]="effectiveIcon()"
             [size]="20"
-            weight="bold"
-            className="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
-            [style.transform]="isOpen() ? 'rotate(' + iconRotateDeg() + 'deg)' : 'rotate(0deg)'"
-          ></ae-icon>
+            [style.transform]="isOpen() ? 'rotate(' + effectiveRotateDeg() + 'deg)' : 'rotate(0deg)'"
+            [style.transition]="'transform 0.2s ease'"
+          ></svg>
         </button>
       </div>
-      @if (isOpen()) {
-        <div class="accordion-content overflow-hidden animate-fadeIn">
-          <div class="pb-5 pt-5 ps-3 pe-3 text-gray-700 [&_.accordion-wrapper]:px-4">
-            @if (content()) {
-              {{ content() }}
-            } @else {
-              <ng-content></ng-content>
-            }
-          </div>
+      <div
+        class="accordion-content"
+        [class.hidden]="!isOpen()"
+        [id]="'aegov-accordion-body-' + value()"
+        [attr.aria-labelledby]="'aegov-accordion-head-' + value()"
+      >
+        <div class="accordion-content-body">
+          @if (content()) {
+            <p>{{ content() }}</p>
+          } @else {
+            <ng-content></ng-content>
+          }
         </div>
-      }
+      </div>
     </div>
   `,
   styles: [`
@@ -68,19 +72,39 @@ export interface AccordionItemData {
 export class AccordionItemComponent {
   private readonly parentAccordion = inject(forwardRef(() => AccordionComponent), { optional: true });
 
+  /** Unique item identifier used to track expansion state */
   readonly value = input.required<string>();
-  readonly title = input.required<string>();
+
+  /** Header title text rendered on the item trigger button */
+  readonly title = input<string>('');
+
+  /** Text content for simple items. Alternatively, project custom content via `<ng-content>` */
   readonly content = input<string | undefined>(undefined);
-  readonly icon = input<IconName>('caret-down');
-  readonly iconRotateDeg = input<number>(180);
 
-  private readonly internalOpen = signal<boolean>(false);
+  /** Custom trigger icon for this item (falls back to parent accordion icon or 'caret-down') */
+  readonly icon = input<IconName | undefined>(undefined);
 
-  readonly isOpen = computed(() => {
+  /** Rotation angle in degrees for the icon when expanded (defaults to parent accordion setting) */
+  readonly iconRotateDeg = input<number | undefined>(undefined);
+
+  /** Whether to omit the bottom border (useful for nested accordions or last items) */
+  readonly borderNone = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  protected readonly internalOpen = signal<boolean>(false);
+
+  protected readonly isOpen = computed(() => {
     if (this.parentAccordion) {
       return this.parentAccordion.isItemOpen(this.value());
     }
     return this.internalOpen();
+  });
+
+  protected readonly effectiveIcon = computed<IconName>(() => {
+    return this.icon() || this.parentAccordion?.icon() || 'caret-down';
+  });
+
+  protected readonly effectiveRotateDeg = computed<number>(() => {
+    return this.iconRotateDeg() ?? this.parentAccordion?.iconRotateDeg() ?? 180;
   });
 
   toggle(): void {
@@ -95,37 +119,43 @@ export class AccordionItemComponent {
 @Component({
   selector: 'ae-accordion',
   standalone: true,
-  imports: [CommonModule, IconComponent, AccordionItemComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [CommonModule, IconDirective, AccordionItemComponent],
   template: `
-    <div [class]="wrapperClasses()">
+    <div class="aegov-accordion" role="region">
       @if (items().length > 0) {
-        @for (item of items(); track item.value) {
-          <div class="border-b border-gray-200 [.accordion-wrapper_&:last-child]:border-0">
-            <div class="w-full">
+        @for (item of items(); track item.value; let isLast = $last) {
+          <div class="accordion-item" [class.border-none!]="isNested() && isLast">
+            <div class="accordion-title" [id]="'aegov-accordion-head-' + item.value">
               <button
                 type="button"
+                [class.accordion-active]="isItemOpen(item.value)"
+                [class.accordion-inactive]="!isItemOpen(item.value)"
                 [attr.aria-expanded]="isItemOpen(item.value)"
-                class="group flex w-full items-center justify-between pe-3 ps-3 pb-5 pt-5 text-left text-base font-semibold text-gray-900 aria-expanded:text-aegold-600 hover:text-aegold-600 focus:text-aegold-600 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-400 hover:transition-colors duration-150 cursor-pointer"
+                [attr.aria-controls]="'aegov-accordion-body-' + item.value"
                 (click)="toggleItem(item.value)"
               >
                 <span>{{ item.title }}</span>
-                <ae-icon
-                  [name]="item.icon || 'caret-down'"
+                <svg
+                  aeIcon
+                  [name]="item.icon || icon()"
                   [size]="20"
-                  weight="bold"
-                  className="shrink-0 text-gray-500 transition-transform duration-200 group-hover:text-primary-600"
-                  [style.transform]="isItemOpen(item.value) ? 'rotate(' + (item.iconRotateDeg ?? 180) + 'deg)' : 'rotate(0deg)'"
-                ></ae-icon>
+                  [style.transform]="isItemOpen(item.value) ? 'rotate(' + (item.iconRotateDeg ?? iconRotateDeg()) + 'deg)' : 'rotate(0deg)'"
+                  [style.transition]="'transform 0.2s ease'"
+                ></svg>
               </button>
             </div>
-            @if (isItemOpen(item.value)) {
-              <div class="overflow-hidden animate-fadeIn">
-                <div class="pb-5 pt-5 ps-3 pe-3 text-gray-700 [&_.accordion-wrapper]:px-4">
-                  {{ item.content }}
-                </div>
+            <div
+              class="accordion-content"
+              [class.hidden]="!isItemOpen(item.value)"
+              [id]="'aegov-accordion-body-' + item.value"
+              [attr.aria-labelledby]="'aegov-accordion-head-' + item.value"
+            >
+              <div class="accordion-content-body">
+                @if (item.content) {
+                  <p>{{ item.content }}</p>
+                }
               </div>
-            }
+            </div>
           </div>
         }
       } @else {
@@ -133,6 +163,7 @@ export class AccordionItemComponent {
       }
     </div>
   `,
+  changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [`
     :host {
       display: block;
@@ -141,16 +172,48 @@ export class AccordionItemComponent {
   `]
 })
 export class AccordionComponent {
-  readonly items = input<AccordionItemData[]>([]);
-  readonly multiple = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly collapsible = input<boolean, unknown>(true, { transform: booleanAttribute });
-  readonly defaultValue = input<string | string[] | undefined>(undefined);
-  readonly className = input<string>('');
+  private readonly parentAccordion = inject(forwardRef(() => AccordionComponent), { optional: true, skipSelf: true });
+  private readonly parentItem = inject(forwardRef(() => AccordionItemComponent), { optional: true });
 
+  protected readonly isNested = computed(() => !!this.parentAccordion || !!this.parentItem);
+
+  /**
+   * Data-driven items for the accordion
+   */
+  readonly items = input<AccordionItemData[]>([]);
+
+  /**
+   * Whether multiple panels can be open concurrently
+   */
+  readonly multiple = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether all panels can be collapsed
+   */
+  readonly collapsible = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Default opened item value(s)
+   */
+  readonly defaultValue = input<string | string[] | undefined>(undefined);
+
+  /**
+   * Default icon for panels (defaults to 'caret-down')
+   */
+  readonly icon = input<IconName>('caret-down');
+
+  /**
+   * Degrees to rotate icon when active (defaults to 180 for caret-down, 45 for plus)
+   */
+  readonly iconRotateDeg = input<number>(180);
+
+  /**
+   * Emitted when open panels change
+   */
   readonly valueChange = output<string | string[]>();
   readonly onValueChange = output<string | string[]>();
 
-  readonly openValues = signal<string[]>([]);
+  private readonly openValues = signal<string[]>([]);
 
   constructor() {
     effect(() => {
@@ -168,8 +231,6 @@ export class AccordionComponent {
       }
     });
   }
-
-  readonly wrapperClasses = computed(() => cn('accordion-wrapper w-full', this.className()));
 
   isItemOpen(val: string): boolean {
     return this.openValues().includes(val);

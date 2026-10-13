@@ -1,0 +1,60 @@
+.aegov-accordion {
+  /* --- 1. DEFAULT COLOR & STYLE VARIABLES --- */
+  --accordion-item-border: var(--color-aeblack-100);
+  --accordion-title-fg: var(--color-aeblack-800);
+  --accordion-title-fg-hover: var(--color-primary-600);
+  --accordion-title-fg-active: var(--color-primary-700);
+  --accordion-content-fg: var(--color-aeblack-800);
+  --accordion-focus-ring: var(--color-primary-support-600);
+
+  /* --- 2. COMPONENT STYLES --- */
+  & .accordion-item {
+    border-bottom-color: var(--accordion-item-border);
+    @apply border-b;
+  }
+
+  & .accordion-title button {
+    color: var(--accordion-title-fg);
+    @apply w-full flex items-start gap-x-4 flex-nowrap justify-between text-start text-base font-semibold transition-all;
+
+    &:hover {
+      color: var(--accordion-title-fg-hover);
+    }
+
+    &.accordion-active {
+      color: var(--accordion-title-fg-active);
+    }
+
+    /* Icon inherits button text color */
+    & svg {
+      color: inherit;
+      @apply h-6 w-6 flex-shrink-0 fill-current;
+    }
+  }
+
+  & .accordion-content {
+    color: var(--accordion-content-fg);
+
+    & .accordion-content-body {
+      @apply text-base;
+    }
+  }
+
+  /* --- 3. DESKTOP PADDING VARIANT --- */
+  &:not(.aegov-mobile-accordion) {
+    & .accordion-title button {
+      @apply px-3 py-4 md:py-5 xl:py-6;
+
+      &:focus-visible {
+        outline-style: solid;
+        outline-width: 2px;
+        outline-offset: 0px;
+        outline-color: var(--accordion-focus-ring);
+      }
+    }
+
+    & .accordion-content .accordion-content-body {
+      @apply px-3 py-4 md:py-5 xl:py-6;
+    }
+  }
+}

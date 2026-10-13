@@ -1,9 +1,16 @@
-import type { Meta, StoryObj } from '@storybook/angular';
+import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { PaginationComponent } from './pagination.component';
+import { IconDirective } from '../Icon/icon.directive';
 
 const meta: Meta<PaginationComponent> = {
   title: 'Components/Pagination',
   component: PaginationComponent,
+  tags: ['autodocs'],
+  decorators: [
+    moduleMetadata({
+      imports: [PaginationComponent, IconDirective],
+    }),
+  ],
   parameters: {
     layout: 'centered',
   },
@@ -11,21 +18,60 @@ const meta: Meta<PaginationComponent> = {
     currentPage: 3,
     totalPages: 17,
     showFirstLast: false,
+    previousLabel: 'Previous',
+    nextLabel: 'Next',
+    firstLabel: 'First',
+    lastLabel: 'Last',
+    pageLabel: 'Page',
+    ofLabel: 'of',
+    pageUrlTemplate: undefined,
+    className: '',
   },
   argTypes: {
     currentPage: {
       control: 'number',
-      description: 'Current active page',
+      description: 'The currently active page index (1-based)',
     },
     totalPages: {
       control: 'number',
-      description: 'Total number of pages',
+      description: 'Total number of available pages',
     },
     showFirstLast: {
       control: 'boolean',
-      description: 'Show/hide first and last page buttons',
+      description: 'Whether to display First and Last page navigation buttons',
     },
-    pageChange: { action: 'page changed' },
+    previousLabel: {
+      control: 'text',
+      description: 'Previous button text label',
+    },
+    nextLabel: {
+      control: 'text',
+      description: 'Next button text label',
+    },
+    firstLabel: {
+      control: 'text',
+      description: 'First button text label',
+    },
+    lastLabel: {
+      control: 'text',
+      description: 'Last button text label',
+    },
+    pageLabel: {
+      control: 'text',
+      description: 'Mobile page label (e.g. Page)',
+    },
+    ofLabel: {
+      control: 'text',
+      description: 'Mobile of label (e.g. of)',
+    },
+    pageUrlTemplate: {
+      control: 'text',
+      description: 'URL pattern template for page links (e.g. ?page={page})',
+    },
+    className: {
+      control: 'text',
+      description: 'Additional custom CSS classes',
+    },
   },
 };
 
@@ -33,69 +79,118 @@ export default meta;
 type Story = StoryObj<PaginationComponent>;
 
 export const Default: Story = {
-  args: {
-    currentPage: 3,
-    totalPages: 17,
-    showFirstLast: false,
-  },
   render: (args) => ({
     props: {
       ...args,
-      onPageChange(page: number) {
-        (this as any).currentPage = page;
-      },
+      pageUrlTemplate: args.pageUrlTemplate || undefined,
     },
-    template: `<ae-pagination [currentPage]="currentPage" [totalPages]="totalPages" [showFirstLast]="showFirstLast" (pageChange)="onPageChange($event); pageChange($event)"></ae-pagination>`,
+    template: `
+      <div class="p-8 w-full max-w-3xl">
+        <ae-pagination
+          [currentPage]="currentPage"
+          [totalPages]="totalPages"
+          [showFirstLast]="showFirstLast"
+          [previousLabel]="previousLabel"
+          [nextLabel]="nextLabel"
+          [firstLabel]="firstLabel"
+          [lastLabel]="lastLabel"
+          [pageLabel]="pageLabel"
+          [ofLabel]="ofLabel"
+          [pageUrlTemplate]="pageUrlTemplate"
+          [className]="className"
+        ></ae-pagination>
+      </div>
+    `,
   }),
 };
 
-export const WithFirstLast: Story = {
-  args: {
-    currentPage: 3,
-    totalPages: 17,
-    showFirstLast: true,
+export const WithFirstAndLast: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: {
-      ...args,
-      onPageChange(page: number) {
-        (this as any).currentPage = page;
-      },
-    },
-    template: `<ae-pagination [currentPage]="currentPage" [totalPages]="totalPages" [showFirstLast]="showFirstLast" (pageChange)="onPageChange($event); pageChange($event)"></ae-pagination>`,
+  render: () => ({
+    template: `
+      <div class="p-8 w-full max-w-3xl">
+        <ae-pagination
+          [currentPage]="3"
+          [totalPages]="17"
+          [showFirstLast]="true"
+        ></ae-pagination>
+      </div>
+    `,
   }),
 };
 
-export const FewPages: Story = {
-  args: {
-    currentPage: 2,
-    totalPages: 5,
-    showFirstLast: false,
+export const SmallPageCount: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: {
-      ...args,
-      onPageChange(page: number) {
-        (this as any).currentPage = page;
-      },
-    },
-    template: `<ae-pagination [currentPage]="currentPage" [totalPages]="totalPages" [showFirstLast]="showFirstLast" (pageChange)="onPageChange($event); pageChange($event)"></ae-pagination>`,
+  render: () => ({
+    template: `
+      <div class="p-8 w-full max-w-xl">
+        <ae-pagination
+          [currentPage]="2"
+          [totalPages]="5"
+          [showFirstLast]="false"
+        ></ae-pagination>
+      </div>
+    `,
   }),
 };
 
-export const ManyPages: Story = {
-  args: {
-    currentPage: 50,
-    totalPages: 100,
-    showFirstLast: true,
+export const MiddlePage: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: {
-      ...args,
-      onPageChange(page: number) {
-        (this as any).currentPage = page;
-      },
-    },
-    template: `<ae-pagination [currentPage]="currentPage" [totalPages]="totalPages" [showFirstLast]="showFirstLast" (pageChange)="onPageChange($event); pageChange($event)"></ae-pagination>`,
+  render: () => ({
+    template: `
+      <div class="p-8 w-full max-w-3xl">
+        <ae-pagination
+          [currentPage]="10"
+          [totalPages]="25"
+          [showFirstLast]="true"
+        ></ae-pagination>
+      </div>
+    `,
+  }),
+};
+
+export const EndPage: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-8 w-full max-w-3xl">
+        <ae-pagination
+          [currentPage]="20"
+          [totalPages]="20"
+          [showFirstLast]="true"
+        ></ae-pagination>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-8 w-full max-w-3xl font-notokufi" dir="rtl" lang="ar">
+        <ae-pagination
+          [currentPage]="3"
+          [totalPages]="17"
+          [showFirstLast]="true"
+          previousLabel="السابق"
+          nextLabel="التالي"
+          firstLabel="الأول"
+          lastLabel="الأخير"
+          pageLabel="صفحة"
+          ofLabel="من"
+        ></ae-pagination>
+      </div>
+    `,
   }),
 };

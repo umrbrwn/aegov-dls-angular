@@ -1,0 +1,105 @@
+/* --- Single-line Checkbox/Radio Item --- */
+.aegov-check-item {
+  @apply flex items-center justify-start space-x-4;
+
+  /* Shared disabled state */
+  &:has(input:disabled) {
+    color: var(--color-aeblack-200);
+
+    & label {
+      color: var(--color-aeblack-300);
+    }
+  }
+
+  /* Shared Color Variables */
+  --form-check-accent: var(--color-primary-600);
+  --form-check-border: var(--color-primary-600);
+  --form-check-hover-before-bg: var(--color-primary-50);
+  --form-check-focus-ring: var(--color-primary-support-600);
+  --form-check-disabled-border: var(--color-primary-200);
+
+  &.check-secondary {
+    --form-check-accent: var(--color-secondary-800);
+    --form-check-border: var(--color-secondary-700);
+    --form-check-hover-before-bg: var(--color-secondary-50);
+    --form-check-focus-ring: var(--color-secondary-support-300);
+    --form-check-disabled-border: var(--color-secondary-200);
+  }
+}
+
+/* --- Multi-line / Detailed Checkbox/Radio Group --- */
+.aegov-check-group {
+  color: var(--color-aeblack-400);
+  @apply relative flex items-start space-x-4;
+
+  & input {
+    @apply mt-1;
+  }
+
+  & label {
+    color: var(--color-aeblack-800);
+    @apply inline-block font-semibold;
+  }
+
+  & p {
+    @apply mb-0;
+  }
+
+  &.group-list {
+    @apply items-center justify-between py-5;
+
+    & label {
+      @apply select-none pe-4;
+    }
+  }
+
+  &:has(input:disabled) {
+    color: var(--color-aeblack-200);
+
+    & label {
+      color: var(--color-aeblack-300);
+    }
+  }
+
+  --form-check-accent: var(--color-primary-600);
+  --form-check-border: var(--color-primary-600);
+  --form-check-hover-before-bg: var(--color-primary-50);
+  --form-check-focus-ring: var(--color-primary-support-600);
+  --form-check-disabled-border: var(--color-primary-200);
+
+  &.check-secondary {
+    --form-check-accent: var(--color-secondary-800);
+    --form-check-border: var(--color-secondary-700);
+    --form-check-hover-before-bg: var(--color-secondary-50);
+    --form-check-focus-ring: var(--color-secondary-support-300);
+    --form-check-disabled-border: var(--color-secondary-200);
+  }
+}
+
+/* --- Size Variants --- */
+.check-lg {
+  @apply text-lg;
+
+  & input[type="checkbox"],
+  & input[type="radio"] {
+    @apply h-6 w-6;
+  }
+}
+
+.check-base {
+  @apply text-base;
+
+  & input[type="checkbox"],
+  & input[type="radio"] {
+    @apply h-5 w-5;
+  }
+}
+
+.check-sm {
+  @apply text-sm;
+
+  & input[type="checkbox"],
+  & input[type="radio"] {
+    @apply h-4 w-4 before:h-10 before:w-10;
+  }
+}

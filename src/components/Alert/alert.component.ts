@@ -7,23 +7,17 @@ import {
   ChangeDetectionStrategy,
   booleanAttribute
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
 import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../Icon/icon.component';
+import { CommonModule } from '@angular/common';
 
-export type AlertVariant = 'info' | 'warning' | 'success' | 'error';
-export type AlertSize = 'sm' | 'base' | 'lg';
+export type AlertVariant = 'info' | 'error' | 'success' | 'warning';
 export type AlertTone = 'soft' | 'solid';
-
-export interface AlertAction {
-  text: string;
-  href: string;
-}
 
 @Component({
   selector: 'ae-alert',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isVisible()) {
@@ -32,55 +26,57 @@ export interface AlertAction {
         [class]="alertClasses()"
       >
         @if (showIcon()) {
-          <div class="shrink-0">
-            <ae-icon
-              [name]="iconName()"
-              [size]="iconSizes[size()]"
-              weight="fill"
-              className="fill-current"
-            ></ae-icon>
+          <div class="alert-icon">
+            <svg
+              aeIcon
+              [name]="effectiveIcon()"
+              [size]="28"
+            ></svg>
           </div>
         }
 
-        <div class="flex-1">
-          @if (title()) {
-            <div [class]="titleClasses()">
-              {{ title() }}
-            </div>
-          }
-          <div [class]="textClasses()">
-            <div [class]="action() ? 'flex justify-between items-start gap-6' : ''">
-              <div>
+        @if (hasLink()) {
+          <div class="alert-content" [class.alert-with-link]="hasLink()">
+            <div>
+              @if (title()) {
+                <div class="alert-title">{{ title() }}</div>
+              }
+              @if (content()) {
+                <p>{{ content() }}</p>
+              } @else {
                 <ng-content></ng-content>
-              </div>
-              @if (action(); as act) {
-                <div [class]="actionWrapperClasses()">
-                  <a
-                    [href]="act.href"
-                    [class]="actionLinkClasses()"
-                  >
-                    {{ act.text }}
-                    <ae-icon name="caret-right" [size]="actionIconSizes[size()]" [flipRtl]="true"></ae-icon>
-                  </a>
-                </div>
               }
             </div>
+            <p class="alert-link">
+              <a [href]="linkHref()">
+                {{ linkText() }}
+                <svg aeIcon name="arrow-right" [size]="20" class="rtl:-scale-x-100"></svg>
+              </a>
+            </p>
           </div>
-        </div>
+        } @else {
+          <div class="alert-content" [class.alert-with-link]="hasLink()">
+            @if (title()) {
+              <div class="alert-title">{{ title() }}</div>
+            }
+            @if (content()) {
+              <p>{{ content() }}</p>
+            } @else {
+              <ng-content></ng-content>
+            }
+          </div>
+        }
 
         @if (dismissible()) {
-          <button
-            type="button"
-            (click)="handleDismiss()"
-            aria-label="Close"
-            class="shrink-0 rounded-full hover:opacity-50 transition-opacity duration-200 cursor-pointer"
-          >
-            <ae-icon
-              name="x"
-              [size]="iconSizes[size()]"
-              [className]="tone() === 'solid' ? 'text-whitely-50' : ''"
-            ></ae-icon>
-          </button>
+          <div class="alert-dismiss">
+            <button
+              type="button"
+              aria-label="Close"
+              (click)="handleDismiss()"
+            >
+              <svg aeIcon name="x" [size]="20"></svg>
+            </button>
+          </div>
         }
       </div>
     }
@@ -93,120 +89,96 @@ export interface AlertAction {
   `]
 })
 export class AlertComponent {
+  /**
+   * Type/color variant of the alert ('info' | 'error' | 'success' | 'warning')
+   */
   readonly variant = input<AlertVariant>('info');
-  readonly title = input<string | undefined>(undefined);
-  readonly size = input<AlertSize>('base');
+
+  /**
+   * Tone/appearance style of the alert ('soft' | 'solid')
+   */
   readonly tone = input<AlertTone>('soft');
-  readonly action = input<AlertAction | undefined>(undefined);
+
+  /**
+   * Optional title displayed at the top of the alert content
+   */
+  readonly title = input<string | undefined>(undefined);
+
+  /**
+   * Main message text. Alternatively, use content projection via <ng-content>
+   */
+  readonly content = input<string | undefined>(undefined);
+
+  /**
+   * Whether to display the visual cue icon (defaults to true)
+   */
   readonly showIcon = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Custom icon name to override the default variant icon
+   */
+  readonly icon = input<IconName | undefined>(undefined);
+
+  /**
+   * Whether the alert includes a close/dismiss trigger button
+   */
   readonly dismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Action link label text (displays an inline action link on the right side)
+   */
+  readonly linkText = input<string | undefined>(undefined);
+
+  /**
+   * Action link target URL
+   */
+  readonly linkHref = input<string>('#');
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
+  /**
+   * Event emitted when the alert is dismissed
+   */
   readonly dismiss = output<void>();
   readonly onDismiss = output<void>();
 
-  readonly isVisible = signal<boolean>(true);
+  /**
+   * Internal visibility state
+   */
+  protected readonly isVisible = signal<boolean>(true);
 
-  readonly iconSizes: Record<AlertSize, number> = {
-    sm: 20,
-    base: 20,
-    lg: 32
+  private readonly defaultIcons: Record<AlertVariant, IconName> = {
+    info: 'info',
+    error: 'warning-circle',
+    success: 'check-circle',
+    warning: 'warning',
   };
 
-  readonly actionIconSizes: Record<AlertSize, number> = {
-    sm: 16,
-    base: 20,
-    lg: 24
-  };
+  protected readonly effectiveIcon = computed<IconName>(() => {
+    return this.icon() || this.defaultIcons[this.variant()] || 'info';
+  });
 
-  readonly variantStyles = {
-    info: {
-      soft: 'bg-techblue-50 text-techblue-700',
-      solid: 'bg-techblue-600 text-whitely-50',
-      icon: 'info' as IconName,
-      link: {
-        soft: 'hover:text-techblue-600',
-        solid: 'hover:text-whitely-100'
-      }
-    },
-    warning: {
-      soft: 'bg-camel-50 text-camel-700',
-      solid: 'bg-camel-600 text-whitely-50',
-      icon: 'warning' as IconName,
-      link: {
-        soft: 'hover:text-camel-600',
-        solid: 'hover:text-whitely-100'
-      }
-    },
-    success: {
-      soft: 'bg-aegreen-50 text-aegreen-700',
-      solid: 'bg-aegreen-600 text-whitely-50',
-      icon: 'check-circle' as IconName,
-      link: {
-        soft: 'hover:text-aegreen-600',
-        solid: 'hover:text-whitely-100'
-      }
-    },
-    error: {
-      soft: 'bg-aered-50 text-aered-700',
-      solid: 'bg-aered-600 text-whitely-50',
-      icon: 'x-circle' as IconName,
-      link: {
-        soft: 'hover:text-aered-600',
-        solid: 'hover:text-whitely-100'
-      }
-    }
-  };
+  protected readonly hasLink = computed<boolean>(() => !!this.linkText());
 
-  readonly sizeStyles: Record<AlertSize, { container: string; text: string }> = {
-    sm: {
-      container: 'px-4 py-3 gap-3',
-      text: 'text-sm'
-    },
-    base: {
-      container: 'px-6 py-4 gap-4',
-      text: 'text-base'
-    },
-    lg: {
-      container: 'px-7 py-5 gap-4',
-      text: 'text-lg'
-    }
-  };
-
-  readonly iconName = computed(() => this.variantStyles[this.variant()].icon);
-
-  readonly alertClasses = computed(() => {
-    const vStyle = this.variantStyles[this.variant()][this.tone()];
-    const sStyle = this.sizeStyles[this.size()];
+  protected readonly alertClasses = computed(() => {
     return cn(
-      'relative flex items-start rounded-sm',
-      vStyle,
-      sStyle.container,
+      'aegov-alert',
+      `alert-${this.variant()}`,
+      this.tone() === 'solid' ? 'alert-solid' : 'alert-soft',
       this.className()
     );
   });
 
-  readonly titleClasses = computed(() =>
-    cn('font-semibold mb-5', this.sizeStyles[this.size()].text)
-  );
-
-  readonly textClasses = computed(() => this.sizeStyles[this.size()].text);
-
-  readonly actionWrapperClasses = computed(() =>
-    cn('shrink-0', this.size() === 'lg' ? 'text-base' : 'text-sm')
-  );
-
-  readonly actionLinkClasses = computed(() => {
-    const linkHover = this.variantStyles[this.variant()].link[this.tone()];
-    return cn(
-      'underline underline-offset-1 inline-flex items-center gap-2 font-medium hover:underline hover:underline-offset-2',
-      linkHover
-    );
-  });
-
-  handleDismiss(): void {
+  protected handleDismiss(): void {
     this.isVisible.set(false);
     this.dismiss.emit();
     this.onDismiss.emit();
+  }
+
+  show(): void {
+    this.isVisible.set(true);
   }
 }

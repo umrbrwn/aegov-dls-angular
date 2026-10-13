@@ -1,462 +1,815 @@
-import { type Meta, type StoryObj, moduleMetadata, applicationConfig } from '@storybook/angular';
-import { CommonModule } from '@angular/common';
-import { RouterModule, provideRouter } from '@angular/router';
+import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
+import { signal } from '@angular/core';
 import {
   NavigationComponent,
-  MainMenuComponent,
-  SecondaryMenuComponent,
-  NavItemComponent,
-  type NavItemData,
-  type NavDropdownGroup
+  NavBrandDirective,
+  NavPrimaryActionsDirective,
+  NavSecondaryActionsDirective,
+  NavDrawerContentDirective,
 } from './navigation.component';
-import { IconComponent } from '../Icon/icon.component';
-import { ButtonComponent } from '../Button/button.component';
-import { AvatarComponent } from '../Avatar/avatar.component';
+import { IconDirective } from '../Icon/icon.directive';
+import { ButtonDirective } from '../Button/button.directive';
+import { InputDirective } from '../Input/input.directive';
+import { TooltipDirective } from '../Tooltip/tooltip.directive';
+import { DropdownDirective, type DropdownItem } from '../Dropdown/dropdown.directive';
+import type { NavItemData } from './navigation.component';
 
-const ministryServiceMegaMenu: NavDropdownGroup[] = [
-  {
-    title: 'Service category #1',
-    items: [
-      { label: 'Service item number #1', href: '#' },
-      { label: 'Service item number #2', href: '#' },
-      { label: 'Service item number #3', href: '#' },
-      { label: 'Service item number #4', href: '#' },
-      { label: 'View all services', href: '#' }
-    ]
-  },
-  {
-    title: 'Service category #2',
-    items: [
-      { label: 'Service item number #1', href: '#' },
-      { label: 'Service item number #2', href: '#' },
-      { label: 'Service item number #3', href: '#' },
-      { label: 'Service item number #4', href: '#' },
-      { label: 'View all services', href: '#' }
-    ]
-  },
-  {
-    title: 'Service category #3',
-    items: [
-      { label: 'Service item number #1', href: '#' },
-      { label: 'Service item number #2', href: '#' },
-      { label: 'Service item number #3', href: '#' },
-      { label: 'Service item number #4', href: '#' },
-      { label: 'View all services', href: '#' }
-    ]
-  }
-];
-
-const mediaCenterDropdown: NavDropdownGroup[] = [
-  {
-    title: 'Media & News',
-    items: [
-      { label: 'Press Releases', href: '#' },
-      { label: 'Latest News & Stories', href: '#' },
-      { label: 'Photo & Video Gallery', href: '#' },
-      { label: 'Media Kit & Guidelines', href: '#' }
-    ]
-  }
-];
-
-const digitalParticipationDropdown: NavDropdownGroup[] = [
-  {
-    title: 'Community Engagement',
-    items: [
-      { label: 'Public Consultations', href: '#' },
-      { label: 'Ideation & Suggestions', href: '#' },
-      { label: 'Digital Polls & Surveys', href: '#' },
-      { label: 'Social Media Channels', href: '#' }
-    ]
-  }
-];
-
-const ministryAboutDropdown: NavDropdownGroup[] = [
-  {
-    title: 'About the Ministry',
-    items: [
-      { label: 'About the Ministry', href: '#' },
-      { label: 'The Minister', href: '#' },
-      { label: 'Minister of State for Financial Affairs', href: '#' },
-      { label: 'Organization Chart', href: '#' },
-      { label: 'Strategic Objectives', href: '#' },
-      { label: 'Federal Decrees & Laws', href: '#' }
-    ]
-  }
-];
-
-const authorityAboutDropdown: NavDropdownGroup[] = [
-  {
-    title: 'About the Authority',
-    items: [
-      { label: 'About', href: '#' },
-      { label: 'Organization chart', href: '#' },
-      { label: 'Strategy', href: '#' },
-      { label: 'Awards & Honors', href: '#' }
-    ]
-  }
-];
-
-export const ministryNavItems: NavItemData[] = [
+const sampleNavItems: NavItemData[] = [
   {
     label: 'Home',
+    url: '/home',
     icon: 'house',
-    routerLink: '/',
-    routerLinkActiveOptions: { exact: true }
   },
   {
     label: 'Services',
-    dropdown: ministryServiceMegaMenu
+    url: '/services',
+    dropdownVariant: 'mega',
+    dropdownColumns: 4,
+    dropdown: [
+      {
+        title: 'Service category',
+        items: [
+          { label: 'Service item number #1', url: '/services/1' },
+          { label: 'Service item number #2', url: '/services/2' },
+          { label: 'Service item number #3', url: '/services/3' },
+          { label: 'Service item number #4', url: '/services/4' },
+          { label: 'View all 40 services', url: '/services' },
+        ],
+      },
+      {
+        title: 'Service category',
+        items: [
+          { label: 'Service item number #1', url: '/services/category/1' },
+          { label: 'Service item number #2', url: '/services/category/2' },
+          { label: 'Service item number #3', url: '/services/category/3' },
+          { label: 'View all 40 services', url: '/services' },
+        ],
+      },
+      {
+        title: 'Service category',
+        items: [
+          { label: 'Service item number #1', url: '/services/sub/1' },
+          { label: 'Service item number #2', url: '/services/sub/2' },
+          { label: 'Service item number #3', url: '/services/sub/3' },
+          { label: 'View all 20 services', url: '/services' },
+        ],
+      },
+      {
+        title: 'Service category',
+        items: [
+          { label: 'Service item number #1', url: '/services/group/1' },
+          { label: 'Service item number #2', url: '/services/group/2' },
+          { label: 'Service item number #3', url: '/services/group/3' },
+          { label: 'View all 10 services', url: '/services' },
+        ],
+      },
+    ],
   },
   {
-    label: 'Media Center',
-    dropdown: mediaCenterDropdown
+    label: 'A custom link',
+    url: 'https://example.com',
+    navigation: 'href',
+    target: '_blank',
   },
   {
-    label: 'A Custom Link',
-    href: '#'
+    label: 'Digital participation',
+    url: '/participation',
+    dropdownVariant: 'multi-column',
+    dropdownColumns: 3,
+    dropdown: [
+      {
+        title: 'Participate',
+        items: [
+          { label: 'Events', url: '/events' },
+          { label: 'Social media channels', url: '/social' },
+          { label: 'Survey and polls', url: '/survey' },
+        ],
+      },
+      {
+        title: 'Media',
+        items: [
+          { label: 'News and press releases', url: '/news' },
+          { label: 'Video archives', url: '/videos' },
+          { label: 'Media gallery', url: '/gallery' },
+          { label: 'Insights and blogs', url: '/blogs' },
+          { label: 'Publications', url: '/pubs' },
+        ],
+      },
+      {
+        title: 'Policies',
+        items: [
+          { label: 'Digital participation policy', url: '/policy' },
+          { label: 'Social media content policy', url: '/content' },
+          { label: 'National relationship management', url: '/nrm' },
+        ],
+      },
+    ],
   },
   {
-    label: 'Digital Participation',
-    dropdown: digitalParticipationDropdown
-  },
-  {
-    label: 'Open Data',
-    href: 'https://data.gov.ae',
-    target: '_blank'
-  },
-  {
-    label: 'About Us',
-    dropdown: ministryAboutDropdown
-  }
-];
-
-export const authorityNavItems: NavItemData[] = [
-  {
-    label: 'Home',
-    icon: 'house',
-    routerLink: '/',
-    routerLinkActiveOptions: { exact: true }
-  },
-  {
-    label: 'Services',
-    dropdown: ministryServiceMegaMenu
-  },
-  {
-    label: 'Media Center',
-    dropdown: mediaCenterDropdown
-  },
-  {
-    label: 'A Custom Link',
-    href: '#'
-  },
-  {
-    label: 'Digital Participation',
-    dropdown: digitalParticipationDropdown
-  },
-  {
-    label: 'Open Data',
-    href: 'https://data.gov.ae',
-    target: '_blank'
+    label: 'Open data',
+    url: '/opendata',
   },
   {
     label: 'About',
-    dropdown: authorityAboutDropdown
-  }
+    url: '/about',
+    dropdown: [
+      {
+        items: [
+          { label: 'About the Ministry', url: '/about/ministry' },
+          { label: 'The Minister', url: '/about/minister' },
+          { label: 'Minister of State for Financial Affairs', url: '/about/minister-state' },
+          { label: 'Organization chart', url: '/about/chart' },
+          { label: 'Strategy', url: '/about/strategy' },
+          { label: 'Awards', url: '/about/awards' },
+          { label: 'Contact', url: '/about/contact' },
+        ],
+      },
+    ],
+  },
+  {
+    label: 'More',
+    url: '/more',
+    dropdown: [
+      {
+        items: [
+          { label: 'Publications', url: '/publications' },
+          { label: 'Press contact and media kit', url: '/media-kit' },
+          { label: 'Federal debt management office', url: '/debt-management' },
+          { label: 'Digital procurement', url: '/procurement' },
+        ],
+      },
+    ],
+  },
+];
+
+const sampleUserMenuItems: DropdownItem[] = [
+  { label: 'Profile Settings', icon: 'user', href: '#profile' },
+  { label: 'My Applications', icon: 'file-text', href: '#applications', badge: '3' },
+  { label: 'Help & Support', icon: 'info', href: '#help' },
+  { label: 'Sign Out', icon: 'sign-out', href: '#logout' },
 ];
 
 const meta: Meta<NavigationComponent> = {
   title: 'Components/Navigation',
   component: NavigationComponent,
+  tags: ['autodocs'],
   decorators: [
-    applicationConfig({
-      providers: [
-        provideRouter([])
-      ]
-    }),
     moduleMetadata({
       imports: [
-        CommonModule,
-        RouterModule,
         NavigationComponent,
-        MainMenuComponent,
-        SecondaryMenuComponent,
-        NavItemComponent,
-        IconComponent,
-        ButtonComponent,
-        AvatarComponent,
+        NavBrandDirective,
+        NavPrimaryActionsDirective,
+        NavSecondaryActionsDirective,
+        NavDrawerContentDirective,
+        IconDirective,
+        ButtonDirective,
+        InputDirective,
+        TooltipDirective,
+        DropdownDirective,
       ],
     }),
   ],
   parameters: {
     layout: 'fullscreen',
   },
-  argTypes: {
-    breakpoint: {
-      control: 'select',
-      options: ['1100px', 'lg', 'md', 'xl'],
-      description: 'Controls the viewport width at which desktop navigation collapses into the mobile header & drawer.'
-    },
-    drawerTitle: {
-      control: 'text',
-      description: 'Default title displayed in the mobile drawer header.'
-    },
-    containerClass: {
-      control: 'text',
-      description: 'Tailwind CSS classes for the horizontal desktop container.'
-    },
-    drawerToggleLabel: {
-      control: 'text',
-      description: 'Accessibility aria-label for the mobile hamburger toggle button.'
-    },
-    drawerCloseLabel: {
-      control: 'text',
-      description: 'Accessibility aria-label for the mobile drawer close button.'
-    },
-    items: {
-      control: 'object',
-      description: 'Single-source array of NavItemData objects rendered automatically across desktop and mobile.'
-    }
-  },
   args: {
-    breakpoint: 'xl',
-    drawerTitle: 'UAE Government Menu',
-    containerClass: 'container mx-auto px-4 sm:px-6 lg:px-8',
-    drawerToggleLabel: 'Toggle main menu',
-    drawerCloseLabel: 'Close menu',
-    items: ministryNavItems
-  }
+    items: sampleNavItems,
+  },
 };
 
 export default meta;
 type Story = StoryObj<NavigationComponent>;
 
 /**
- * Official Ministry Header Template (based on ministry-sample.html).
+ * Standalone Navigation Bar (without top header bar slots)
  */
-export const Ministry: Story = {
-  args: {
-    drawerTitle: 'Ministry of Finance',
-    items: ministryNavItems,
-  },
+export const StandaloneNavBar: Story = {
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+    },
     template: `
-      <ae-navigation
-        [items]="items"
-        [breakpoint]="breakpoint"
-        [drawerTitle]="drawerTitle"
-        [containerClass]="containerClass"
-        [drawerToggleLabel]="drawerToggleLabel"
-        [drawerCloseLabel]="drawerCloseLabel"
-      >
-        <!-- Desktop Top Bar: Logos & Search -->
-        <div slot="top-bar" class="py-3 border-b border-aeblack-100 bg-white">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <a href="#" class="block">
-                <img src="https://designsystem.gov.ae/img/logo-ministry.svg" alt="Ministry Logo" class="h-10 lg:h-12 w-auto object-contain">
+      <ae-navigation [items]="items">
+        <ng-template aeNavSecondaryActions>
+          <ul class="flex max-sm:flex-col">
+            <li>
+              <a
+                href="#login"
+                aeTooltip="Login"
+                tooltipPlacement="bottom"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="md:sr-only">Login</span>
               </a>
-              <a href="#" class="block">
-                <img src="https://designsystem.gov.ae/img/global-star.png" alt="Gold Star Rating" class="h-8 lg:h-10 w-auto object-contain">
+            </li>
+            <li>
+              <a
+                href="#accessibility"
+                aeTooltip="Accessibility"
+                tooltipPlacement="bottom"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="md:sr-only">Accessibility</span>
               </a>
-            </div>
-            <div class="flex items-center">
-              <div class="relative w-64 xl:w-80">
-                <input
-                  type="search"
-                  placeholder="Search in site..."
-                  aria-label="Search site"
-                  class="w-full h-10 ps-3.5 pe-10 text-sm border border-aeblack-200 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 bg-white"
-                />
-                <button
-                  type="button"
-                  class="absolute inset-y-0 end-0 flex items-center justify-center pe-3 text-aeblack-600 hover:text-primary-700 bg-transparent border-0 cursor-pointer"
-                  title="Search"
-                >
-                  <ae-icon name="magnifying-glass" [size]="18"></ae-icon>
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Mobile Header Brand Logo -->
-        <div slot="logo" class="flex items-center gap-2">
-          <img src="https://designsystem.gov.ae/img/logo-ministry.svg" alt="Ministry Logo" class="h-8 w-auto">
-          <img src="https://designsystem.gov.ae/img/global-star.png" alt="Star Rating" class="h-6 w-auto">
-        </div>
-
-        <!-- Persistent Mobile Actions -->
-        <div slot="mobile-actions">
-          <button class="p-1.5 text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer" title="Search">
-            <ae-icon name="magnifying-glass" [size]="20"></ae-icon>
-          </button>
-        </div>
-
-        <!-- Secondary Actions (Right) -->
-        <ae-secondary-menu secondary-menu>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="User Login">
-              <ae-icon name="user" [size]="20"></ae-icon>
-            </button>
-          </li>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="Accessibility">
-              <ae-icon name="person-arms-spread" [size]="20"></ae-icon>
-            </button>
-          </li>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="Switch Language">
-              <ae-icon name="globe" [size]="20"></ae-icon>
-            </button>
-          </li>
-        </ae-secondary-menu>
-
-        <!-- Mobile Drawer Custom Footer -->
-        <div slot="drawer-footer" class="flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-3 border-b border-aeblack-100">
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="globe" [size]="16"></ae-icon>
-              <span>عربي (Arabic)</span>
-            </button>
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="person-arms-spread" [size]="16"></ae-icon>
-              <span>Accessibility</span>
-            </button>
-          </div>
-          <div class="flex items-center">
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="user" [size]="16"></ae-icon>
-              <span>Sign In / UAE PASS</span>
-            </button>
-          </div>
-        </div>
+            </li>
+            <li>
+              <a
+                href="#language"
+                aeTooltip="Switch language"
+                tooltipPlacement="bottom"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="md:sr-only">Switch Language</span>
+              </a>
+            </li>
+          </ul>
+        </ng-template>
       </ae-navigation>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="p-8 bg-white border border-gray-200 rounded-xl shadow-xs space-y-3">
-          <h1 class="text-2xl font-bold text-aeblack-900">Ministry Header Specification</h1>
-          <p class="text-sm text-aeblack-600 max-w-2xl">
-            This story models the official Ministry layout with top-bar search and multi-category service mega dropdown.
-            Change the <code>items</code> or <code>breakpoint</code> controls to test responsiveness and different navigation trees.
-          </p>
-        </div>
-      </main>
     `,
   }),
 };
 
 /**
- * Official Federal Authority Header Template (based on authority-sample.html).
+ * Ministry Header with primary logo, GSR gold star rating, search input form,
+ * mobile search toggle & drawer, integrated into a single unified ae-navigation component.
  */
-export const Authority: Story = {
-  args: {
-    drawerTitle: 'TDRA UAE',
-    items: authorityNavItems,
+export const MinistryHeader: Story = {
+  render: (args) => {
+    const isSearchOpen = signal(false);
+    return {
+      props: {
+        ...args,
+        items: sampleNavItems,
+        isSearchOpen,
+        toggleSearch: () => isSearchOpen.update((open) => !open),
+      },
+      template: `
+        <ae-navigation [items]="items">
+          <!-- Brand Logos Slot -->
+          <ng-template aeNavBrand>
+            <div class="logo-item">
+              <a href="#" class="logo block">
+                <img
+                  src="https://designsystem.gov.ae/img/logo-ministry.svg"
+                  alt="logo"
+                />
+                <span class="sr-only">Logo</span>
+              </a>
+            </div>
+            <div class="logo-item">
+              <a href="#" class="block">
+                <img
+                  src="https://designsystem.gov.ae/img/global-star.png"
+                  alt="logo"
+                  class="secondary-logo"
+                />
+                <span class="sr-only">Gold star Logo</span>
+              </a>
+            </div>
+          </ng-template>
+
+          <!-- Desktop Header Top Right Search Slot -->
+          <ng-template aeNavPrimaryActions="desktop">
+            <form action="#" method="post" (submit)="$event.preventDefault()">
+              <div class="aegov-form-control w-64 xl:w-80">
+                <div class="form-control-input">
+                  <input
+                    aeInput
+                    type="search"
+                    aria-label="search in site"
+                    name="searchelem"
+                    id="searchelem"
+                    placeholder="search for something"
+                  />
+                  <button type="submit" class="control-suffix">
+                    <svg aeIcon name="magnifying-glass" [size]="24"></svg>
+                    <span class="sr-only">Search</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </ng-template>
+
+          <!-- Main Navbar Right Actions Slot: Login, Accessibility, Language -->
+          <ng-template aeNavSecondaryActions>
+            <ul class="flex max-sm:flex-col">
+              <li>
+                <a
+                  href="#login"
+                  aeTooltip="Login"
+                  tooltipPlacement="bottom"
+                  class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                >
+                  <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                  <span class="md:sr-only">Login</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#accessibility"
+                  aeTooltip="Accessibility"
+                  tooltipPlacement="bottom"
+                  class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                >
+                  <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                  <span class="md:sr-only">Accessibility</span>
+                </a>
+              </li>
+              <li>
+                <a
+                  href="#language"
+                  aeTooltip="Switch language"
+                  tooltipPlacement="bottom"
+                  class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                >
+                  <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                  <span class="md:sr-only">Switch Language</span>
+                </a>
+              </li>
+            </ul>
+          </ng-template>
+
+          <!-- Mobile Drawer Actions: Search Toggle Button -->
+          <ng-template aeNavPrimaryActions="drawer">
+            <button
+              aeButton
+              variant="soft"
+              [isIcon]="true"
+              size="xs"
+              aria-label="search in site"
+              (click)="toggleSearch()"
+            >
+              <svg aeIcon name="magnifying-glass" [size]="16"></svg>
+            </button>
+          </ng-template>
+
+          <!-- Mobile Drawer Content: Search Form -->
+          <ng-template aeNavDrawerContent>
+            @if (isSearchOpen()) {
+              <form action="#" method="post" (submit)="$event.preventDefault()">
+                <div class="aegov-form-control control-sm w-full mb-4">
+                  <div class="form-control-input">
+                    <input
+                      aeInput
+                      type="search"
+                      aria-label="search in site"
+                      name="searchelemMobile"
+                      id="searchelemMobile"
+                      placeholder="search for something"
+                    />
+                    <button type="submit" class="control-suffix">
+                      <svg aeIcon name="magnifying-glass" [size]="20"></svg>
+                      <span class="sr-only">Search</span>
+                    </button>
+                  </div>
+                </div>
+              </form>
+            }
+          </ng-template>
+        </ae-navigation>
+      `,
+    };
   },
+};
+
+/**
+ * Authority Header (TDRA / Government Entities) demonstrating the custom entity theming
+ * with custom authority blue primary color tokens and right action icons.
+ */
+export const AuthorityHeader: Story = {
+  render: (args) => {
+    const isSearchOpen = signal(false);
+    return {
+      props: {
+        ...args,
+        items: sampleNavItems,
+        isSearchOpen,
+        toggleSearch: () => isSearchOpen.update((open) => !open),
+      },
+      template: `
+        <div class="authority-theme w-full">
+          <style>
+            .authority-theme {
+              --font-sans: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+              --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+              --spacing: 0.25rem;
+              --breakpoint-2xl: 96rem;
+              --container-sm: 24rem;
+              --text-xs: 0.75rem;
+              --text-xs--line-height: calc(1 / 0.75);
+              --text-sm: 0.875rem;
+              --text-sm--line-height: calc(1.25 / 0.875);
+              --text-base: 1rem;
+              --text-base--line-height: calc(1.5 / 1);
+              --text-lg: 1.125rem;
+              --text-lg--line-height: calc(1.75 / 1.125);
+              --text-xl: 1.25rem;
+              --text-xl--line-height: calc(1.75 / 1.25);
+              --text-2xl: 1.5rem;
+              --text-2xl--line-height: calc(2 / 1.5);
+              --text-3xl: 1.875rem;
+              --text-3xl--line-height: calc(2.25 / 1.875);
+              --font-weight-light: 300;
+              --font-weight-normal: 400;
+              --font-weight-medium: 500;
+              --font-weight-semibold: 600;
+              --font-weight-bold: 700;
+              --font-weight-extrabold: 800;
+              --leading-relaxed: 1.625;
+              --radius-md: 0.375rem;
+              --radius-lg: 0.5rem;
+              --radius-xl: 0.75rem;
+              --radius-2xl: 1rem;
+              --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+              --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+              --ease-out: cubic-bezier(0, 0, 0.2, 1);
+              --default-transition-duration: 150ms;
+              --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+              --default-font-family: var(--font-sans);
+              --default-mono-font-family: var(--font-mono);
+              --color-primary-50: #EFF3F6;
+              --color-primary-100: #DBE4EC;
+              --color-primary-200: #B3C5D6;
+              --color-primary-300: #8CA7C1;
+              --color-primary-400: #6489AC;
+              --color-primary-500: #496A89;
+              --color-primary-600: #344B61;
+              --color-primary-700: #28394A;
+              --color-primary-800: #1B2733;
+              --color-primary-900: #0F151B;
+            }
+          </style>
+
+          <ae-navigation [items]="items">
+            <!-- Brand Logos Slot for Authorities (TDRA + Gold Star Rating) -->
+            <ng-template aeNavBrand>
+              <div class="logo-item">
+                <a href="#" class="logo block">
+                  <img
+                    src="https://designsystem.gov.ae/img/logo-tdra.svg"
+                    alt="TDRA Logo"
+                    class="h-auto! lg:w-72! xl:w-80!"
+                  />
+                  <span class="sr-only">TDRA Logo</span>
+                </a>
+              </div>
+              <div class="logo-item">
+                <a href="#" class="block">
+                  <img
+                    src="https://designsystem.gov.ae/img/global-star.png"
+                    alt="Gold star rating"
+                    class="secondary-logo"
+                  />
+                  <span class="sr-only">Gold star Logo</span>
+                </a>
+              </div>
+            </ng-template>
+
+            <!-- Desktop Header Top Right: UAE Emblem -->
+            <ng-template aeNavPrimaryActions="desktop">
+              <a href="#" class="inline-block">
+                <img
+                  src="https://designsystem.gov.ae/img/emblem.png"
+                  alt="UAE Emblem"
+                  class="emblem-logo"
+                />
+              </a>
+            </ng-template>
+
+            <!-- Main Navbar Right Actions Slot -->
+            <ng-template aeNavSecondaryActions>
+              <ul class="flex max-sm:flex-col">
+                <li>
+                  <a
+                    href="#login"
+                    aeTooltip="Login"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Login</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#accessibility"
+                    aeTooltip="Accessibility"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Accessibility</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#language"
+                    aeTooltip="Switch language"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Switch Language</span>
+                  </a>
+                </li>
+              </ul>
+            </ng-template>
+
+            <!-- Mobile Drawer Actions: Search Toggle -->
+            <ng-template aeNavPrimaryActions="drawer">
+              <button
+                aeButton
+                variant="soft"
+                [isIcon]="true"
+                size="xs"
+                aria-label="search in site"
+                (click)="toggleSearch()"
+              >
+                <svg aeIcon name="magnifying-glass" [size]="16"></svg>
+              </button>
+            </ng-template>
+
+            <!-- Mobile Drawer Content -->
+            <ng-template aeNavDrawerContent>
+              @if (isSearchOpen()) {
+                <form action="#" method="post" (submit)="$event.preventDefault()">
+                  <div class="aegov-form-control control-sm w-full mb-4">
+                    <div class="form-control-input">
+                      <input
+                        aeInput
+                        type="search"
+                        aria-label="search in site"
+                        name="searchelemMobile"
+                        id="searchelemMobile"
+                        placeholder="search for something"
+                      />
+                      <button type="submit" class="control-suffix">
+                        <svg aeIcon name="magnifying-glass" [size]="20"></svg>
+                        <span class="sr-only">Search</span>
+                      </button>
+                    </div>
+                  </div>
+                </form>
+              }
+            </ng-template>
+          </ae-navigation>
+        </div>
+      `,
+    };
+  },
+};
+
+/**
+ * Custom Dropdown Action demonstration on hover in Navigation Bar
+ */
+export const WithCustomDropdownAction: Story = {
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      userMenuItems: sampleUserMenuItems,
+    },
     template: `
-      <ae-navigation
-        [items]="items"
-        [breakpoint]="breakpoint"
-        [drawerTitle]="drawerTitle"
-        [containerClass]="containerClass"
-        [drawerToggleLabel]="drawerToggleLabel"
-        [drawerCloseLabel]="drawerCloseLabel"
-      >
-        <!-- Desktop Top Bar: TDRA Logo & UAE Emblem -->
-        <div slot="top-bar" class="py-3.5 border-b border-aeblack-100 bg-white">
-          <div class="container mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <a href="#" class="block">
-                <img src="https://designsystem.gov.ae/img/logo-tdra.svg" alt="TDRA Logo" class="h-10 lg:h-12 w-auto object-contain">
+      <ae-navigation [items]="items">
+        <!-- Desktop Navbar Right Actions with Custom User Profile Dropdown on Hover -->
+        <ng-template aeNavSecondaryActions="desktop">
+          <ul class="flex items-center">
+            <li class="flex items-center">
+              <a
+                aeDropdown
+                [items]="userMenuItems"
+                dropdownPlacement="bottom"
+                dropdownTrigger="hover"
+                href="#user"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center justify-center shrink-0 cursor-pointer"
+              >
+                <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="sr-only">User Account</span>
               </a>
-              <a href="#" class="block">
-                <img src="https://designsystem.gov.ae/img/global-star.png" alt="Gold Star Rating" class="h-8 lg:h-10 w-auto object-contain">
+            </li>
+            <li>
+              <a
+                href="#accessibility"
+                aeTooltip="Accessibility"
+                tooltipPlacement="bottom"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="sr-only">Accessibility</span>
               </a>
-            </div>
-            <div class="flex items-center">
-              <a href="#" class="block">
-                <img src="https://designsystem.gov.ae/img/emblem.png" alt="UAE Emblem" class="h-12 lg:h-14 w-auto object-contain">
+            </li>
+            <li>
+              <a
+                href="#language"
+                aeTooltip="Switch language"
+                tooltipPlacement="bottom"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span class="sr-only">Switch Language</span>
               </a>
-            </div>
-          </div>
-        </div>
+            </li>
+          </ul>
+        </ng-template>
 
-        <!-- Mobile Header Brand Logo -->
-        <div slot="logo" class="flex items-center gap-2">
-          <img src="https://designsystem.gov.ae/img/logo-tdra.svg" alt="TDRA Logo" class="h-8 w-auto">
-          <img src="https://designsystem.gov.ae/img/global-star.png" alt="Star Rating" class="h-6 w-auto">
-        </div>
-
-        <!-- Persistent Mobile Actions -->
-        <div slot="mobile-actions">
-          <button class="p-1.5 text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer" title="Search">
-            <ae-icon name="magnifying-glass" [size]="20"></ae-icon>
-          </button>
-        </div>
-
-        <!-- Secondary Actions with Search Trigger Button -->
-        <ae-secondary-menu secondary-menu>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="Search">
-              <ae-icon name="magnifying-glass" [size]="20"></ae-icon>
-            </button>
-          </li>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="User Login">
-              <ae-icon name="user" [size]="20"></ae-icon>
-            </button>
-          </li>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="Accessibility">
-              <ae-icon name="person-arms-spread" [size]="20"></ae-icon>
-            </button>
-          </li>
-          <li class="inline-flex items-center">
-            <button class="h-12 px-2.5 flex items-center justify-center text-aeblack-700 hover:text-primary-700 cursor-pointer bg-transparent border-0" title="Switch Language">
-              <ae-icon name="globe" [size]="20"></ae-icon>
-            </button>
-          </li>
-        </ae-secondary-menu>
-
-        <!-- Custom Mobile Drawer Header with Emblem -->
-        <div slot="drawer-header" class="flex items-center gap-3">
-          <img src="https://designsystem.gov.ae/img/emblem.png" alt="UAE Emblem" class="h-8 w-auto">
-          <span class="font-bold text-aeblack-900 text-sm">TDRA UAE</span>
-        </div>
-
-        <!-- Mobile Drawer Custom Footer -->
-        <div slot="drawer-footer" class="flex flex-col gap-3">
-          <div class="flex items-center justify-between pb-3 border-b border-aeblack-100">
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="globe" [size]="16"></ae-icon>
-              <span>عربي (Arabic)</span>
-            </button>
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="person-arms-spread" [size]="16"></ae-icon>
-              <span>Accessibility</span>
-            </button>
-          </div>
-          <div class="flex items-center">
-            <button class="inline-flex items-center gap-2 text-xs font-semibold text-aeblack-700 hover:text-primary-700 bg-transparent border-0 cursor-pointer">
-              <ae-icon name="user" [size]="16"></ae-icon>
-              <span>Sign In / UAE PASS</span>
-            </button>
-          </div>
-        </div>
+        <!-- Mobile Drawer Secondary Actions: User Profile Card & Menu List -->
+        <ng-template aeNavSecondaryActions="mobile">
+          <ul class="flex flex-col">
+            <li>
+              <a
+                href="#"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span>Hazza Al Mansoori (hazza&#64;gov.ae)</span>
+              </a>
+              <div class="space-y-3 mb-4 border-b border-secondary-100">
+                <div class="space-y-1">
+                  @for (item of userMenuItems; track item.label) {
+                    <a
+                      [href]="item.href || '#'"
+                      class="flex items-center gap-3 py-2 px-2 text-sm text-secondary-800 hover:text-primary-800 rounded-md"
+                    >
+                      @if (item.icon) {
+                        <svg aeIcon [name]="item.icon" [size]="18" class="fill-current"></svg>
+                      }
+                      <span>{{ item.label }}</span>
+                    </a>
+                  }
+                </div>
+              </div>
+            </li>
+            <li>
+              <a
+                href="#accessibility"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span>Accessibility</span>
+              </a>
+            </li>
+            <li>
+              <a
+                href="#language"
+                class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+              >
+                <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                <span>Switch Language</span>
+              </a>
+            </li>
+          </ul>
+        </ng-template>
       </ae-navigation>
-
-      <main class="container mx-auto px-4 py-8">
-        <div class="p-8 bg-white border border-gray-200 rounded-xl shadow-xs space-y-3">
-          <h1 class="text-2xl font-bold text-aeblack-900">Authority / Entity Header Specification</h1>
-          <p class="text-sm text-aeblack-600 max-w-2xl">
-            This story models the official TDRA / Federal Authority layout with top-bar emblem and secondary navigation search trigger.
-            Change the <code>items</code> or <code>breakpoint</code> controls to test responsiveness and different navigation trees.
-          </p>
-        </div>
-      </main>
     `,
   }),
+};
+
+/**
+ * Interactive Entity Theme Switcher demonstrating real-time dynamic switching
+ * between Ministry (UAE Gold) and Authority (Custom Steel / Tech Blue) palettes.
+ */
+export const DynamicEntityThemeSwitcher: Story = {
+  render: (args) => {
+    const activeEntity = signal<'ministry' | 'authority'>('authority');
+    return {
+      props: {
+        ...args,
+        items: sampleNavItems,
+        activeEntity,
+        setEntity: (entity: 'ministry' | 'authority') => activeEntity.set(entity),
+      },
+      template: `
+        <div [class.authority-theme]="activeEntity() === 'authority'" class="w-full transition-colors duration-300">
+          <style>
+            .authority-theme {
+              --color-primary-50: #EFF3F6;
+              --color-primary-100: #DBE4EC;
+              --color-primary-200: #B3C5D6;
+              --color-primary-300: #8CA7C1;
+              --color-primary-400: #6489AC;
+              --color-primary-500: #496A89;
+              --color-primary-600: #344B61;
+              --color-primary-700: #28394A;
+              --color-primary-800: #1B2733;
+              --color-primary-900: #0F151B;
+            }
+          </style>
+
+          <!-- Theme Switcher Floating Toolbar -->
+          <div class="bg-whitely-100 border-b border-aeblack-100 p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-sm">
+            <div class="flex items-center gap-2">
+              <span class="font-semibold text-aeblack-900">Current Theme:</span>
+              <span class="px-2 py-0.5 rounded font-mono text-xs bg-primary-100 text-primary-800 uppercase font-bold">
+                {{ activeEntity() }}
+              </span>
+            </div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="text-aeblack-600">Switch Theme:</span>
+              <div class="flex items-center gap-1.5">
+                <button
+                  aeButton
+                  size="xs"
+                  [variant]="activeEntity() === 'ministry' ? 'solid' : 'outline'"
+                  (click)="setEntity('ministry')"
+                >
+                  Ministry (Gold)
+                </button>
+                <button
+                  aeButton
+                  size="xs"
+                  [variant]="activeEntity() === 'authority' ? 'solid' : 'outline'"
+                  (click)="setEntity('authority')"
+                >
+                  Authority (Blue)
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Themed Header Component -->
+          <ae-navigation [items]="items">
+            <ng-template aeNavBrand>
+              <div class="logo-item">
+                <a href="#" class="logo block">
+                  @if (activeEntity() === 'authority') {
+                    <img
+                      src="https://designsystem.gov.ae/img/logo-tdra.svg"
+                      alt="TDRA Logo"
+                      class="h-auto! lg:w-72! xl:w-80!"
+                    />
+                  } @else {
+                    <img
+                      src="https://designsystem.gov.ae/img/logo-ministry.svg"
+                      alt="Ministry Logo"
+                    />
+                  }
+                  <span class="sr-only">Entity Logo</span>
+                </a>
+              </div>
+              <div class="logo-item">
+                <a href="#" class="block">
+                  <img
+                    src="https://designsystem.gov.ae/img/global-star.png"
+                    alt="Gold star rating"
+                    class="secondary-logo"
+                  />
+                  <span class="sr-only">Gold star Logo</span>
+                </a>
+              </div>
+            </ng-template>
+
+            <ng-template aeNavPrimaryActions="desktop">
+              <a href="#" class="inline-block">
+                <img
+                  src="https://designsystem.gov.ae/img/emblem.png"
+                  alt="UAE Emblem"
+                  class="emblem-logo"
+                />
+              </a>
+            </ng-template>
+
+            <ng-template aeNavSecondaryActions>
+              <ul class="flex max-sm:flex-col">
+                <li>
+                  <a
+                    href="#login"
+                    aeTooltip="Login"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="user" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Login</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#accessibility"
+                    aeTooltip="Accessibility"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="person-arms-spread" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Accessibility</span>
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="#language"
+                    aeTooltip="Switch language"
+                    tooltipPlacement="bottom"
+                    class="lg:h-12 xl:h-14 lg:px-2 xl:px-3 flex items-center gap-3"
+                  >
+                    <svg aeIcon name="globe" [size]="24" class="max-sm:me-2 fill-current"></svg>
+                    <span class="md:sr-only">Switch Language</span>
+                  </a>
+                </li>
+              </ul>
+            </ng-template>
+          </ae-navigation>
+        </div>
+      `,
+    };
+  },
 };

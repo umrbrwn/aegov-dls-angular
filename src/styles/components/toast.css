@@ -1,0 +1,49 @@
+.aegov-toast {
+  color: var(--color-aeblack-500);
+  background-color: var(--color-whitely-50);
+  border-color: var(--color-aeblack-100);
+  @apply rounded-lg shadow-xl p-4 border;
+
+  & .popover-header {
+    color: var(--color-aeblack-900);
+    border-color: var(--color-aeblack-50);
+    @apply border-b;
+  }
+
+  & .toast-body {
+    @apply ms-3 text-sm font-normal;
+  }
+
+  & .toast-dismiss {
+    --toast-dismiss-bg: var(--color-whitely-50);
+    --toast-dismiss-fg: var(--color-aeblack-400);
+    --toast-dismiss-bg-hover: var(--color-aeblack-50);
+    --toast-dismiss-fg-hover: var(--color-aeblack-600);
+    --tw-ring-color: var(--color-primary-support-600);
+
+    color: var(--toast-dismiss-fg);
+    background-color: var(--toast-dismiss-bg);
+    @apply ms-auto -mx-1.5 -my-1.5 inline-flex items-center rounded-lg p-1.5 text-sm focus-within:ring-2 focus:outline-hidden;
+
+    &:hover {
+      background-color: var(--toast-dismiss-bg-hover);
+      color: var(--toast-dismiss-fg-hover);
+    }
+
+    & svg {
+      @apply h-5 w-5;
+    }
+  }
+
+  & .toast-icon {
+    @apply flex-shrink-0;
+
+    & > svg {
+      @apply h-7 w-7 flex-shrink-0 fill-current;
+    }
+
+    & > img {
+      @apply h-7 w-7 flex-shrink-0 object-cover;
+    }
+  }
+}

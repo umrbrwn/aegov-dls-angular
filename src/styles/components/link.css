@@ -1,0 +1,45 @@
+.aegov-link {
+  /* --- 1. STRUCTURAL STYLES --- */
+  @apply -ml-2.5 inline-flex items-center gap-2 px-2.5 py-2 align-middle font-semibold no-underline rtl:-mr-2.5 rtl:ml-0;
+  @apply focus-visible:ring-offset-4;
+
+  /* --- 2. DYNAMIC COLOR PROPERTIES --- */
+  color: var(--link-fg);
+  background-color: var(--link-bg, transparent);
+  --tw-ring-color: var(--link-focus-ring);
+
+  /* --- 3. DEFAULT (PRIMARY) COLOR SCHEME --- */
+  --link-fg: var(--color-primary-600);
+  --link-fg-hover: var(--color-primary-500);
+  --link-bg-hover: var(--color-primary-50);
+  --link-focus-ring: var(--color-primary-support-600);
+
+  /* --- 4. BEHAVIOR --- */
+  &:hover {
+    color: var(--link-fg-hover);
+    text-decoration-line: underline;
+  }
+
+  & > svg.link-icon {
+    @apply h-5 w-5;
+  }
+
+  /* --- MODIFIER CLASSES --- */
+  &.link-underline {
+    @apply underline;
+  }
+
+  &.link-soft {
+    &:hover {
+      background-color: var(--link-bg-hover);
+      @apply no-underline;
+    }
+  }
+
+  &.link-secondary {
+    --link-fg: var(--color-aeblack-800);
+    --link-fg-hover: var(--color-aeblack-700);
+    --link-bg-hover: var(--color-aeblack-50);
+    --link-focus-ring: var(--color-secondary-support-300);
+  }
+}

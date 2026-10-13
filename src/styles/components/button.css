@@ -1,0 +1,238 @@
+.aegov-btn {
+  /* --- CORE STYLES & LAYOUT --- */
+  @apply inline-flex flex-shrink-0 cursor-pointer select-none flex-wrap items-center justify-center text-center no-underline;
+  @apply h-12 gap-2 rounded-lg px-6 text-base font-medium;
+  transition-property: background-color;
+  transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+  transition-duration: 0.3s;
+
+  /* --- DYNAMIC COLOR PROPERTIES --- */
+  background-color: var(--btn-bg);
+  color: var(--btn-fg);
+  border-style: solid;
+  border-width: 1px;
+  border-color: var(--btn-border-color);
+  box-shadow: var(--btn-shadow, none);
+
+  /* --- DEFAULT (PRIMARY) COLOR SCHEME --- */
+  --btn-bg: var(--color-primary-600);
+  --btn-fg: var(--color-whitely-50);
+  --btn-border-color: transparent;
+  --btn-bg-hover: var(--color-primary-500);
+  --btn-focus-ring: var(--color-primary-support-600);
+  --btn-shadow: inset 0px 1px var(--tw-shadow-color, color-mix(in oklab, var(--color-whitely-50) 20%, transparent));
+
+  /* --- INTERACTIVE & ACCESSIBILITY STATES --- */
+  &:hover {
+    background-color: var(--btn-bg-hover);
+  }
+
+  &:focus-visible {
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--btn-focus-ring);
+  }
+
+  &:disabled {
+    @apply pointer-events-none cursor-not-allowed opacity-30 !shadow-none;
+  }
+
+  /* --- ICON & SIZING LOGIC --- */
+  & > svg,
+  & > img {
+    @apply h-6 w-6 flex-shrink-0 fill-current;
+  }
+
+  &:has(svg),
+  &:has(img) {
+    @apply px-5;
+  }
+
+  &:has(svg + svg),
+  &:has(img + img) {
+    @apply px-4;
+  }
+}
+
+.btn-icon {
+  @apply w-12 gap-0 px-0;
+}
+
+/* --- STYLE VARIANTS (Soft, Outline, Link) --- */
+.btn-soft {
+  --btn-bg: var(--color-primary-50);
+  --btn-fg: var(--color-primary-700);
+  --btn-bg-hover: var(--color-primary-100);
+  --btn-focus-ring: var(--color-primary-support-600);
+
+  &:focus-visible {
+    outline-offset: 0;
+  }
+
+  &:disabled {
+    @apply opacity-50;
+  }
+}
+
+.btn-outline {
+  border-style: solid;
+  border-width: 2px;
+  --btn-bg: transparent;
+  --btn-fg: var(--color-primary-700);
+  --btn-bg-hover: var(--color-primary-50);
+  --btn-border-color: var(--color-primary-600);
+  --btn-focus-ring: var(--color-primary-support-600);
+
+  &:focus-visible {
+    outline-width: 2px;
+    outline-offset: -2px;
+  }
+}
+
+.btn-link {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-primary-600);
+  --btn-bg-hover: var(--color-primary-50);
+  --btn-border-color: transparent;
+  --btn-focus-ring: var(--color-primary-support-600);
+
+  &:focus-visible {
+    outline-width: 2px;
+    outline-offset: -2px;
+  }
+}
+
+/* --- COLOR VARIANTS (Secondary) --- */
+.btn-secondary {
+  --btn-bg: var(--color-secondary-800);
+  --btn-fg: var(--color-secondary-50);
+  --btn-bg-hover: var(--color-secondary-950);
+  --btn-focus-ring: var(--color-secondary-support-300);
+
+  &.btn-soft {
+    --btn-bg: var(--color-secondary-50);
+    --btn-fg: var(--color-secondary-800);
+    --btn-bg-hover: var(--color-secondary-100);
+  }
+
+  &.btn-outline {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-secondary-800);
+    --btn-bg-hover: var(--color-secondary-100);
+    --btn-border-color: var(--color-secondary-800);
+    --btn-focus-ring: var(--color-secondary-support-300);
+  }
+
+  &.btn-link {
+    --btn-bg: transparent;
+    --btn-fg: var(--color-secondary-800);
+    --btn-bg-hover: var(--color-secondary-50);
+    --btn-focus-ring: var(--color-secondary-support-300);
+  }
+}
+
+/* --- SIZE VARIANTS (lg, base, sm, xs) --- */
+.btn-lg {
+  @apply h-13 gap-3 px-7 text-lg;
+
+  & > svg,
+  & > img {
+    @apply h-7 w-7;
+  }
+
+  &:has(svg),
+  &:has(img) {
+    @apply px-6;
+  }
+
+  &:has(svg + svg),
+  &:has(img + img) {
+    @apply px-5;
+  }
+
+  &.btn-icon {
+    @apply w-13;
+  }
+}
+
+.btn-base {
+  @apply h-12 gap-2 px-6 text-base;
+
+  & > svg,
+  & > img {
+    @apply h-6 w-6;
+  }
+
+  &:has(svg),
+  &:has(img) {
+    @apply px-5;
+  }
+
+  &:has(svg + svg),
+  &:has(img + img) {
+    @apply px-4;
+  }
+
+  &.btn-icon {
+    @apply w-12 gap-0 px-0;
+  }
+}
+
+.btn-sm {
+  @apply h-10 rounded-md px-5 text-base;
+
+  & > svg,
+  & > img {
+    @apply h-5 w-5;
+  }
+
+  &:has(svg),
+  &:has(img) {
+    @apply px-4;
+  }
+
+  &:has(svg + svg),
+  &:has(img + img) {
+    @apply px-3;
+  }
+
+  &.btn-icon {
+    @apply w-10;
+  }
+}
+
+.btn-xs {
+  @apply h-8 rounded px-4 text-sm;
+
+  & > svg,
+  & > img {
+    @apply h-4.5 w-4.5;
+  }
+
+  &:has(svg),
+  &:has(img) {
+    @apply px-3;
+  }
+
+  &:has(svg + svg),
+  &:has(img + img) {
+    @apply px-2;
+  }
+
+  &.btn-icon {
+    @apply w-8;
+  }
+}
+
+.btn-block {
+  @apply w-full;
+}
+
+/* --- RESPONSIVE SIZING --- */
+[data-responsive="auto"] .aegov-btn {
+  @apply h-8 rounded px-4 text-sm;
+  @apply sm:h-10 sm:rounded-lg sm:px-5 sm:text-base;
+  @apply lg:h-12 lg:rounded-lg lg:px-6 lg:text-base;
+  @apply 2xl:h-13 2xl:gap-3 2xl:px-7 2xl:text-lg;
+}

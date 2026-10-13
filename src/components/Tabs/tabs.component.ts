@@ -2,63 +2,77 @@ import {
   Component,
   input,
   output,
-  signal,
+  linkedSignal,
   computed,
   ChangeDetectionStrategy
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../Icon/icon.component';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
 
-export type TabsVariant = 'default' | 'pills' | 'compact';
+export type TabsVariant = 'default' | 'compact' | 'pills';
 
 export interface TabItem {
+  /** Unique identifier for this tab */
   value: string;
+  /** Display label text */
   label: string;
+  /** Optional tab content (plain text) */
   content?: string;
+  /** Optional icon name (rendered via svg aeIcon) */
   icon?: IconName;
 }
 
 @Component({
   selector: 'ae-tabs',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="rootClasses()">
-      <!-- Tabs Navigation List -->
-      <div [class]="listClasses()" role="tablist">
+    <!-- Tab Navigation -->
+    <div [class]="wrapperClasses()">
+      <ul
+        class="tab-items gap-4 md:gap-6 lg:gap-7 xl:gap-8 max-xl:overflow-auto"
+        role="tablist"
+      >
         @for (item of items(); track item.value) {
-          <button
-            type="button"
-            role="tab"
-            [id]="'tab-' + item.value"
-            [attr.aria-selected]="currentTab() === item.value"
-            [attr.aria-controls]="'panel-' + item.value"
-            [class]="triggerClasses(item.value)"
-            (click)="selectTab(item.value)"
-          >
-            <div class="flex items-center gap-2">
+          <li role="presentation">
+            <a
+              href="#"
+              role="tab"
+              class="tab-link whitespace-nowrap"
+              [class.tab-active]="currentTab() === item.value"
+              [class.h-10]="variant() === 'pills'"
+              [class.lg:h-12]="variant() === 'pills'"
+              [class.px-4]="variant() === 'pills'"
+              [class.lg:px-6]="variant() === 'pills'"
+              [id]="'tab-' + computedId() + '-' + item.value"
+              [attr.aria-selected]="currentTab() === item.value"
+              [attr.aria-controls]="'panel-' + computedId() + '-' + item.value"
+              (click)="selectTab($event, item.value)"
+            >
               @if (item.icon) {
-                <ae-icon [name]="item.icon" [size]="20"></ae-icon>
+                <svg aeIcon [name]="item.icon" [size]="iconSize()"></svg>
               }
-              <span class="whitespace-nowrap">{{ item.label }}</span>
-            </div>
-          </button>
+              {{ item.label }}
+            </a>
+          </li>
         }
-      </div>
+      </ul>
+    </div>
 
-      <!-- Tab Panels Content -->
+    <!-- Tab Content Panels -->
+    <div class="py-4">
       @for (item of items(); track item.value) {
         @if (currentTab() === item.value) {
           <div
+            class="tab-content"
             role="tabpanel"
-            [id]="'panel-' + item.value"
-            [attr.aria-labelledby]="'tab-' + item.value"
-            [class]="contentClasses()"
+            [id]="'panel-' + computedId() + '-' + item.value"
+            [attr.aria-labelledby]="'tab-' + computedId() + '-' + item.value"
           >
             @if (item.content) {
-              <div>{{ item.content }}</div>
+              <p>{{ item.content }}</p>
             } @else {
               <ng-content></ng-content>
             }
@@ -75,69 +89,65 @@ export interface TabItem {
   `]
 })
 export class TabsComponent {
-  readonly variant = input<TabsVariant>('default');
+  /**
+   * HTML ID for the tabs component
+   */
+  readonly id = input<string | undefined>(undefined);
+
+  /**
+   * Array of tab items defining label, value, optional content and icon
+   */
   readonly items = input<TabItem[]>([]);
+
+  /**
+   * Visual variant: 'default' | 'compact' | 'pills'
+   */
+  readonly variant = input<TabsVariant>('default');
+
+  /**
+   * Initial active tab value (defaults to the first tab)
+   */
   readonly defaultValue = input<string | undefined>(undefined);
+
+  /**
+   * Additional CSS classes forwarded to the root wrapper
+   */
   readonly className = input<string>('');
 
+  /** Emits the value of the selected tab */
   readonly tabChange = output<string>();
 
-  readonly activeTab = signal<string>('');
-
-  readonly effectiveVariant = computed<TabsVariant>(() => this.variant() || 'default');
-
-  readonly currentTab = computed(() => {
-    const active = this.activeTab();
-    if (active) return active;
+  /** Internal active tab state tracking defaultValue and user selections */
+  protected readonly activeTab = linkedSignal(() => {
     const def = this.defaultValue();
     if (def) return def;
     const list = this.items();
     return list.length > 0 ? list[0].value : '';
   });
 
-  readonly rootClasses = computed(() =>
-    cn('w-full', this.className())
-  );
+  private readonly uniqueId = `tabs-${Math.random().toString(36).substring(2, 9)}`;
 
-  readonly listClasses = computed(() =>
-    cn(
-      'flex gap-4 md:gap-6 lg:gap-7 xl:gap-8 -mb-px',
-      this.effectiveVariant() !== 'pills' && 'border-b-2 border-gray-200'
-    )
-  );
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
 
-  triggerClasses(tabValue: string): string {
-    const isActive = this.currentTab() === tabValue;
-    const v = this.effectiveVariant();
+  protected readonly currentTab = computed(() => this.activeTab());
 
-    const base = 'items-center gap-3 font-medium transition-colors focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-0 cursor-pointer';
+  protected readonly iconSize = computed(() => {
+    return this.variant() === 'compact' ? 18 : 20;
+  });
 
-    const variantStyles = {
-      default: cn(
-        'py-6 px-1 text-base border-b-[3px] border-transparent hover:text-gray-950 hover:border-primary-500 rounded-t-lg',
-        isActive && 'text-primary-600 border-primary-500 font-semibold'
-      ),
-      pills: cn(
-        'py-3 px-4 lg:px-6 text-base rounded-lg hover:bg-aeblack-50',
-        isActive && 'bg-primary-100 text-primary-900 font-semibold'
-      ),
-      compact: cn(
-        'py-4 px-1 text-sm border-b-[3px] border-transparent hover:text-gray-950 hover:border-primary-500 rounded-t-lg',
-        isActive && 'text-primary-600 border-primary-500 font-semibold'
-      )
-    };
-
-    return cn(base, variantStyles[v]);
-  }
-
-  readonly contentClasses = computed(() => {
+  protected readonly wrapperClasses = computed(() => {
+    const v = this.variant();
     return cn(
-      'p-4 pt-6 focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-primary-400 focus-visible:ring-offset-0'
+      'aegov-tab',
+      v === 'compact' && 'tab-sm',
+      v === 'pills' && 'tab-pills',
+      this.className()
     );
   });
 
-  selectTab(val: string): void {
-    this.activeTab.set(val);
-    this.tabChange.emit(val);
+  protected selectTab(event: Event, value: string): void {
+    event.preventDefault();
+    this.activeTab.set(value);
+    this.tabChange.emit(value);
   }
 }

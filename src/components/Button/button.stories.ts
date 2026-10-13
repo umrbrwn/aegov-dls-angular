@@ -1,219 +1,262 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { ButtonComponent } from './button.component';
+import { moduleMetadata } from '@storybook/angular';
+import { ButtonDirective, type AegovButtonVariant, type AegovButtonColor, type AegovButtonSize } from './button.directive';
+import { IconDirective } from '../Icon/icon.directive';
 
-const meta: Meta<ButtonComponent> = {
+export interface ButtonStoryArgs {
+  variant?: AegovButtonVariant;
+  color?: AegovButtonColor;
+  size?: AegovButtonSize;
+  disabled?: boolean;
+  isIcon?: boolean;
+  type?: 'button' | 'submit' | 'reset';
+  label?: string;
+  href?: string;
+}
+
+const meta: Meta<ButtonStoryArgs> = {
   title: 'Components/Button',
-  component: ButtonComponent,
+  decorators: [
+    moduleMetadata({
+      imports: [ButtonDirective, IconDirective],
+    }),
+  ],
+  tags: ['autodocs'],
   argTypes: {
     variant: {
       control: 'select',
-      options: ['solid', 'soft', 'link', 'outline'],
+      options: ['solid', 'outline', 'soft', 'link'],
+      description: 'Button visual variant',
     },
     color: {
       control: 'select',
       options: ['primary', 'secondary'],
+      description: 'Button color palette',
     },
     size: {
       control: 'select',
       options: ['xs', 'sm', 'base', 'lg'],
-    },
-    block: {
-      control: 'boolean',
+      description: 'Button size',
     },
     isIcon: {
       control: 'boolean',
+      description: 'Whether the button is an icon-only button',
     },
     disabled: {
       control: 'boolean',
+      description: 'Whether the button is disabled',
+    },
+    type: {
+      control: 'select',
+      options: ['button', 'submit', 'reset'],
+      description: 'HTML button type',
+    },
+    href: {
+      control: 'text',
+      description: 'Optional URL to render as an anchor link',
+    },
+    label: {
+      control: 'text',
+      description: 'Button text label',
     },
   },
   args: {
-    color: 'primary',
     variant: 'solid',
+    color: 'primary',
     size: 'base',
     disabled: false,
-    block: false,
     isIcon: false,
+    type: 'button',
+    href: '',
+    label: 'Button',
   },
 };
 
 export default meta;
-type Story = StoryObj<ButtonComponent>;
+type Story = StoryObj<ButtonStoryArgs>;
 
 export const Default: Story = {
   render: (args) => ({
     props: args,
-    template: `<ae-button [color]="color" [variant]="variant" [size]="size" [block]="block" [isIcon]="isIcon" [disabled]="disabled">Button</ae-button>`,
-  }),
-};
-
-export const PrimaryVariants: Story = {
-  argTypes: {
-    color: { table: { disable: true } },
-    variant: { table: { disable: true } },
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    size: 'base',
-    disabled: false,
-    block: false,
-  },
-  render: (args) => ({
-    props: args,
     template: `
-      <div class="flex flex-col gap-4">
-        <ae-button variant="solid" color="primary" [size]="size" [disabled]="disabled" [block]="block">Solid Button</ae-button>
-        <ae-button variant="soft" color="primary" [size]="size" [disabled]="disabled" [block]="block">Soft Button</ae-button>
-        <ae-button variant="link" color="primary" [size]="size" [disabled]="disabled" [block]="block">Link Button</ae-button>
-        <ae-button variant="outline" color="primary" [size]="size" [disabled]="disabled" [block]="block">Outline Button</ae-button>
-      </div>
+      @if (href) {
+        <a
+          aeButton
+          [href]="href"
+          [variant]="variant"
+          [color]="color"
+          [size]="size"
+          [isIcon]="isIcon"
+          [disabled]="disabled"
+        >
+          @if (isIcon) {
+            <svg aeIcon name="magnifying-glass"></svg>
+          } @else {
+            {{ label }}
+          }
+        </a>
+      } @else {
+        <button
+          aeButton
+          [type]="type"
+          [variant]="variant"
+          [color]="color"
+          [size]="size"
+          [isIcon]="isIcon"
+          [disabled]="disabled"
+        >
+          @if (isIcon) {
+            <svg aeIcon name="magnifying-glass"></svg>
+          } @else {
+            {{ label }}
+          }
+        </button>
+      }
     `,
   }),
 };
 
-export const SecondaryVariants: Story = {
-  argTypes: {
-    color: { table: { disable: true } },
-    variant: { table: { disable: true } },
-    isIcon: { table: { disable: true } },
+export const Variants: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    size: 'base',
-    disabled: false,
-    block: false,
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="flex flex-col gap-4">
-        <ae-button variant="solid" color="secondary" [size]="size" [disabled]="disabled" [block]="block">Solid Button</ae-button>
-        <ae-button variant="soft" color="secondary" [size]="size" [disabled]="disabled" [block]="block">Soft Button</ae-button>
-        <ae-button variant="link" color="secondary" [size]="size" [disabled]="disabled" [block]="block">Link Button</ae-button>
-        <ae-button variant="outline" color="secondary" [size]="size" [disabled]="disabled" [block]="block">Outline Button</ae-button>
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton variant="solid" color="primary" size="base">Solid button</button>
+        <button aeButton variant="outline" color="primary" size="base">Outline button</button>
+        <button aeButton variant="soft" color="primary" size="base">Soft button</button>
+        <button aeButton variant="link" color="primary" size="base">Link button</button>
       </div>
     `,
   }),
 };
 
 export const Sizes: Story = {
-  argTypes: {
-    size: { table: { disable: true } },
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    color: 'primary',
-    variant: 'solid',
-    disabled: false,
-    block: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="flex flex-col gap-4">
-        <ae-button size="xs" [color]="color" [variant]="variant" [disabled]="disabled" [block]="block">Extra Small</ae-button>
-        <ae-button size="sm" [color]="color" [variant]="variant" [disabled]="disabled" [block]="block">Small</ae-button>
-        <ae-button size="base" [color]="color" [variant]="variant" [disabled]="disabled" [block]="block">Base</ae-button>
-        <ae-button size="lg" [color]="color" [variant]="variant" [disabled]="disabled" [block]="block">Large</ae-button>
-      </div>
-    `,
-  }),
-};
-
-export const BlockButton: Story = {
-  argTypes: {
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    block: true,
-    color: 'primary',
-    variant: 'solid',
-    size: 'base',
-    disabled: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-button [block]="block" [color]="color" [variant]="variant" [size]="size" [disabled]="disabled">Block Button</ae-button>`,
-  }),
-};
-
-export const DisabledButton: Story = {
-  argTypes: {
-    disabled: { table: { disable: true } },
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    color: 'primary',
-    variant: 'solid',
-    size: 'base',
-    block: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-button [disabled]="true" [color]="color" [variant]="variant" [size]="size" [block]="block">Disabled Button</ae-button>`,
-  }),
-};
-
-export const IconWithSizes: Story = {
-  argTypes: {
-    size: { table: { disable: true } },
-    color: { table: { disable: true } },
-    block: { table: { disable: true } },
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    variant: 'solid',
-    disabled: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="flex flex-col gap-4">
-        <ae-button [isIcon]="true" size="xs" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="sm" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="base" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="lg" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="xs" color="secondary" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="sm" color="secondary" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="base" color="secondary" [variant]="variant" [disabled]="disabled">👋</ae-button>
-        <ae-button [isIcon]="true" size="lg" color="secondary" [variant]="variant" [disabled]="disabled">👋</ae-button>
-      </div>
-    `,
-  }),
-};
-
-export const AsLink: Story = {
   parameters: {
-    docs: {
-      description: {
-        story: 'Demonstrates using `<ae-button href="...">` to render an accessible anchor tag with button styling and interactive controls.',
-      },
-    },
+    controls: { disable: true },
   },
-  argTypes: {
-    isIcon: { table: { disable: true } },
-  },
-  args: {
-    color: 'primary',
-    variant: 'solid',
-    size: 'base',
-    disabled: false,
-    block: false,
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <ae-button
-        href="https://example.com"
-        target="_blank"
-        rel="noopener noreferrer"
-        [color]="color"
-        [variant]="variant"
-        [size]="size"
-        [disabled]="disabled"
-        [block]="block"
-      >
-        Link as Button
-      </ae-button>
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton size="lg">Large button</button>
+        <button aeButton size="base">Base button</button>
+        <button aeButton size="sm">Small button</button>
+        <button aeButton size="xs">Extra small button</button>
+      </div>
+    `,
+  }),
+};
+
+export const OutlineSizes: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton variant="outline" size="lg">Large button</button>
+        <button aeButton variant="outline" size="base">Base button</button>
+        <button aeButton variant="outline" size="sm">Small button</button>
+        <button aeButton variant="outline" size="xs">Extra small button</button>
+      </div>
+    `,
+  }),
+};
+
+export const SoftSizes: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton variant="soft" size="lg">Large button</button>
+        <button aeButton variant="soft" size="base">Base button</button>
+        <button aeButton variant="soft" size="sm">Small button</button>
+        <button aeButton variant="soft" size="xs">Extra small button</button>
+      </div>
+    `,
+  }),
+};
+
+export const WithIcons: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton size="base">
+          <svg aeIcon name="user" [size]="18"></svg>
+          <span>My account</span>
+        </button>
+        <button aeButton size="base" variant="outline">
+          <span>Register</span>
+          <svg aeIcon name="arrow-right" [size]="18"></svg>
+        </button>
+        <button aeButton size="base" variant="soft">
+          <svg aeIcon name="user" [size]="18"></svg>
+          <span>Login now</span>
+          <svg aeIcon name="caret-right" [size]="16"></svg>
+        </button>
+      </div>
+    `,
+  }),
+};
+
+export const IconOnly: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <button aeButton [isIcon]="true" size="lg" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="20"></svg>
+          </button>
+          <button aeButton [isIcon]="true" size="base" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="18"></svg>
+          </button>
+          <button aeButton [isIcon]="true" size="sm" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="16"></svg>
+          </button>
+          <button aeButton [isIcon]="true" size="xs" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="14"></svg>
+          </button>
+        </div>
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <button aeButton variant="outline" [isIcon]="true" size="lg" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="20"></svg>
+          </button>
+          <button aeButton variant="outline" [isIcon]="true" size="base" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="18"></svg>
+          </button>
+          <button aeButton variant="outline" [isIcon]="true" size="sm" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="16"></svg>
+          </button>
+          <button aeButton variant="outline" [isIcon]="true" size="xs" aria-label="Search">
+            <svg aeIcon name="magnifying-glass" [size]="14"></svg>
+          </button>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const SecondaryColor: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+        <button aeButton color="secondary" variant="solid">Solid button</button>
+        <button aeButton color="secondary" variant="outline">Outline button</button>
+        <button aeButton color="secondary" variant="soft">Soft button</button>
+        <button aeButton color="secondary" variant="link">Link button</button>
+      </div>
     `,
   }),
 };

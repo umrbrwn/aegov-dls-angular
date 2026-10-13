@@ -10,16 +10,15 @@ import {
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR, FormsModule } from '@angular/forms';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
 
-export type ToggleVariant = 'default' | 'success' | 'mode' | 'secondary';
+export type ToggleVariant = 'default' | 'primary' | 'success' | 'mode' | 'secondary';
 
 @Component({
   selector: 'ae-toggle',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, FormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -30,31 +29,34 @@ export type ToggleVariant = 'default' | 'success' | 'mode' | 'secondary';
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <label [class]="wrapperClasses()">
-      <button
-        type="button"
+      <input
+        type="checkbox"
+        class="sr-only peer"
         role="switch"
-        [attr.aria-checked]="isChecked()"
-        [attr.aria-disabled]="disabled() ? 'true' : null"
+        [id]="computedId()"
+        [name]="name() || computedId()"
+        [value]="value() || ''"
+        [checked]="internalChecked()"
         [disabled]="disabled()"
-        [class]="rootClasses()"
-        (click)="toggle()"
-        (blur)="onTouched()"
-      >
-        <span [class]="thumbClasses()">
-          @if (variant() === 'mode') {
-            @if (isChecked()) {
-              <ae-icon name="moon" [size]="16" className="text-whitely-50"></ae-icon>
-            } @else {
-              <ae-icon name="sun" [size]="16" className="text-aeblack-950"></ae-icon>
-            }
-          }
-        </span>
-      </button>
+        [required]="required()"
+        [attr.aria-checked]="internalChecked() ? 'true' : 'false'"
+        [attr.aria-disabled]="disabled() ? 'true' : null"
+        (change)="onInputChange($event)"
+        (blur)="onInputBlur()"
+      />
+      <span class="toggle-item" [class.toggle-icon]="withIcon()"></span>
 
       @if (label()) {
-        <span class="ms-3 text-sm font-medium text-gray-900 select-none cursor-pointer">
+        <span class="toggle-text">
           {{ label() }}
+          @if (required()) {
+            <span class="text-aered-600 ms-0.5" aria-hidden="true">*</span>
+          }
         </span>
+      } @else if (srOnlyLabel()) {
+        <span class="sr-only">{{ srOnlyLabel() }}</span>
+      } @else {
+        <span class="sr-only">Enable</span>
       }
     </label>
   `,
@@ -65,93 +67,125 @@ export type ToggleVariant = 'default' | 'success' | 'mode' | 'secondary';
   `]
 })
 export class ToggleComponent implements ControlValueAccessor {
+  /**
+   * HTML ID attribute (auto-generated if omitted)
+   */
+  readonly id = input<string | undefined>(undefined);
+
+  /**
+   * HTML name attribute
+   */
+  readonly name = input<string | undefined>(undefined);
+
+  /**
+   * HTML value attribute
+   */
+  readonly value = input<string | undefined>(undefined);
+
+  /**
+   * Visual variant: 'default' | 'primary' | 'success' | 'mode' | 'secondary'
+   */
   readonly variant = input<ToggleVariant>('default');
-  readonly label = input<string | undefined>(undefined);
-  readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Controlled or initial checked state
+   */
   readonly checked = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Visible text label accompanying the toggle switch
+   */
+  readonly label = input<string | undefined>(undefined);
+
+  /**
+   * Visually hidden text label for screen readers when no visible label is provided
+   */
+  readonly srOnlyLabel = input<string | undefined>(undefined);
+
+  /**
+   * Displays an icon inside the toggle thumb that changes on state switch
+   */
+  readonly withIcon = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Disables toggle interaction
+   */
+  readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Required field indicator
+   */
+  readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
+  /**
+   * Event emitted when checked state changes
+   */
   readonly checkedChange = output<boolean>();
 
-  readonly isChecked = signal<boolean>(false);
+  /**
+   * Event emitted on change
+   */
+  readonly change = output<Event>();
+
+  protected readonly internalChecked = signal<boolean>(false);
+
+  private readonly uniqueId = `toggle-switch-${Math.random().toString(36).substring(2, 9)}`;
+
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
+
+  private prevCheckedInput: boolean | undefined = undefined;
 
   constructor() {
     effect(() => {
-      this.isChecked.set(this.checked());
+      const currentInput = this.checked();
+      if (this.prevCheckedInput === undefined) {
+        this.prevCheckedInput = currentInput;
+        this.internalChecked.set(currentInput);
+      } else if (currentInput !== this.prevCheckedInput) {
+        this.prevCheckedInput = currentInput;
+        this.internalChecked.set(currentInput);
+      }
     });
   }
 
-  readonly effectiveVariant = computed<ToggleVariant>(() => this.variant() || 'default');
-
-  readonly variants = {
-    default: {
-      root: 'bg-aeblack-100 data-[state=checked]:bg-primary-300',
-      thumb: 'bg-whitely-50 border border-aeblack-100 data-[state=checked]:border-primary-600',
-    },
-    success: {
-      root: 'bg-aeblack-100 data-[state=checked]:bg-aegreen-300',
-      thumb: 'bg-whitely-50 border border-aeblack-100 data-[state=checked]:border-aegreen-600',
-    },
-    secondary: {
-      root: 'bg-aeblack-100 data-[state=checked]:bg-secondary-800',
-      thumb: 'bg-whitely-50 border border-aeblack-100 data-[state=checked]:border-secondary-600',
-    },
-    mode: {
-      root: 'bg-whitely-50 border border-aeblack-100 data-[state=checked]:bg-aeblack-950',
-      thumb: 'bg-transparent border-transparent flex items-center justify-center',
-    },
-  };
-
-  readonly wrapperClasses = computed(() =>
-    cn('relative inline-flex cursor-pointer items-center', this.className())
-  );
-
-  readonly rootClasses = computed(() => {
-    const v = this.effectiveVariant();
-    const checkedState = this.isChecked();
-    const variantStyle = this.variants[v];
-
+  protected readonly wrapperClasses = computed(() => {
+    const v = this.variant();
     return cn(
-      'relative flex items-center h-4 w-10 cursor-pointer rounded-full outline-hidden transition-colors',
-      'focus-visible:outline-solid focus-visible:outline-offset-[3px] focus-visible:outline-primary-500',
-      'disabled:cursor-not-allowed disabled:opacity-30',
-      v === 'mode' && 'h-6 w-12',
-      checkedState
-        ? variantStyle.root.replace('bg-aeblack-100', '').replace('bg-whitely-50 border border-aeblack-100', '') +
-          ' ' +
-          (v === 'default' ? 'bg-primary-300' : v === 'success' ? 'bg-aegreen-300' : v === 'secondary' ? 'bg-secondary-800' : 'bg-aeblack-950')
-        : (v === 'mode' ? 'bg-whitely-50 border border-aeblack-100' : 'bg-aeblack-100')
+      'aegov-toggle',
+      v === 'success' && 'toggle-success',
+      v === 'mode' && 'toggle-mode',
+      v === 'secondary' && 'toggle-secondary',
+      this.className()
     );
   });
 
-  readonly thumbClasses = computed(() => {
-    const v = this.effectiveVariant();
-    const checkedState = this.isChecked();
+  protected onInputChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const isChecked = target.checked;
+    this.prevCheckedInput = isChecked;
+    this.internalChecked.set(isChecked);
+    this.onChange(isChecked);
+    this.checkedChange.emit(isChecked);
+    this.change.emit(event);
+  }
 
-    if (v === 'mode') {
-      return cn(
-        'absolute block rounded-full shadow-sm transition-transform duration-300 top-1/2 -translate-y-1/2',
-        'h-4 w-4 bg-transparent border-transparent flex items-center justify-center',
-        checkedState ? 'translate-x-7 rtl:-translate-x-7' : 'translate-x-1 rtl:-translate-x-1'
-      );
-    }
+  protected onInputBlur(): void {
+    this.onTouched();
+  }
 
-    const borderStyle = checkedState
-      ? (v === 'default' ? 'border-primary-600' : v === 'success' ? 'border-aegreen-600' : 'border-secondary-600')
-      : 'border-aeblack-100';
+  // ControlValueAccessor implementation
+  protected onChange: (value: any) => void = () => {};
+  protected onTouched: () => void = () => {};
 
-    return cn(
-      'absolute block h-5 w-5 rounded-full shadow-sm transition-transform duration-300 top-1/2 -translate-y-1/2 bg-whitely-50 border',
-      borderStyle,
-      checkedState ? 'translate-x-6 rtl:-translate-x-6' : 'translate-x-0'
-    );
-  });
-
-  onChange = (_value: boolean) => {};
-  onTouched = () => {};
-
-  writeValue(val: boolean): void {
-    this.isChecked.set(!!val);
+  writeValue(val: any): void {
+    const isChecked = !!val;
+    this.prevCheckedInput = isChecked;
+    this.internalChecked.set(isChecked);
   }
 
   registerOnChange(fn: any): void {
@@ -162,12 +196,7 @@ export class ToggleComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  toggle(): void {
-    if (this.disabled()) return;
-    const next = !this.isChecked();
-    this.isChecked.set(next);
-    this.onChange(next);
-    this.onTouched();
-    this.checkedChange.emit(next);
+  setDisabledState?(isDisabled: boolean): void {
+    // Handled via Angular input signal
   }
 }

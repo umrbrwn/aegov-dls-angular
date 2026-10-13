@@ -1,82 +1,162 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { TooltipComponent } from './tooltip.component';
-import { TooltipDirective } from './tooltip.directive';
-import { ButtonComponent } from '../Button/button.component';
+import { TooltipDirective, type TooltipPlacement } from './tooltip.directive';
+import { ButtonDirective } from '../Button/button.directive';
+import { HyperlinkDirective } from '../Hyperlink/hyperlink.directive';
+import { IconDirective } from '../Icon/icon.directive';
 
-const meta: Meta<TooltipComponent> = {
+const meta: Meta<TooltipDirective> = {
   title: 'Components/Tooltip',
-  component: TooltipComponent,
+  component: TooltipDirective,
+  tags: ['autodocs'],
   decorators: [
     moduleMetadata({
-      imports: [ButtonComponent, TooltipComponent, TooltipDirective],
+      imports: [TooltipDirective, ButtonDirective, HyperlinkDirective, IconDirective],
     }),
   ],
   parameters: {
     layout: 'centered',
   },
-  args: {
-    side: 'top',
-    content: 'This is a tooltip',
-    isOpen: false,
-  },
   argTypes: {
-    side: {
-      control: 'select',
-      options: ['top', 'right', 'bottom', 'left'],
-    },
-    content: {
+    aeTooltip: {
       control: 'text',
+      description: 'Text content displayed in the floating tooltip',
     },
-    isOpen: {
-      control: 'boolean',
+    tooltipPlacement: {
+      control: 'select',
+      options: ['top', 'right', 'bottom', 'left'] as TooltipPlacement[],
+      description: 'Placement side relative to host element',
     },
+  },
+  args: {
+    aeTooltip: 'Helpful tooltip information',
+    tooltipPlacement: 'top',
   },
 };
 
 export default meta;
-type Story = StoryObj<TooltipComponent>;
+type Story = StoryObj<TooltipDirective>;
 
-export const Basic: Story = {
-  args: {
-    content: 'This is a basic tooltip',
-    side: 'top',
-    isOpen: false,
-  },
+export const Default: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div class="p-16 flex justify-center">
-        <ae-tooltip [content]="content" [side]="side" [isOpen]="isOpen">
-          <ae-button variant="solid">Hover me</ae-button>
-        </ae-tooltip>
+      <div class="p-16 flex items-center justify-center">
+        <button
+          aeButton
+          variant="solid"
+          color="primary"
+          [aeTooltip]="aeTooltip"
+          [tooltipPlacement]="tooltipPlacement"
+        >
+          Hover or Focus Me
+        </button>
       </div>
     `,
   }),
 };
 
-export const Placement: Story = {
-  argTypes: {
-    side: { table: { disable: true } },
+export const Placements: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    isOpen: false,
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="p-20 flex flex-wrap gap-4 justify-center items-center">
-        <ae-tooltip content="Tooltip on top" side="top" [isOpen]="isOpen">
-          <ae-button variant="solid">Top</ae-button>
-        </ae-tooltip>
-        <ae-tooltip content="Tooltip on right" side="right" [isOpen]="isOpen">
-          <ae-button variant="solid">Right</ae-button>
-        </ae-tooltip>
-        <ae-tooltip content="Tooltip on bottom" side="bottom" [isOpen]="isOpen">
-          <ae-button variant="solid">Bottom</ae-button>
-        </ae-tooltip>
-        <ae-tooltip content="Tooltip on left" side="left" [isOpen]="isOpen">
-          <ae-button variant="solid">Left</ae-button>
-        </ae-tooltip>
+      <div class="p-24 flex items-center justify-center gap-6 flex-wrap">
+        <button
+          aeButton
+          variant="outline"
+          aeTooltip="Tooltip on top"
+          tooltipPlacement="top"
+        >
+          Tooltip Top
+        </button>
+
+        <button
+          aeButton
+          variant="outline"
+          aeTooltip="Tooltip on right"
+          tooltipPlacement="right"
+        >
+          Tooltip Right
+        </button>
+
+        <button
+          aeButton
+          variant="outline"
+          aeTooltip="Tooltip on bottom"
+          tooltipPlacement="bottom"
+        >
+          Tooltip Bottom
+        </button>
+
+        <button
+          aeButton
+          variant="outline"
+          aeTooltip="Tooltip on left"
+          tooltipPlacement="left"
+        >
+          Tooltip Left
+        </button>
+      </div>
+    `,
+  }),
+};
+
+export const OnLinksAndIcons: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-16 flex gap-8 items-center justify-center">
+        <button
+          aeButton
+          [isIcon]="true"
+          variant="soft"
+          aeTooltip="Search services"
+          tooltipPlacement="top"
+          aria-label="Search"
+        >
+          <svg aeIcon name="magnifying-glass" [size]="18"></svg>
+        </button>
+
+        <a
+          aeHyperlink
+          href="#help"
+          aeTooltip="Read user guide"
+          tooltipPlacement="bottom"
+        >
+          Documentation
+        </a>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-16 flex items-center justify-center gap-6" dir="rtl">
+        <button
+          aeButton
+          variant="solid"
+          aeTooltip="تلميح الأدوات في الأعلى"
+          tooltipPlacement="top"
+        >
+          تلميح أعلى
+        </button>
+
+        <button
+          aeButton
+          variant="outline"
+          aeTooltip="معلومات إضافية للمستخدم"
+          tooltipPlacement="bottom"
+        >
+          تلميح أسفل
+        </button>
       </div>
     `,
   }),

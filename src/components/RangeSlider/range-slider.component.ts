@@ -1,8 +1,10 @@
 import {
   Component,
   input,
+  output,
   signal,
   computed,
+  effect,
   forwardRef,
   ChangeDetectionStrategy,
   booleanAttribute
@@ -22,68 +24,56 @@ export type RangeSliderVariant = 'primary' | 'secondary';
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => RangeSliderComponent),
-      multi: true
-    }
+      multi: true,
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="wrapperClasses()">
+    <div [class]="formControlClasses()">
       @if (label()) {
-        <label
-          [attr.for]="computedId()"
-          [class]="labelClasses()"
-        >
+        <label [attr.for]="computedId()">
           {{ label() }}
+          @if (required()) {
+            <span class="text-aered-600 ms-0.5">*</span>
+          }
         </label>
       }
 
-      <div class="flex items-center gap-4">
-        <!-- Slider Container -->
-        <div class="relative flex w-full touch-none select-none items-center py-2">
-          <!-- Background Track -->
-          <div [class]="trackClasses()">
-            <!-- Range Active Fill -->
-            <div
-              [class]="rangeClasses()"
-              [style.width.%]="percentage()"
-            ></div>
-          </div>
-
-          <!-- Thumb -->
-          <div
-            [class]="thumbClasses()"
-            [style.left.%]="percentage()"
-            aria-hidden="true"
-          ></div>
-
-          <!-- Interactive Native Input (Transparent Overlay) -->
-          <input
-            type="range"
-            [id]="computedId()"
-            [min]="min()"
-            [max]="max()"
-            [step]="step()"
-            [value]="value()"
-            [disabled]="disabled()"
-            class="group absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-20"
-            (input)="onInputChange($event)"
-            (change)="onCommit()"
-            (focus)="isFocused.set(true)"
-            (blur)="onInputBlur()"
-          />
-        </div>
-
+      <div class="form-control-input items-center">
+        <input
+          type="range"
+          [id]="computedId()"
+          [name]="name() || computedId()"
+          [min]="min()"
+          [max]="max()"
+          [step]="step()"
+          [value]="internalValue()"
+          [disabled]="disabled()"
+          [required]="required()"
+          [attr.aria-disabled]="disabled() ? 'true' : null"
+          [attr.aria-describedby]="ariaDescribedBy()"
+          (input)="onSliderInput($event)"
+          (change)="onSliderChange()"
+          (blur)="onSliderBlur()"
+          (focus)="onSliderFocus()"
+        />
         <output
           [attr.for]="computedId()"
-          [class]="outputClasses()"
+          class="w-[50px] text-sm text-end h-auto bg-transparent py-1 font-medium"
         >
-          {{ value() }}
+          {{ internalValue() }}
         </output>
       </div>
 
-      @if (helperText() || error()) {
-        <p [class]="helperClasses()">
-          {{ error() || helperText() }}
+      @if (helperText() && !error()) {
+        <p [id]="computedId() + '-desc'" class="mt-2 text-xs leading-6 text-aeblack-500">
+          {{ helperText() }}
+        </p>
+      }
+
+      @if (error()) {
+        <p [id]="computedId() + '-error'" class="error-message">
+          {{ error() }}
         </p>
       }
     </div>
@@ -96,144 +86,145 @@ export type RangeSliderVariant = 'primary' | 'secondary';
   `]
 })
 export class RangeSliderComponent implements ControlValueAccessor {
-  readonly min = input<number>(0);
-  readonly max = input<number>(100);
-  readonly step = input<number>(1);
-  readonly label = input<string | undefined>(undefined);
-  readonly helperText = input<string | undefined>(undefined);
-  readonly error = input<string | undefined>(undefined);
-  readonly size = input<RangeSliderSize>('base');
-  readonly variant = input<RangeSliderVariant>('primary');
+  /**
+   * HTML id attribute for the range input (auto-generated if omitted)
+   */
   readonly id = input<string | undefined>(undefined);
+
+  /**
+   * Form control name attribute
+   */
+  readonly name = input<string | undefined>(undefined);
+
+  /**
+   * Label text above the slider
+   */
+  readonly label = input<string | undefined>(undefined);
+
+  /**
+   * Initial / controlled value
+   */
+  readonly value = input<number | undefined>(undefined);
+
+  /**
+   * Minimum value of the range slider
+   */
+  readonly min = input<number>(0);
+
+  /**
+   * Maximum value of the range slider
+   */
+  readonly max = input<number>(100);
+
+  /**
+   * Step increment
+   */
+  readonly step = input<number>(1);
+
+  /**
+   * Sizing scale: 'sm' | 'base' | 'lg'
+   */
+  readonly size = input<RangeSliderSize>('base');
+
+  /**
+   * Visual colour variant: 'primary' | 'secondary'
+   */
+  readonly variant = input<RangeSliderVariant>('primary');
+
+  /**
+   * Helper / description text below the slider
+   */
+  readonly helperText = input<string | undefined>(undefined);
+
+  /**
+   * Error message (applies '.control-error')
+   */
+  readonly error = input<string | undefined>(undefined);
+
+  /**
+   * Disabled state
+   */
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Required indicator
+   */
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional CSS classes forwarded to the wrapper
+   */
   readonly className = input<string>('');
 
-  readonly value = signal<number>(20);
-  readonly isFocused = signal<boolean>(false);
+  /** Emits when value changes via user interaction */
+  readonly valueChange = output<number>();
+  readonly blur = output<void>();
+  readonly focus = output<void>();
 
-  private readonly generatedId = `range-${Math.random().toString(36).slice(2, 9)}`;
-  readonly computedId = computed(() => this.id() || this.generatedId);
+  /** Internal reactive value kept in sync with the input() signal and CVA writeValue */
+  protected readonly internalValue = signal<number>(20);
 
-  readonly percentage = computed(() => {
-    const min = this.min();
-    const max = this.max();
-    const val = this.value();
-    if (max <= min) return 0;
-    return Math.min(100, Math.max(0, ((val - min) / (max - min)) * 100));
-  });
+  private readonly uniqueId = `aegov-range-${Math.random().toString(36).substring(2, 9)}`;
 
-  readonly sizeStyles: Record<RangeSliderSize, { track: string; thumb: string; label: string; helperText: string }> = {
-    sm: {
-      track: 'h-1',
-      thumb: 'h-3.5 w-3.5',
-      label: 'text-sm',
-      helperText: 'text-xs',
-    },
-    base: {
-      track: 'h-1.5',
-      thumb: 'h-4 w-4',
-      label: 'text-base',
-      helperText: 'text-sm',
-    },
-    lg: {
-      track: 'h-2',
-      thumb: 'h-5 w-5',
-      label: 'text-lg',
-      helperText: 'text-base',
-    },
-  };
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
 
-  readonly variantStyles: Record<RangeSliderVariant, { track: string; range: string; thumb: string; focusRing: string }> = {
-    primary: {
-      track: 'bg-primary-100',
-      range: 'bg-primary-600',
-      thumb: 'border-primary-600',
-      focusRing: 'ring-2 ring-primary-500 ring-offset-2',
-    },
-    secondary: {
-      track: 'bg-secondary-100',
-      range: 'bg-secondary-800',
-      thumb: 'border-secondary-800',
-      focusRing: 'ring-2 ring-secondary-500 ring-offset-2',
-    },
-  };
+  constructor() {
+    effect(() => {
+      const v = this.value();
+      if (v !== undefined) {
+        this.internalValue.set(v);
+      }
+    });
+  }
 
-  readonly effectiveSize = computed<RangeSliderSize>(() => this.size() || 'base');
-  readonly effectiveVariant = computed<RangeSliderVariant>(() => this.variant() || 'primary');
+  protected readonly formControlClasses = computed<string>(() => {
+    const sz = this.size();
+    const v = this.variant();
+    const err = this.error();
 
-  readonly wrapperClasses = computed(() => cn('w-full', this.className()));
-
-  readonly labelClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
     return cn(
-      'mb-1.5 block font-medium text-gray-900',
-      s.label,
-      this.error() && 'text-red-600',
-      this.required() && 'after:ms-0.5 after:text-red-500 after:content-["*"]',
-      this.disabled() && 'opacity-50'
+      'aegov-form-control',
+      sz === 'sm' && 'control-sm',
+      sz === 'lg' && 'control-lg',
+      v === 'secondary' && 'control-secondary',
+      !!err && 'control-error',
+      this.className()
     );
   });
 
-  readonly trackClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
-    const v = this.variantStyles[this.effectiveVariant()];
-    return cn(
-      'relative grow rounded-full w-full',
-      s.track,
-      v.track,
-      this.disabled() && 'opacity-50'
-    );
+  protected readonly ariaDescribedBy = computed<string | null>(() => {
+    if (this.error()) return `${this.computedId()}-error`;
+    if (this.helperText()) return `${this.computedId()}-desc`;
+    return null;
   });
 
-  readonly rangeClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
-    const v = this.variantStyles[this.effectiveVariant()];
-    return cn(
-      'absolute rounded-full h-full',
-      s.track,
-      v.range,
-      this.disabled() && 'opacity-50'
-    );
-  });
+  protected onSliderInput(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const num = Number(target.value);
+    this.internalValue.set(num);
+    this.onChange(num);
+    this.valueChange.emit(num);
+  }
 
-  readonly thumbClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
-    const v = this.variantStyles[this.effectiveVariant()];
-    return cn(
-      'absolute top-1/2 -translate-y-1/2 -translate-x-1/2 rounded-full border-2 bg-white shadow-xs transition-colors pointer-events-none z-10',
-      s.thumb,
-      v.thumb,
-      this.isFocused() && v.focusRing,
-      this.disabled() && 'opacity-50 pointer-events-none'
-    );
-  });
+  protected onSliderChange(): void {
+    this.onTouched();
+  }
 
-  readonly outputClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
-    return cn(
-      'w-12 text-right rtl:text-left text-gray-900 font-medium',
-      s.label,
-      this.disabled() && 'opacity-50'
-    );
-  });
+  protected onSliderBlur(): void {
+    this.onTouched();
+    this.blur.emit();
+  }
 
-  readonly helperClasses = computed(() => {
-    const s = this.sizeStyles[this.effectiveSize()];
-    return cn(
-      'mt-1.5',
-      s.helperText,
-      this.error() ? 'text-red-600' : 'text-gray-500'
-    );
-  });
+  protected onSliderFocus(): void {
+    this.focus.emit();
+  }
 
-  onChange = (_value: number) => {};
-  onTouched = () => {};
+  // ControlValueAccessor
+  protected onChange: (value: number) => void = () => {};
+  protected onTouched: () => void = () => {};
 
-  writeValue(val: number): void {
-    if (val !== undefined && val !== null) {
-      this.value.set(Number(val));
-    }
+  writeValue(val: any): void {
+    this.internalValue.set(val ?? this.min());
   }
 
   registerOnChange(fn: any): void {
@@ -244,19 +235,7 @@ export class RangeSliderComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  onInputChange(event: Event): void {
-    const target = event.target as HTMLInputElement;
-    const num = Number(target.value);
-    this.value.set(num);
-    this.onChange(num);
-  }
-
-  onCommit(): void {
-    this.onTouched();
-  }
-
-  onInputBlur(): void {
-    this.isFocused.set(false);
-    this.onTouched();
+  setDisabledState?(isDisabled: boolean): void {
+    // handled via Angular input signal
   }
 }

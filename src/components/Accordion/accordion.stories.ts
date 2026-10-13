@@ -22,6 +22,7 @@ const defaultItems = [
 const meta: Meta<AccordionComponent> = {
   title: 'Components/Accordion',
   component: AccordionComponent,
+  tags: ['autodocs'],
   decorators: [
     moduleMetadata({
       imports: [AccordionComponent, AccordionItemComponent],
@@ -37,22 +38,38 @@ const meta: Meta<AccordionComponent> = {
       control: 'boolean',
       description: 'Allow all items to be closed',
     },
+    defaultValue: {
+      control: 'text',
+      description: 'Default active item value (or array of values if multiple is true)',
+    },
+    icon: {
+      control: 'text',
+      description: 'Icon name (e.g. caret-down, plus)',
+    },
+    iconRotateDeg: {
+      control: 'number',
+      description: 'Degrees to rotate icon on open',
+    },
   },
   args: {
     multiple: false,
     collapsible: true,
+    defaultValue: '1',
+    icon: 'caret-down',
+    iconRotateDeg: 180,
   },
 };
 
 export default meta;
 type Story = StoryObj<AccordionComponent>;
 
-// Default single accordion
 export const Default: Story = {
   args: {
     multiple: false,
     collapsible: true,
     defaultValue: '1',
+    icon: 'caret-down',
+    iconRotateDeg: 180,
   },
   render: (args) => ({
     props: {
@@ -65,100 +82,120 @@ export const Default: Story = {
         [defaultValue]="defaultValue"
         [multiple]="multiple"
         [collapsible]="collapsible"
+        [icon]="icon"
+        [iconRotateDeg]="iconRotateDeg"
       ></ae-accordion>
     `,
   }),
 };
 
-// Multiple selection allowed
 export const Multiple: Story = {
-  args: {
-    multiple: true,
-    collapsible: true,
-    defaultValue: ['1', '2'],
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
+  render: () => ({
     props: {
-      ...args,
       items: defaultItems,
     },
     template: `
       <ae-accordion
         [items]="items"
-        [defaultValue]="defaultValue"
-        [multiple]="multiple"
-        [collapsible]="collapsible"
+        [defaultValue]="['1', '2']"
+        [multiple]="true"
+        [collapsible]="true"
+        icon="caret-down"
+        [iconRotateDeg]="180"
       ></ae-accordion>
     `,
   }),
 };
 
-// Custom icon
-export const CustomIcon: Story = {
-  args: {
-    multiple: false,
-    collapsible: true,
-    defaultValue: '1',
+export const PlusIconVariation: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
+  render: () => ({
     props: {
-      ...args,
-      items: defaultItems.map(item => ({
-        ...item,
-        icon: 'plus',
-        iconRotateDeg: 45,
-      })),
+      items: defaultItems,
     },
     template: `
       <ae-accordion
         [items]="items"
-        [defaultValue]="defaultValue"
-        [multiple]="multiple"
-        [collapsible]="collapsible"
+        defaultValue="1"
+        [multiple]="false"
+        [collapsible]="true"
+        icon="plus"
+        [iconRotateDeg]="45"
       ></ae-accordion>
     `,
   }),
 };
 
-// Nested accordions
-export const Nested: Story = {
-  render: () => ({
-    template: `
-      <div class="space-y-4">
-        <ae-accordion
-          [items]="[
-            {
-              value: 'parent-1',
-              title: 'Parent Accordion 1',
-              content: 'This is the main content of parent accordion 1.'
-            },
-            {
-              value: 'parent-2',
-              title: 'Parent Accordion 2',
-              content: 'Content of parent accordion 2'
-            }
-          ]"
-          defaultValue="parent-1"
-        ></ae-accordion>
-      </div>
-    `,
-  }),
-};
-
-// Declarative Accordion Items with Projected Content
 export const Declarative: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
   render: () => ({
     template: `
-      <ae-accordion defaultValue="item-1">
+      <ae-accordion
+        defaultValue="item-1"
+        [multiple]="false"
+        [collapsible]="true"
+        icon="caret-down"
+        [iconRotateDeg]="180"
+      >
         <ae-accordion-item value="item-1" title="What is a design system?">
-          <p class="text-gray-600 leading-relaxed">
+          <p>
             A Design System is a comprehensive set of standards, documentation, principles, and components that guide the creation of a digital product's UI.
           </p>
         </ae-accordion-item>
         <ae-accordion-item value="item-2" title="Why use content projection?">
-          <p class="text-gray-600 leading-relaxed">
+          <p>
             In Angular, content projection via <code>&lt;ng-content&gt;</code> is the idiomatic way to project rich templates, custom markup, or interactive components into accordion panels.
           </p>
+        </ae-accordion-item>
+        <ae-accordion-item value="item-3" title="Accessibility & ARIA">
+          <p>
+            The component manages <code>aria-expanded</code> and <code>aria-controls</code> attributes automatically.
+          </p>
+        </ae-accordion-item>
+      </ae-accordion>
+    `,
+  }),
+};
+
+export const Nested: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <ae-accordion
+        defaultValue="parent-1"
+        [multiple]="false"
+        [collapsible]="true"
+        icon="caret-down"
+        [iconRotateDeg]="180"
+      >
+        <ae-accordion-item value="parent-1" title="Parent Section 1">
+          <p style="margin-bottom: 1rem;">Here is some parent information. Below is a nested accordion:</p>
+          <ae-accordion
+            defaultValue="nested-1"
+            icon="plus"
+            [iconRotateDeg]="45"
+            [multiple]="false"
+            [collapsible]="true"
+          >
+            <ae-accordion-item value="nested-1" title="Nested Topic A">
+              <p>Details for nested topic A.</p>
+            </ae-accordion-item>
+            <ae-accordion-item value="nested-2" title="Nested Topic B" [borderNone]="true">
+              <p>Details for nested topic B.</p>
+            </ae-accordion-item>
+          </ae-accordion>
+        </ae-accordion-item>
+        <ae-accordion-item value="parent-2" title="Parent Section 2">
+          <p>Details for parent section 2.</p>
         </ae-accordion-item>
       </ae-accordion>
     `,

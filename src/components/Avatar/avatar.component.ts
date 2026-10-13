@@ -4,44 +4,48 @@ import {
   signal,
   computed,
   effect,
-  ChangeDetectionStrategy
+  ChangeDetectionStrategy,
+  booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
+import { phUserFill } from '../Icon/default-icons';
 
 export type AvatarSize = 'xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl';
-export type AvatarVariant = 'square' | 'rounded-sm' | 'rounded' | 'circle';
+export type AvatarVariant = 'square' | 'rounded';
 export type AvatarStatus = 'online' | 'offline' | 'none';
+
+const NO_USER_AVATAR_SRC = `data:image/svg+xml,${encodeURIComponent(
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="#9ca3af">${phUserFill}</svg>`
+)}`;
 
 @Component({
   selector: 'ae-avatar',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div class="relative inline-block leading-0">
-      <div [class]="avatarClasses()">
-        @if (src() && !imageError()) {
-          <img
-            [src]="src()"
-            [alt]="alt()"
-            class="h-full w-full object-cover"
-            (error)="onImageError()"
-          />
-        } @else if (fallback()) {
-          <div class="flex h-full w-full items-center justify-center bg-gray-200 text-gray-700 font-semibold text-xs uppercase select-none">
-            {{ fallback() }}
-          </div>
-        } @else {
-          <div class="flex h-full w-full items-center justify-center bg-gray-100">
-            <ae-icon name="user" [size]="iconSizes[size()]" className="text-gray-400"></ae-icon>
-          </div>
-        }
-      </div>
+    <div
+      [class]="avatarClasses()"
+      role="img"
+      [attr.aria-label]="alt()"
+    >
+      <img
+        [src]="effectiveSrc()"
+        [class.no-user]="isNoUser()"
+        [alt]="alt()"
+        (error)="handleImageError()"
+      />
 
-      @if (status() !== 'none') {
-        <span [class]="statusBadgeClasses()"></span>
+      @if (showIndicator()) {
+        <span
+          class="alert-indicator"
+          [class]="indicatorClass()"
+          [class.bg-aegreen-500]="!indicatorClass() && status() === 'online'"
+          [class.bg-aered-500]="!indicatorClass() && status() === 'offline'"
+          [class.ring-whitely-50]="!indicatorClass() && (status() === 'online' || status() === 'offline')"
+          [attr.aria-label]="effectiveStatusLabel()"
+        ></span>
       }
     </div>
   `,
@@ -53,16 +57,52 @@ export type AvatarStatus = 'online' | 'offline' | 'none';
   `]
 })
 export class AvatarComponent {
+  /**
+   * Source URL of the avatar image
+   */
   readonly src = input<string | undefined>(undefined);
-  readonly alt = input<string>('Avatar');
-  readonly fallback = input<string | undefined>(undefined);
+
+  /**
+   * Alt text for accessibility
+   */
+  readonly alt = input<string>('User Avatar');
+
+  /**
+   * Size variation of the avatar ('xs' | 'sm' | 'base' | 'lg' | 'xl' | '2xl' | '3xl')
+   */
   readonly size = input<AvatarSize>('base');
+
+  /**
+   * Shape style variation ('square' | 'rounded')
+   */
   readonly variant = input<AvatarVariant>('square');
-  readonly shape = input<string | undefined>(undefined); // alias for backwards compatibility
+
+  /**
+   * Status indicator type ('online' | 'offline' | 'none')
+   */
   readonly status = input<AvatarStatus>('none');
+
+  /**
+   * Accessible aria-label for status indicator dot
+   */
+  readonly statusLabel = input<string | undefined>(undefined);
+
+  /**
+   * Custom CSS classes for the status indicator dot (e.g. 'bg-aegreen-500 ring-whitely-50')
+   */
+  readonly indicatorClass = input<string>('');
+
+  /**
+   * Explicitly force no-user placeholder state
+   */
+  readonly noUser = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes for the avatar container
+   */
   readonly className = input<string>('');
 
-  readonly imageError = signal<boolean>(false);
+  private readonly imageError = signal<boolean>(false);
 
   constructor() {
     effect(() => {
@@ -71,76 +111,35 @@ export class AvatarComponent {
     });
   }
 
-  readonly effectiveVariant = computed(() => {
-    const v = (this.variant() || this.shape()) as string;
-    if (v === 'rounded-sm' || v === 'rounded' || v === 'circle') return 'rounded-sm';
-    return 'square';
+  protected readonly isNoUser = computed(() => {
+    return this.noUser() || !this.src() || this.imageError();
   });
 
-  readonly sizeStyles: Record<AvatarSize, string> = {
-    xs: 'h-6 w-6',
-    sm: 'h-8 w-8',
-    base: 'h-10 w-10',
-    lg: 'h-12 w-12',
-    xl: 'h-14 w-14',
-    '2xl': 'h-16 w-16',
-    '3xl': 'h-20 w-20'
-  };
+  protected readonly effectiveSrc = computed(() => {
+    return this.isNoUser() ? NO_USER_AVATAR_SRC : (this.src() || NO_USER_AVATAR_SRC);
+  });
 
-  readonly iconSizes: Record<AvatarSize, number> = {
-    xs: 12,
-    sm: 16,
-    base: 20,
-    lg: 24,
-    xl: 28,
-    '2xl': 32,
-    '3xl': 40
-  };
+  protected readonly showIndicator = computed(() => {
+    return this.status() !== 'none' || !!this.indicatorClass();
+  });
 
-  readonly borderRadiusStyles: Record<AvatarSize, string> = {
-    xs: 'rounded-[4px]',
-    sm: 'rounded-[4px]',
-    base: 'rounded-[6px]',
-    lg: 'rounded-[6px]',
-    xl: 'rounded-[8px]',
-    '2xl': 'rounded-[8px]',
-    '3xl': 'rounded-[8px]'
-  };
+  protected readonly effectiveStatusLabel = computed(() => {
+    if (this.statusLabel()) return this.statusLabel();
+    if (this.status() === 'online') return 'Online';
+    if (this.status() === 'offline') return 'Offline';
+    return undefined;
+  });
 
-  readonly statusStyles: Record<AvatarStatus, string> = {
-    online: 'bg-green-500',
-    offline: 'bg-red-500',
-    none: 'hidden'
-  };
-
-  readonly statusSizeStyles: Record<AvatarSize, string> = {
-    xs: 'h-1.5 w-1.5',
-    sm: 'h-2 w-2',
-    base: 'h-2.5 w-2.5',
-    lg: 'h-3 w-3',
-    xl: 'h-3.5 w-3.5',
-    '2xl': 'h-4 w-4',
-    '3xl': 'h-5 w-5',
-  };
-
-  readonly avatarClasses = computed(() =>
-    cn(
-      'relative inline-flex items-center justify-center overflow-hidden',
-      this.sizeStyles[this.size()],
-      this.effectiveVariant() === 'rounded-sm' ? 'rounded-full' : this.borderRadiusStyles[this.size()],
+  protected readonly avatarClasses = computed(() => {
+    return cn(
+      'aegov-avatar',
+      this.size() !== 'base' && `avatar-${this.size()}`,
+      this.variant() === 'rounded' && 'avatar-rounded',
       this.className()
-    )
-  );
+    );
+  });
 
-  readonly statusBadgeClasses = computed(() =>
-    cn(
-      'absolute -right-0.5 -top-0.5 block rounded-full ring-2 ring-white',
-      this.statusStyles[this.status()],
-      this.statusSizeStyles[this.size()]
-    )
-  );
-
-  onImageError(): void {
+  protected handleImageError(): void {
     this.imageError.set(true);
   }
 }

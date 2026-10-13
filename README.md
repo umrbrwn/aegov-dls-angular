@@ -1,94 +1,110 @@
 # aegov-dls-angular
 
-> **⚠️ Disclaimer**: This is an **unofficial, community-driven Angular port** of the [UAE Government Design Language System](https://designsystem.gov.ae/) originally published as [`@aegov/design-system`](https://www.npmjs.com/package/@aegov/design-system). It is **NOT** an official release by or affiliated with the Telecommunications and Digital Government Regulatory Authority (TDRA).
+> **Disclaimer**: This is an **unofficial, community-driven Angular port** of the [UAE Government Design Language System](https://designsystem.gov.ae/) originally published as [`@aegov/design-system`](https://www.npmjs.com/package/@aegov/design-system). It is **NOT** an official release by or affiliated with the Telecommunications and Digital Government Regulatory Authority (TDRA).
 
-A modern Angular 19+ component library implementing the UAE Government Design Language System (aegov DLS). Built using Standalone Components, Signals, modern control flow (`@if`, `@for`), Tailwind CSS v4, and Angular CDK.
+A modern Angular 19+ component library implementing the UAE Government Design Language System (aegov DLS).
+
+This package is ported from [`@aegov/design-system`](https://www.npmjs.com/package/@aegov/design-system), replacing vanilla JavaScript component behavior with native Angular implementation.
 
 ## About & Attribution
 
 - **Original Design System**: Telecommunications and Digital Government Regulatory Authority (TDRA) — [designsystem.gov.ae](https://designsystem.gov.ae/)
-- **Original Packages**: [`@aegov/design-system`](https://www.npmjs.com/package/@aegov/design-system) / [`@aegov/design-system-react`](https://www.npmjs.com/package/@aegov/design-system-react)
+- **Original Packages**: [`@aegov/design-system`](https://www.npmjs.com/package/@aegov/design-system)
 - **Icon Set**: Sourced from [Phosphor Icons](https://phosphoricons.com/) via [`@phosphor-icons/core`](https://www.npmjs.com/package/@phosphor-icons/core) (licensed under MIT).
 
 ## Installation
 
 ```bash
-npm install aegov-dls-angular @angular/cdk
+npm install aegov-dls-angular
 ```
+
+Requires Angular 19+:
+
+- `@angular/core`: `^19.0.0`
+- `@angular/common`: `^19.0.0`
+- `@angular/forms`: `^19.0.0`
+- `@angular/platform-browser`: `^19.0.0`
+- `@angular/router`: `^19.0.0`
 
 ## Styling Setup
 
-Include the UAE Gov Tailwind CSS v4 styles in your application's global stylesheet or `angular.json`:
+Add the stylesheet to your global CSS:
 
 ```css
-/* in your global styles.css */
-@import "aegov-dls-angular/styles/tailwind.css";
+/* For Tailwind CSS projects (in src/styles.css) */
+@import 'tailwindcss';
+@import 'aegov-dls-angular/styles.css';
 ```
+
+```css
+/* For Non-Tailwind / Custom CSS projects (in src/styles.css) */
+@import 'aegov-dls-angular/styles.css';
+```
+
+*For detailed styling instructions, `angular.json` configurations, font setup, and multi-entity theming, see the [Setup Guide](docs/Setup.md) and [Customization Guide](docs/Customization.md).*
 
 ## Usage
 
-Import the standalone components directly into your Angular components:
+Import standalone components and directives directly into your Angular components:
 
 ```typescript
 import { Component } from '@angular/core';
-import { ButtonComponent, AlertComponent, InputComponent } from 'aegov-dls-angular';
+import { AlertComponent, ButtonDirective } from 'aegov-dls-angular';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ButtonComponent, AlertComponent, InputComponent],
+  imports: [AlertComponent, ButtonDirective],
   template: `
-    <ae-alert variant="info" title="Welcome to UAE Gov DLS (Angular)">
-      Community-maintained Angular implementation of the UAE Government Design System.
+    <ae-alert variant="info" title="Welcome">
+      Welcome to the UAE Government Design System portal.
     </ae-alert>
 
-    <ae-button color="primary" variant="solid" size="base">
-      Submit Application
-    </ae-button>
-  `
+    <button aeButton variant="solid" color="primary" (click)="onProceed()">
+      Get Started
+    </button>
+  `,
 })
-export class AppComponent {}
+export class AppComponent {
+  onProceed(): void {
+    console.log('Action triggered');
+  }
+}
 ```
 
 ## Icons
 
 The library includes a lightweight, flexible inline SVG icon system with zero external font dependencies:
 
-- **Built-in Icons (Zero Config)**: Pre-bundles 22 essential icons required by UAE Gov DLS components (`Alert`, `Select`, `Toast`, `Pagination`, `FileUpload`, `Accordion`, `Input`, etc.) out-of-the-box.
+- **50+ Built-in Icons**: Pre-bundles essential Phosphor Icons required across components out-of-the-box.
 - **Custom / Consumer Icons**: Easily register custom SVG paths at application startup using `provideAeIcons()`.
-- **Direct SVG Rendering**: Pass SVG inner path markup directly to `<ae-icon [svg]="...">` without needing registration.
-- **Color & Size Inheritance**: Automatically scales with `[size]` and inherits colors via `currentColor` (fully compatible with Tailwind text color utilities like `text-primary-600`, `text-emerald-500`, etc.).
+- **Direct SVG Rendering**: Pass SVG inner path markup directly to `<svg aeIcon [svg]="...">` without needing registration.
+- **Color & Size Inheritance**: Automatically scales with `[size]`, inherits colors via `currentColor`, and mirrors in RTL layouts with standard Tailwind class `rtl:-scale-x-100`.
 
-### 1. Built-in Icons Usage
-
-Use `<ae-icon>` in any standalone component:
+### Quick Example
 
 ```typescript
 import { Component } from '@angular/core';
-import { IconComponent } from 'aegov-dls-angular';
+import { IconDirective } from 'aegov-dls-angular';
 
 @Component({
   selector: 'app-example',
   standalone: true,
-  imports: [IconComponent],
+  imports: [IconDirective],
   template: `
     <!-- Built-in icons work out-of-the-box -->
-    <ae-icon name="check" [size]="20" class="text-primary-600"></ae-icon>
-    <ae-icon name="caret-down" weight="bold" [size]="16"></ae-icon>
-    <ae-icon name="check-circle" weight="fill" [size]="24" class="text-emerald-500"></ae-icon>
+    <svg aeIcon name="check" [size]="20" class="text-primary-600"></svg>
+    <svg aeIcon name="caret-down" weight="bold" [size]="16"></svg>
+    <svg aeIcon name="arrow-right" [size]="20" class="rtl:-scale-x-100"></svg>
   `
 })
 export class ExampleComponent {}
 ```
 
-#### Pre-bundled Icon Names:
-`caret-double-left`, `caret-double-right`, `caret-down`, `caret-left`, `caret-right`, `caret-up`, `check`, `check-circle`, `eye`, `eye-slash`, `house`, `image`, `info`, `list`, `magnifying-glass`, `moon`, `sun`, `upload-simple`, `user`, `warning`, `x`, `x-circle`.
-
-### 2. Registering Custom Icons (`provideAeIcons`)
-
-Register custom icons (or additional Phosphor / branded SVGs) in your `app.config.ts`:
+### Registering Custom Icons
 
 ```typescript
+// In app.config.ts
 import { ApplicationConfig } from '@angular/core';
 import { provideAeIcons } from 'aegov-dls-angular';
 
@@ -96,43 +112,25 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideAeIcons({
       heart: '<path d="M223,57a58.07,58.07,0,0,0-81.92,0l-13.1,13.1-13.1-13.1A58,58,0,0,0,33,139l13.1,13.1L128,234l81.9-81.9L223,139A58.07,58.07,0,0,0,223,57Z"/>',
-      gear: '<path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/>',
     }),
   ],
 };
 ```
 
-Then use anywhere in your templates:
+*For the complete icon catalog, contributor sync scripts, weights, and detailed usage, see the [Icon System Guide](docs/Icons.md).*
 
-```html
-<ae-icon name="heart" [size]="24" class="text-red-500"></ae-icon>
-<ae-icon name="gear" [size]="24" class="text-gray-600"></ae-icon>
-```
+## Documentation & Guides
 
-### 3. Direct SVG Input (`[svg]`)
+- **[Setup & Getting Started](docs/Setup.md)**: Full setup details for Tailwind and non-Tailwind Angular applications.
+- **[Customization & Theming](docs/Customization.md)**: Token-driven architecture, palette customization, fonts, and entity theming.
+- **[Icon System Guide](docs/Icons.md)**: Built-in icon list, sync script architecture, and custom icon providers.
 
-Pass raw SVG `<path>` markup directly via `[svg]` without registering in the registry:
+## AI Agents & LLM Support (`skills/`)
 
-```typescript
-import { Component } from '@angular/core';
-import { IconComponent } from 'aegov-dls-angular';
+This package includes a structured [`skills/`](./skills/) directory for AI coding assistants (Cursor, Claude Code, Antigravity, GitHub Copilot, Windsurf):
 
-@Component({
-  standalone: true,
-  imports: [IconComponent],
-  template: `<ae-icon [svg]="customSvg" [size]="24" class="text-amber-500"></ae-icon>`
-})
-export class CustomIconComponent {
-  readonly customSvg = '<path d="..."/>';
-}
-```
-
-## AI Agents & LLM Support (`llms.txt`)
-
-This package includes a structured [`llms.txt`](./llms.txt) specification. When building applications with AI coding assistants (Cursor, Claude Code, Antigravity, GitHub Copilot, Windsurf):
-
-- **In consuming apps**: Point your agent to `node_modules/aegov-dls-angular/llms.txt` or copy its contents into your project's `.cursorrules`, `AGENTS.md`, `CLAUDE.md`, or `.github/copilot-instructions.md`.
-- All components, inputs, outputs, icon names, and standalone usage examples are documented in machine-readable format.
+- Point your agent to `node_modules/aegov-dls-angular/skills/` or copy it to `.agents/skills`.
+- Contains modular skill files for all components, directives, form migration, and capabilities.
 
 ## Storybook Development
 

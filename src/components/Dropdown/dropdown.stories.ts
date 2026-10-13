@@ -1,469 +1,469 @@
-import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { DropdownComponent } from './dropdown.component';
-import { ButtonComponent } from '../Button/button.component';
-import { CheckboxComponent } from '../Checkbox/checkbox.component';
-import { IconComponent } from '../Icon/icon.component';
+import type { Meta, StoryObj } from '@storybook/angular';
+import { moduleMetadata, applicationConfig } from '@storybook/angular';
+import {
+  DropdownDirective,
+  DropdownTriggerDirective,
+  type DropdownItem,
+  type DropdownGroup,
+  type DropdownPlacement,
+  type DropdownTrigger,
+} from './dropdown.directive';
+import { ButtonDirective, type AegovButtonVariant, type AegovButtonColor, type AegovButtonSize } from '../Button/button.directive';
+import { IconDirective } from '../Icon/icon.directive';
+import { provideAeIcons } from '../Icon/icon-registry.service';
 
-const meta: Meta<DropdownComponent> = {
+const currencyCircleDollarSvg =
+  '<path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm16-80a8,8,0,0,1-8,8H116v16a8,8,0,0,1-16,0V144H96a8,8,0,0,1,0-16h40a8,8,0,0,0,0-16H112a24,24,0,0,1,0-48h8V48a8,8,0,0,1,16,0V64h8a8,8,0,0,1,0,16H112a8,8,0,0,0,0,16h24A24,24,0,0,1,144,136Z"/>';
+
+const standardItems: DropdownItem[] = [
+  { value: '1', label: 'Dashboard', href: '#dashboard' },
+  { value: '2', label: 'Settings', href: '#settings' },
+  { value: '3', label: 'Earnings', href: '#earnings' },
+  { value: '4', label: 'Sign out', href: '#logout' },
+];
+
+export interface DropdownStoryArgs {
+  triggerText: string;
+  triggerVariant: AegovButtonVariant;
+  triggerColor: AegovButtonColor;
+  triggerSize: AegovButtonSize;
+  trigger: DropdownTrigger;
+  side: DropdownPlacement;
+  showCaret: boolean;
+  widthClass: string;
+  items: DropdownItem[];
+  triggerIconLeft?: string;
+  disabled: boolean;
+}
+
+const meta: Meta<DropdownStoryArgs> = {
   title: 'Components/Dropdown',
-  component: DropdownComponent,
+  tags: ['autodocs'],
   decorators: [
+    applicationConfig({
+      providers: [
+        provideAeIcons({
+          'currency-circle-dollar': currencyCircleDollarSvg,
+        }),
+      ],
+    }),
     moduleMetadata({
-      imports: [DropdownComponent, ButtonComponent, CheckboxComponent, IconComponent],
+      imports: [DropdownDirective, DropdownTriggerDirective, ButtonDirective, IconDirective],
     }),
   ],
-  parameters: {
-    layout: 'centered',
-  },
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
-  },
   argTypes: {
-    align: {
-      control: 'select',
-      options: ['start', 'center', 'end'],
+    triggerText: {
+      control: 'text',
+      description: 'Text shown on the trigger button',
     },
-    side: {
+    triggerVariant: {
       control: 'select',
-      options: ['bottom', 'top', 'left', 'right'],
+      options: ['solid', 'outline', 'soft', 'link'],
+      description: 'Button visual variant applied via aeButton',
+    },
+    triggerColor: {
+      control: 'select',
+      options: ['primary', 'secondary'],
+      description: 'Button color scheme applied via aeButton',
+    },
+    triggerSize: {
+      control: 'select',
+      options: ['xs', 'sm', 'base', 'lg'],
+      description: 'Size applied via aeButton',
     },
     trigger: {
       control: 'select',
-      options: ['click', 'hover'],
+      options: ['click', 'hover'] as DropdownTrigger[],
+      description: 'Event type that opens the dropdown menu',
     },
+    side: {
+      control: 'select',
+      options: ['top', 'bottom', 'left', 'right'] as DropdownPlacement[],
+      description: 'Placement side relative to trigger',
+    },
+    showCaret: {
+      control: 'boolean',
+      description: 'Displays a caret arrow on the trigger button',
+    },
+    widthClass: {
+      control: 'text',
+      description: 'Width CSS utility class for dropdown panel',
+    },
+    items: {
+      control: 'object',
+      description: 'Array of data-driven menu items',
+    },
+    triggerIconLeft: {
+      control: 'text',
+      description: 'Leading icon name rendered inside trigger button',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Whether dropdown interaction is disabled',
+    },
+  },
+  args: {
+    triggerText: 'Open dropdown',
+    triggerVariant: 'solid',
+    triggerColor: 'primary',
+    triggerSize: 'base',
+    trigger: 'click',
+    side: 'bottom',
+    showCaret: true,
+    widthClass: 'w-44',
+    items: standardItems,
+    triggerIconLeft: undefined,
+    disabled: false,
   },
 };
 
 export default meta;
-type Story = StoryObj<DropdownComponent>;
+type Story = StoryObj<DropdownStoryArgs>;
 
 export const Default: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
-  },
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      triggerIconLeft: args.triggerIconLeft || undefined,
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Profile', value: 'profile' },
-                { label: 'Settings', value: 'settings' },
-                { label: 'Logout', value: 'logout' }
-              ]
-            }
-          ]"
+        <button
+          aeButton
+          [variant]="triggerVariant"
+          [color]="triggerColor"
+          [size]="triggerSize"
+          [disabled]="disabled"
+          aeDropdown
+          [items]="items"
+          [dropdownPlacement]="side"
+          [dropdownTrigger]="trigger"
+          [widthClass]="widthClass"
         >
-          <ae-button trigger color="secondary" variant="solid">
-            <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+          @if (triggerIconLeft) {
+            <svg aeIcon [name]="triggerIconLeft" [size]="18" class="me-1.5"></svg>
+          }
+          <span>{{ triggerText }}</span>
+          @if (showCaret) {
+            <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+          }
+        </button>
       </div>
     `,
   }),
 };
 
-export const WithIcons: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
+export const Languages: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: {
+      langItems: [
+        { value: 'en', label: 'English (US)', href: '#en' },
+        { value: 'ar', label: 'العربية (UAE)', href: '#ar' },
+        { value: 'fr', label: 'Français', href: '#fr' },
+      ],
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Profile', value: 'profile', icon: 'user' },
-                { label: 'Notifications', value: 'notifications', icon: 'bell-simple' },
-                { label: 'Settings', value: 'settings', icon: 'gear' },
-                { label: 'Logout', value: 'logout', icon: 'sign-out' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">
-            <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+        <button aeButton aeDropdown [items]="langItems">
+          <svg aeIcon name="globe" [size]="18" class="me-1.5"></svg>
+          <span>Language</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
       </div>
     `,
   }),
 };
 
-export const WithGroups: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
+export const WithHeaderDividerAndIcon: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              label: 'Account',
-              items: [
-                { label: 'Profile', value: 'profile', icon: 'user' },
-                { label: 'Settings', value: 'settings', icon: 'gear' }
-              ]
-            },
-            {
-              label: 'Shopping',
-              items: [
-                { label: 'Cart', value: 'cart', icon: 'shopping-cart' },
-                { label: 'Orders', value: 'orders', icon: 'package' },
-                { label: 'Wishlist', value: 'wishlist', icon: 'heart' }
-              ]
-            },
-            {
-              label: 'Billing',
-              items: [
-                { label: 'Payment Methods', value: 'payment', icon: 'credit-card' },
-                { label: 'Subscriptions', value: 'subscriptions', icon: 'package' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">
-            <span>Select An Option</span>
-            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+        <button aeButton [aeDropdownTrigger]="userMenu">
+          <svg aeIcon name="user" [size]="18" class="me-1.5"></svg>
+          <span>User Account</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+
+        <div #userMenu class="aegov-dropdown hidden w-52">
+          <div class="dropdown-header">
+            <div class="font-bold text-aeblack-900 truncate">Bonnie Green</div>
+            <div class="text-sm font-normal text-aeblack-600 truncate">name&#64;aegov.ae</div>
+          </div>
+          <div class="dropdown-body text-aeblack-600">
+            <ul class="py-1" role="menu">
+              <li role="none">
+                <a href="#dashboard" class="dropdown-item">
+                  <svg aeIcon name="house" [size]="20"></svg>
+                  <span class="flex-1 text-left rtl:text-right">Dashboard</span>
+                </a>
+              </li>
+              <li role="none">
+                <a href="#settings" class="dropdown-item">
+                  <svg aeIcon name="gear" [size]="20"></svg>
+                  <span class="flex-1 text-left rtl:text-right">Settings</span>
+                </a>
+              </li>
+            </ul>
+            <ul class="py-1 border-t border-aeblack-50" role="menu">
+              <li role="none">
+                <a href="#signout" class="dropdown-item">
+                  <svg aeIcon name="sign-out" [size]="20"></svg>
+                  <span class="flex-1 text-left rtl:text-right">Sign out</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     `,
   }),
 };
 
-export const ArabicDropdown: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
+export const WithIconsOnly: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="p-20 flex justify-center" dir="rtl">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              label: 'الحساب',
-              items: [
-                { label: 'الملف الشخصي', value: 'profile', icon: 'user' },
-                { label: 'الإعدادات', value: 'settings', icon: 'gear' }
-              ]
-            },
-            {
-              label: 'التسوق',
-              items: [
-                { label: 'السلة', value: 'cart', icon: 'shopping-cart' },
-                { label: 'الطلبات', value: 'orders', icon: 'package' },
-                { label: 'المفضلة', value: 'wishlist', icon: 'heart' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">
-            <span>حدد خياراً</span>
-            <ae-icon name="caret-down" [size]="16" className="mr-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
-      </div>
-    `,
-  }),
-};
-
-export const LanguageSelector: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: {
+      iconItems: [
+        { value: '1', label: 'Dashboard', icon: 'house', href: '#dashboard' },
+        { value: '2', label: 'Settings', icon: 'gear', href: '#settings' },
+        { value: '3', label: 'Sign out', icon: 'sign-out', href: '#signout' },
+      ] as DropdownItem[],
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'English', value: 'en' },
-                { label: 'العربية', value: 'ar' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger variant="outline" color="secondary">
-            <ae-icon name="globe" [size]="16" className="mr-2"></ae-icon>
-            <span>Language</span>
-            <ae-icon name="caret-down" [size]="16" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+        <button aeButton aeDropdown [items]="iconItems">
+          <span>Actions Menu</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
       </div>
     `,
   }),
 };
 
-export const Alignments: Story = {
-  argTypes: {
-    align: { table: { disable: true } },
+export const WithDividersOnly: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    side: 'bottom',
-    trigger: 'click',
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="p-20 flex gap-4 justify-center">
-        <ae-dropdown
-          align="start"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Left aligned', value: '1' },
-                { label: 'Item 2', value: '2' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Left</ae-button>
-        </ae-dropdown>
-
-        <ae-dropdown
-          align="center"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Center aligned', value: '1' },
-                { label: 'Item 2', value: '2' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Center</ae-button>
-        </ae-dropdown>
-
-        <ae-dropdown
-          align="end"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Right aligned', value: '1' },
-                { label: 'Item 2', value: '2' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Right</ae-button>
-        </ae-dropdown>
-      </div>
-    `,
-  }),
-};
-
-export const Placements: Story = {
-  argTypes: {
-    side: { table: { disable: true } },
-  },
-  args: {
-    align: 'start',
-    trigger: 'click',
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="p-24 flex gap-6 justify-center">
-        <ae-dropdown
-          side="bottom"
-          [align]="align"
-          [trigger]="trigger"
-          [groups]="[{ items: [{ label: 'Bottom', value: '1' }] }]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Bottom</ae-button>
-        </ae-dropdown>
-
-        <ae-dropdown
-          side="top"
-          [align]="align"
-          [trigger]="trigger"
-          [groups]="[{ items: [{ label: 'Top', value: '1' }] }]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Top</ae-button>
-        </ae-dropdown>
-
-        <ae-dropdown
-          side="right"
-          [align]="align"
-          [trigger]="trigger"
-          [groups]="[{ items: [{ label: 'Right', value: '1' }] }]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Right</ae-button>
-        </ae-dropdown>
-
-        <ae-dropdown
-          side="left"
-          [align]="align"
-          [trigger]="trigger"
-          [groups]="[{ items: [{ label: 'Left', value: '1' }] }]"
-        >
-          <ae-button trigger color="secondary" variant="solid">Left</ae-button>
-        </ae-dropdown>
-      </div>
-    `,
-  }),
-};
-
-export const WithHeaderDividerAndIcons: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: {
+      dividedGroups: [
+        {
+          items: [
+            { value: '1', label: 'Dashboard', href: '#dashboard' },
+            { value: '2', label: 'Settings', href: '#settings' },
+          ],
+        },
+        {
+          items: [
+            { value: '3', label: 'Earnings', href: '#earnings' },
+          ],
+        },
+        {
+          items: [
+            { value: '4', label: 'Sign out', href: '#signout' },
+          ],
+        },
+      ] as DropdownGroup[],
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          header="Signed in as john@example.com"
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-          [groups]="[
-            {
-              items: [
-                { label: 'Alerts', value: 'item-1', icon: 'bell-simple' },
-                { label: 'Profile', value: 'item-2', icon: 'user' },
-                { label: 'Region', value: 'item-3', icon: 'globe' }
-              ]
-            },
-            {
-              items: [
-                { label: 'Settings', value: 'item-4', icon: 'gear' },
-                { label: 'Cart', value: 'item-5', icon: 'shopping-cart' },
-                { label: 'Orders', value: 'item-6', icon: 'package' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="primary" variant="solid">
-            <span>Open dropdown</span>
-            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+        <button aeButton aeDropdown [groups]="dividedGroups">
+          <span>Divided Sections</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
       </div>
     `,
   }),
 };
 
 export const WithCheckboxes: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'click',
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [align]="align"
-          [side]="side"
-          [trigger]="trigger"
-        >
-          <ae-button trigger color="primary" variant="solid">
-            <span>Open checkboxes</span>
-            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
-          </ae-button>
-          <div dropdown-content class="p-4 min-w-[320px] flex flex-col gap-4">
-            <ae-checkbox
-              label="Comments"
-              description="Get notified when someone posts a comment."
-              size="lg"
-              variant="primary"
-            ></ae-checkbox>
-            <ae-checkbox
-              label="Alerts"
-              description="Get notified when there is a critical issue."
-              size="lg"
-              variant="primary"
-            ></ae-checkbox>
-            <ae-checkbox
-              label="Updates"
-              description="Get notified when there is a new feature."
-              size="lg"
-              variant="primary"
-            ></ae-checkbox>
+        <button aeButton [aeDropdownTrigger]="dropdownCheckboxes">
+          <span>Open dropdown</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+
+        <div #dropdownCheckboxes class="aegov-dropdown hidden w-80">
+          <div class="dropdown-body mb-4" data-dropdown-prevent-close>
+            <div class="aegov-check-group rounded-md hover:bg-aeblack-50 px-5 pt-4 pb-2">
+              <input id="comments" aria-describedby="comments-description" name="comments" type="checkbox">
+              <div>
+                <label for="comments">Comments</label>
+                <p id="comments-description" class="text-sm">Get notified when someone posts a comment on a posting.</p>
+              </div>
+            </div>
+            <div class="aegov-check-group rounded-md hover:bg-aeblack-50 px-5 pt-4 pb-2">
+              <input id="alert" aria-describedby="alert-description" name="alert" type="checkbox" checked>
+              <div>
+                <label for="alert">Alerts</label>
+                <p id="alert-description" class="text-sm">Get notified when there is a critical issue.</p>
+              </div>
+            </div>
+            <div class="aegov-check-group rounded-md hover:bg-aeblack-50 px-5 pt-4 pb-2">
+              <input id="update" aria-describedby="update-description" name="update" type="checkbox">
+              <div>
+                <label for="update">Updates</label>
+                <p id="update-description" class="text-sm">Get notified when there is a new feature released.</p>
+              </div>
+            </div>
           </div>
-        </ae-dropdown>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const CustomUIMenu: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-20 flex justify-center">
+        <button aeButton [aeDropdownTrigger]="dropdownDescMenu">
+          <span>Open dropdown</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+
+        <div #dropdownDescMenu class="aegov-dropdown hidden w-80">
+          <div class="dropdown-body">
+            <div class="group hover:bg-primary-500 p-4">
+              <a href="#" (click)="$event.preventDefault()" class="no-underline">
+                <div class="font-bold text-aeblack-950 uppercase mb-2 group-hover:text-primary-50">PUBLISHED</div>
+                <p class="text-sm text-aeblack-300 group-hover:text-whitely-50 !mb-0">by publishing an item, the content will be pushed on the production version of the site.</p>
+              </a>
+            </div>
+            <div class="group hover:bg-primary-500 p-4">
+              <a href="#" (click)="$event.preventDefault()" class="no-underline">
+                <div class="font-bold text-aeblack-950 uppercase mb-2 group-hover:text-primary-50">DRAFT</div>
+                <p class="text-sm text-aeblack-300 group-hover:text-whitely-50 !mb-0">Save a working copy of your file and save the progress before publishing</p>
+              </a>
+            </div>
+            <div class="group hover:bg-primary-500 p-4">
+              <a href="#" (click)="$event.preventDefault()" class="no-underline">
+                <div class="font-bold text-aeblack-950 uppercase mb-2 group-hover:text-primary-50">PRIVATE</div>
+                <p class="text-sm text-aeblack-300 group-hover:text-whitely-50 !mb-0">make this post as a private post and only visible to selected user</p>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     `,
   }),
 };
 
 export const TriggerOnHover: Story = {
-  args: {
-    align: 'start',
-    side: 'bottom',
-    trigger: 'hover',
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
+    props: {
+      hoverItems: standardItems,
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-dropdown
-          [trigger]="trigger"
-          [align]="align"
-          [side]="side"
-          [groups]="[
-            {
-              items: [
-                { label: 'Hover item 1', value: 'hover-1' },
-                { label: 'Hover item 2', value: 'hover-2' }
-              ]
-            }
-          ]"
-        >
-          <ae-button trigger color="primary" variant="solid">
-            <span>Open on hover</span>
-            <ae-icon name="caret-down" [size]="20" className="ml-2"></ae-icon>
-          </ae-button>
-        </ae-dropdown>
+        <button aeButton aeDropdown dropdownTrigger="hover" [items]="hoverItems">
+          <span>Hover to open</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+      </div>
+    `,
+  }),
+};
+
+export const Placements: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      placementItems: standardItems,
+    },
+    template: `
+      <div class="min-h-[600px] flex flex-wrap gap-8 justify-center items-center p-8">
+        <button aeButton aeDropdown dropdownPlacement="top" [items]="placementItems">
+          <span>Top Dropdown</span>
+          <svg aeIcon name="caret-up" [size]="16" class="ms-1.5"></svg>
+        </button>
+        <button aeButton aeDropdown dropdownPlacement="right" [items]="placementItems">
+          <span>Right Dropdown</span>
+          <svg aeIcon name="caret-right" [size]="16" class="ms-1.5"></svg>
+        </button>
+        <button aeButton aeDropdown dropdownPlacement="bottom" [items]="placementItems">
+          <span>Bottom Dropdown</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+        <button aeButton aeDropdown dropdownPlacement="left" [items]="placementItems">
+          <span>Left Dropdown</span>
+          <svg aeIcon name="caret-left" [size]="16" class="ms-1.5"></svg>
+        </button>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-20 flex justify-center" dir="rtl">
+        <button aeButton [aeDropdownTrigger]="arabicUserMenu">
+          <svg aeIcon name="user" [size]="18" class="me-1.5"></svg>
+          <span>الحساب الشخصي</span>
+          <svg aeIcon name="caret-down" [size]="16" class="ms-1.5"></svg>
+        </button>
+
+        <div #arabicUserMenu class="aegov-dropdown hidden w-52">
+          <div class="dropdown-header">
+            <div class="font-bold text-aeblack-900 truncate">سعادة محمد بن راشد</div>
+            <div class="text-sm font-normal text-aeblack-600 truncate">mohammed&#64;aegov.ae</div>
+          </div>
+          <div class="dropdown-body text-aeblack-600">
+            <ul class="py-1" role="menu">
+              <li role="none">
+                <a href="#dashboard" class="dropdown-item">
+                  <svg aeIcon name="house" [size]="20"></svg>
+                  <span class="flex-1 text-right">لوحة التحكم</span>
+                </a>
+              </li>
+              <li role="none">
+                <a href="#settings" class="dropdown-item">
+                  <svg aeIcon name="gear" [size]="20"></svg>
+                  <span class="flex-1 text-right">الإعدادات العامة</span>
+                </a>
+              </li>
+              <li role="none">
+                <a href="#earnings" class="dropdown-item">
+                  <svg aeIcon name="currency-circle-dollar" [size]="20"></svg>
+                  <span class="flex-1 text-right">الأرباح والتقارير</span>
+                </a>
+              </li>
+            </ul>
+            <ul class="py-1 border-t border-aeblack-50" role="menu">
+              <li role="none">
+                <a href="#logout" class="dropdown-item">
+                  <svg aeIcon name="sign-out" [size]="20"></svg>
+                  <span class="flex-1 text-right">تسجيل الخروج</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     `,
   }),

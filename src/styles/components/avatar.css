@@ -1,0 +1,60 @@
+.aegov-avatar {
+  @apply relative inline-block h-10 w-10;
+
+  & > img {
+    @apply h-full w-full rounded object-cover;
+
+    &.no-user {
+      background-color: var(--color-aeblack-50);
+    }
+  }
+
+  & > span.alert-indicator {
+    @apply absolute -right-1 -top-1 block h-2.5 w-2.5 rounded-full ring-2;
+  }
+
+  /* Size definitions */
+  &.avatar-xs {
+    @apply h-6 w-6;
+    & > span.alert-indicator { @apply h-1.5 w-1.5; }
+  }
+
+  &.avatar-sm {
+    @apply h-8 w-8;
+    & > span.alert-indicator { @apply h-2 w-2; }
+  }
+
+  &.avatar-base {
+    @apply h-10 w-10;
+    & > span.alert-indicator { @apply h-2.5 w-2.5; }
+  }
+
+  &.avatar-lg {
+    @apply h-12 w-12;
+    & > img { @apply rounded-md; }
+    & > span.alert-indicator { @apply h-3 w-3; }
+  }
+
+  &.avatar-xl {
+    @apply h-14 w-14;
+    & > img { @apply rounded-md; }
+    & > span.alert-indicator { @apply h-3.5 w-3.5; }
+  }
+
+  &.avatar-2xl {
+    @apply h-16 w-16;
+    & > img { @apply rounded-lg; }
+    & > span.alert-indicator { @apply h-4 w-4; }
+  }
+
+  &.avatar-3xl {
+    @apply h-20 w-20;
+    & > img { @apply rounded-lg; }
+    & > span.alert-indicator { @apply h-5 w-5; }
+  }
+
+  &.avatar-rounded {
+    & > img { @apply rounded-full; }
+    & > span.alert-indicator { @apply right-0 top-0; }
+  }
+}

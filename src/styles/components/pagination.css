@@ -1,0 +1,57 @@
+.aegov-pagination {
+  @apply inline-flex items-center space-x-1;
+
+  & a {
+    @apply text-base no-underline;
+  }
+
+  .pages {
+    @apply text-base;
+  }
+
+  .aegov-pagination-first,
+  .aegov-pagination-last,
+  .aegov-pagination-previous,
+  .aegov-pagination-next {
+    --pagination-nav-fg: var(--color-aeblack-800);
+    --pagination-nav-fg-hover: var(--color-primary-500);
+
+    color: var(--pagination-nav-fg);
+    @apply inline-flex items-center gap-2 py-1 no-underline lg:px-1 text-base;
+
+    &:hover {
+      color: var(--pagination-nav-fg-hover);
+    }
+
+    & svg {
+      @apply h-5 w-5;
+    }
+  }
+
+  .aegov-pagination-page,
+  .aegov-pagination-current {
+    @apply inline-flex h-8 w-8 items-center justify-center rounded-full text-base;
+  }
+
+  .aegov-pagination-page {
+    --pagination-page-fg: var(--color-aeblack-800);
+    --pagination-page-bg-hover: var(--color-primary-50);
+    --pagination-page-fg-hover: var(--color-primary-800);
+
+    color: var(--pagination-page-fg);
+
+    &:hover {
+      background-color: var(--pagination-page-bg-hover);
+      color: var(--pagination-page-fg-hover);
+    }
+  }
+
+  .aegov-pagination-current {
+    background-color: var(--color-primary-600);
+    color: var(--color-whitely-50);
+  }
+
+  .aegov-pagination-extend {
+    color: var(--color-aeblack-300);
+  }
+}

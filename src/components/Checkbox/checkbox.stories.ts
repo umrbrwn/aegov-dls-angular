@@ -1,37 +1,78 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { CheckboxComponent } from './checkbox.component';
+import { moduleMetadata } from '@storybook/angular';
+import { CheckboxComponent, type CheckboxSize, type CheckboxVariant, type CheckboxLayout } from './checkbox.component';
+import { FormsModule } from '@angular/forms';
 
 const meta: Meta<CheckboxComponent> = {
   title: 'Components/Checkbox',
   component: CheckboxComponent,
-  parameters: {
-    layout: 'centered',
+  tags: ['autodocs'],
+  decorators: [
+    moduleMetadata({
+      imports: [CheckboxComponent, FormsModule],
+    }),
+  ],
+  argTypes: {
+    size: {
+      control: 'select',
+      options: ['sm', 'base', 'lg'] as CheckboxSize[],
+      description: 'The sizing scale of the checkbox element',
+    },
+    variant: {
+      control: 'select',
+      options: ['primary', 'secondary'] as CheckboxVariant[],
+      description: 'Color styling for the checkbox check state',
+    },
+    layout: {
+      control: 'select',
+      options: ['auto', 'item', 'group', 'list'] as CheckboxLayout[],
+      description: 'Display alignment mode of label, description, and input',
+    },
+    label: {
+      control: 'text',
+      description: 'Primary text label for the checkbox',
+    },
+    description: {
+      control: 'text',
+      description: 'Accompanying helper description text',
+    },
+    checked: {
+      control: 'boolean',
+      description: 'Current checked state',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disables user interaction',
+    },
+    required: {
+      control: 'boolean',
+      description: 'Indicates mandatory field requirement',
+    },
+    id: {
+      control: 'text',
+      description: 'Custom element ID',
+    },
+    name: {
+      control: 'text',
+      description: 'Form control input name',
+    },
+    className: {
+      control: 'text',
+      description: 'Additional custom CSS classes',
+    },
   },
   args: {
     size: 'base',
     variant: 'primary',
+    layout: 'auto',
+    label: 'I would prefer option 1',
+    description: '',
+    checked: false,
     disabled: false,
     required: false,
-    checked: false,
-  },
-  argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'base', 'lg'],
-    },
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    required: {
-      control: 'boolean',
-    },
-    checked: {
-      control: 'boolean',
-    },
+    id: '',
+    name: '',
+    className: '',
   },
 };
 
@@ -39,162 +80,177 @@ export default meta;
 type Story = StoryObj<CheckboxComponent>;
 
 export const Default: Story = {
-  args: {
-    label: 'Accept terms and conditions',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    checked: false,
-  },
   render: (args) => ({
-    props: args,
-    template: `<ae-checkbox [label]="label" [description]="description" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>`,
+    props: {
+      ...args,
+      id: args.id || undefined,
+      name: args.name || undefined,
+      description: args.description || undefined,
+    },
+    template: `
+      <div class="p-6">
+        <ae-checkbox
+          [id]="id"
+          [name]="name"
+          [size]="size"
+          [variant]="variant"
+          [layout]="layout"
+          [label]="label"
+          [description]="description"
+          [(checked)]="checked"
+          [disabled]="disabled"
+          [required]="required"
+          [className]="className"
+        ></ae-checkbox>
+      </div>
+    `,
   }),
 };
 
-export const WithDescription: Story = {
-  args: {
-    label: 'Notifications',
-    description: 'Get notified when there is a critical issue.',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    checked: false,
+export const InlineRow: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<ae-checkbox [label]="label" [description]="description" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>`,
+  render: () => ({
+    template: `
+      <div class="flex flex-wrap gap-6 items-center p-6">
+        <ae-checkbox label="Option 1"></ae-checkbox>
+        <ae-checkbox label="Option 2" [checked]="true"></ae-checkbox>
+        <ae-checkbox label="Option 3"></ae-checkbox>
+      </div>
+    `,
+  }),
+};
+
+export const InlineWithLink: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-6 max-w-md">
+        <ae-checkbox>
+          <span>I agree with the <a href="#" class="text-primary-600 underline font-medium hover:text-primary-700">terms and conditions</a></span>
+        </ae-checkbox>
+      </div>
+    `,
+  }),
+};
+
+export const WithAdditionalDescription: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="flex flex-col gap-6 p-6 max-w-md">
+        <ae-checkbox
+          label="Option 1"
+          description="A short description explaining the implications of selecting option 1."
+        ></ae-checkbox>
+        <ae-checkbox
+          label="Option 2"
+          description="A short description explaining the implications of selecting option 2."
+          [checked]="true"
+        ></ae-checkbox>
+      </div>
+    `,
+  }),
+};
+
+export const AsListElement: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-6 max-w-md divide-y divide-aeblack-100 border border-aeblack-200 rounded-lg">
+        <ae-checkbox layout="list" label="Visa - XXXX XXXX XXXX 3456"></ae-checkbox>
+        <ae-checkbox layout="list" label="Visa - XXXX XXXX XXXX 1345" [checked]="true"></ae-checkbox>
+        <ae-checkbox layout="list" label="Mastercard - XXXX XXXX XXXX 4453"></ae-checkbox>
+      </div>
+    `,
   }),
 };
 
 export const Sizes: Story = {
-  argTypes: {
-    size: { table: { disable: true } },
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="flex flex-col gap-4">
-        <ae-checkbox size="sm" label="Small checkbox" description="This is a small checkbox" [variant]="variant" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>
-        <ae-checkbox size="base" label="Base checkbox" description="This is a base checkbox" [variant]="variant" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>
-        <ae-checkbox size="lg" label="Large checkbox" description="This is a large checkbox" [variant]="variant" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>
+      <div class="flex flex-col gap-6 p-6 max-w-md">
+        <div class="flex flex-col gap-2">
+          <span class="text-xs font-semibold text-gray-400 block">Large (.check-lg)</span>
+          <ae-checkbox size="lg" label="Option 1 (Large)" description="Additional details for large checkbox."></ae-checkbox>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="text-xs font-semibold text-gray-400 block">Base (.check-base / default)</span>
+          <ae-checkbox size="base" label="Option 2 (Base)" description="Additional details for base checkbox."></ae-checkbox>
+        </div>
+        <div class="flex flex-col gap-2">
+          <span class="text-xs font-semibold text-gray-400 block">Small (.check-sm)</span>
+          <ae-checkbox size="sm" label="Option 3 (Small)" description="Additional details for small checkbox."></ae-checkbox>
+        </div>
       </div>
     `,
   }),
 };
 
-export const Variants: Story = {
-  argTypes: {
-    variant: { table: { disable: true } },
+export const SecondaryColor: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="flex flex-col gap-4">
-        <ae-checkbox variant="primary" label="Primary checkbox" description="This uses the primary color scheme" [size]="size" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>
-        <ae-checkbox variant="secondary" label="Secondary checkbox" description="This uses the secondary color scheme" [size]="size" [disabled]="disabled" [required]="required" [checked]="checked"></ae-checkbox>
+      <div class="flex flex-col gap-4 p-6 max-w-md">
+        <ae-checkbox variant="secondary" label="Secondary Option 1"></ae-checkbox>
+        <ae-checkbox variant="secondary" label="Secondary Option 2" [checked]="true"></ae-checkbox>
       </div>
     `,
   }),
 };
 
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled checkbox',
-    description: 'This checkbox cannot be interacted with',
-    disabled: true,
-    size: 'base',
-    variant: 'primary',
-    required: false,
-    checked: false,
+export const DisabledState: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<ae-checkbox [label]="label" [description]="description" [disabled]="disabled" [size]="size" [variant]="variant" [required]="required" [checked]="checked"></ae-checkbox>`,
-  }),
-};
-
-export const Required: Story = {
-  args: {
-    label: 'Required checkbox',
-    description: 'This checkbox must be checked',
-    required: true,
-    disabled: false,
-    size: 'base',
-    variant: 'primary',
-    checked: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-checkbox [label]="label" [description]="description" [required]="required" [size]="size" [variant]="variant" [disabled]="disabled" [checked]="checked"></ae-checkbox>`,
-  }),
-};
-
-export const AllStates: Story = {
-  argTypes: {
-    disabled: { table: { disable: true } },
-    required: { table: { disable: true } },
-    checked: { table: { disable: true } },
-  },
-  args: {
-    size: 'base',
-    variant: 'primary',
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="flex flex-col gap-6">
-        <ae-checkbox label="Default checkbox" [size]="size" [variant]="variant"></ae-checkbox>
-        <ae-checkbox label="With description" description="Additional information about this checkbox" [size]="size" [variant]="variant"></ae-checkbox>
-        <ae-checkbox label="Disabled checkbox" description="This checkbox cannot be interacted with" [disabled]="true" [size]="size" [variant]="variant"></ae-checkbox>
-        <ae-checkbox label="Required checkbox" description="This checkbox must be checked" [required]="true" [size]="size" [variant]="variant"></ae-checkbox>
+      <div class="flex flex-col gap-4 p-6 max-w-md">
+        <ae-checkbox label="Disabled Unchecked" [disabled]="true"></ae-checkbox>
+        <ae-checkbox label="Disabled Checked" [checked]="true" [disabled]="true"></ae-checkbox>
+        <ae-checkbox
+          label="Disabled with Description"
+          description="This option cannot currently be selected."
+          [disabled]="true"
+        ></ae-checkbox>
       </div>
     `,
   }),
 };
 
-export const AsList: Story = {
-  argTypes: {
-    size: { table: { disable: true } },
-    disabled: { table: { disable: true } },
-    required: { table: { disable: true } },
-    checked: { table: { disable: true } },
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    variant: 'primary',
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="bg-white rounded-xl border border-gray-200 p-6 max-w-xl">
-        <ul class="divide-y divide-gray-200 w-[400px]">
-          <li class="flex items-center justify-between py-4">
-            <label class="font-semibold text-gray-800 flex justify-between w-full cursor-pointer">
-              Abdullah Al Mehri
-              <ae-checkbox [variant]="variant"></ae-checkbox>
-            </label>
-          </li>
-          <li class="flex items-center justify-between py-4">
-            <label class="font-semibold text-gray-800 flex justify-between w-full cursor-pointer">
-              Maryam Al Kamali
-              <ae-checkbox [variant]="variant"></ae-checkbox>
-            </label>
-          </li>
-          <li class="flex items-center justify-between py-4">
-            <label class="font-semibold text-gray-800 flex justify-between w-full cursor-pointer">
-              Shehzad Obaid
-              <ae-checkbox [variant]="variant"></ae-checkbox>
-            </label>
-          </li>
-          <li class="flex items-center justify-between py-4">
-            <label class="font-semibold text-gray-800 flex justify-between w-full cursor-pointer">
-              Ramakrishnan Iyer
-              <ae-checkbox [variant]="variant"></ae-checkbox>
-            </label>
-          </li>
-        </ul>
+      <div class="flex flex-col gap-6 p-6 max-w-md" dir="rtl">
+        <div class="flex flex-col gap-4">
+          <span class="text-xs font-semibold text-gray-400 block">خيارات معيارية</span>
+          <ae-checkbox label="الخيار الأول"></ae-checkbox>
+          <ae-checkbox label="الخيار الثاني" [checked]="true"></ae-checkbox>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <span class="text-xs font-semibold text-gray-400 block">خيارات مع نص توضيحي</span>
+          <ae-checkbox
+            label="تفعيل الإشعارات عبر الرسائل النصية"
+            description="ستصلك رسائل دورية عند صدور أي تحديث جديد بشأن طلبك."
+            [checked]="true"
+          ></ae-checkbox>
+        </div>
       </div>
     `,
   }),

@@ -1,0 +1,182 @@
+.aegov-card-group {
+  background-color: var(--color-primary-300);
+  border-color: var(--color-primary-300);
+  @apply grid gap-px rounded-lg border md:rounded-xl xl:rounded-2xl;
+
+  &.card-stacked {
+    @apply overflow-hidden;
+
+    & > * {
+      @apply h-full space-y-6 p-6;
+    }
+  }
+}
+
+.card-element-space {
+  @apply space-y-6;
+}
+
+.aegov-card {
+  @apply rounded-xl;
+
+  & > svg {
+    color: var(--color-primary-600);
+    @apply h-10 w-10;
+  }
+
+  & .card-title {
+    @apply text-h5 font-extrabold font-inter rtl:font-alexandria;
+  }
+
+  & .card-image {
+    @apply aspect-[16/9] w-full object-cover;
+  }
+
+  &:not(.card-bordered) {
+    & .card-image {
+      @apply rounded-xl;
+    }
+  }
+
+  &.card-bordered {
+    border-color: var(--color-primary-300);
+    @apply border overflow-hidden;
+
+    &:not(.card-news) {
+      @apply space-y-6 p-6;
+    }
+
+    & .card-image {
+      @apply rounded-lg block;
+    }
+  }
+
+  &.card-glow {
+    --tw-shadow-color: var(--color-primary-100);
+    transition-property: box-shadow;
+    transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+    transition-duration: 0.3s;
+
+    &:hover {
+      box-shadow: 0 20px 25px -5px var(--tw-shadow-color, #0000001a), 0 8px 10px -6px var(--tw-shadow-color, #0000001a);
+    }
+  }
+
+  &.card-news {
+    &:not(.card-bordered) {
+      @apply space-y-6;
+
+      & img {
+        @apply rounded-xl hover:opacity-90;
+      }
+    }
+
+    & .card-content {
+      @apply space-y-6;
+    }
+
+    &.card-bordered {
+      & .card-content {
+        @apply p-6;
+      }
+    }
+  }
+
+  &.card-service {
+    @apply transition-all;
+
+    &:hover {
+      background-color: var(--color-primary-50);
+    }
+
+    & .card-service-title,
+    & .card-title {
+      @apply text-h5;
+
+      & > a {
+        color: var(--color-aeblack-800);
+
+        &:hover {
+          color: var(--color-primary-800);
+        }
+      }
+    }
+
+    & .card-service-title {
+      @apply font-extrabold;
+    }
+  }
+
+  &.card-creative {
+    @apply relative rounded-xl overflow-hidden after:absolute after:inset-0 after:h-full after:w-full after:content-[""];
+
+    &::after {
+      background-image: linear-gradient(to top, var(--color-primary-700), transparent);
+    }
+
+    & img {
+      @apply w-full object-cover;
+    }
+
+    & .card-content {
+      color: var(--color-whitely-50);
+      @apply absolute inset-x-0 bottom-0 z-10 p-7 text-[2.5rem] font-inter font-extrabold leading-[1.15] rtl:font-notokufi;
+    }
+  }
+
+  /* --- Size Variations --- */
+  &.card-sm {
+    @apply rounded-lg;
+
+    & > svg { @apply h-7 w-7; }
+    & .card-title { @apply text-h6; }
+    &:not(.card-bordered) .card-image { @apply rounded-lg; }
+    &.card-bordered:not(.card-news) { @apply space-y-5 p-4; }
+    &.card-bordered:not(.card-news) .card-image { @apply rounded; }
+    &.card-news:not(.card-bordered) { @apply space-y-5; }
+    &.card-news:not(.card-bordered) img { @apply rounded-lg; }
+    &.card-news .card-content { @apply space-y-5; }
+    &.card-bordered.card-news .card-content { @apply p-4; }
+    &.card-service .card-title,
+    &.card-service .card-service-title { @apply text-h6; }
+    &.card-creative .card-content { @apply text-[2rem] leading-[normal] p-5; }
+  }
+
+  &.card-base {
+    @apply rounded-xl;
+
+    & > svg { @apply h-10 w-10; }
+    & .card-title { @apply text-h5 font-extrabold; }
+    &:not(.card-bordered) .card-image { @apply rounded-xl; }
+    &.card-bordered:not(.card-news) { @apply space-y-6 p-6; }
+    &.card-bordered:not(.card-news) .card-image { @apply rounded-lg; }
+    &.card-news:not(.card-bordered) { @apply space-y-6; }
+    &.card-news:not(.card-bordered) img { @apply rounded-xl; }
+    &.card-news .card-content { @apply space-y-6; }
+    &.card-bordered.card-news .card-content { @apply p-6; }
+    &.card-service .card-title,
+    &.card-service .card-service-title { @apply text-h5; }
+    &.card-creative .card-content { @apply text-[2.5rem] leading-[1.15] p-7; }
+  }
+
+  &.card-lg {
+    @apply rounded-2xl;
+
+    & > svg { @apply h-14 w-14; }
+    & .card-title { @apply text-h4; }
+    &:not(.card-bordered) .card-image { @apply rounded-2xl; }
+    &.card-bordered:not(.card-news) { @apply space-y-7 p-7; }
+    &.card-bordered:not(.card-news) .card-image { @apply rounded-xl; }
+    &.card-news:not(.card-bordered) { @apply space-y-7; }
+    &.card-news:not(.card-bordered) img { @apply rounded-2xl; }
+    &.card-news .card-content { @apply space-y-7; }
+    &.card-bordered.card-news .card-content { @apply p-7; }
+    &.card-service .card-title,
+    &.card-service .card-service-title { @apply text-h4; }
+    &.card-creative .card-content { @apply text-[3rem] leading-[1.05] p-8; }
+  }
+
+  .aegov-link {
+    @apply underline;
+  }
+}

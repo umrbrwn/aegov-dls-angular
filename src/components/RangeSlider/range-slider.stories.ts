@@ -4,51 +4,84 @@ import { RangeSliderComponent } from './range-slider.component';
 const meta: Meta<RangeSliderComponent> = {
   title: 'Components/RangeSlider',
   component: RangeSliderComponent,
+  tags: ['autodocs'],
   parameters: {
     layout: 'centered',
   },
   args: {
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    label: 'Label',
+    id: undefined,
+    name: undefined,
+    label: 'A range',
+    value: 20,
     min: 0,
     max: 100,
     step: 1,
+    size: 'base',
+    variant: 'primary',
+    helperText: 'Select your preferred value from the range.',
+    error: '',
+    disabled: false,
+    required: false,
+    className: '',
   },
   argTypes: {
+    id: {
+      control: 'text',
+      description: 'HTML id attribute for the range input',
+    },
+    name: {
+      control: 'text',
+      description: 'Form control name attribute',
+    },
+    label: {
+      control: 'text',
+      description: 'Label text above the slider',
+    },
+    value: {
+      control: 'number',
+      description: 'Initial / controlled value',
+    },
+    min: {
+      control: 'number',
+      description: 'Minimum value of the range slider',
+    },
+    max: {
+      control: 'number',
+      description: 'Maximum value of the range slider',
+    },
+    step: {
+      control: 'number',
+      description: 'Step increment',
+    },
     size: {
       control: 'select',
       options: ['sm', 'base', 'lg'],
+      description: 'Sizing scale',
     },
     variant: {
       control: 'select',
       options: ['primary', 'secondary'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    required: {
-      control: 'boolean',
-    },
-    label: {
-      control: 'text',
+      description: 'Visual colour variant',
     },
     helperText: {
       control: 'text',
+      description: 'Helper / description text below the slider',
     },
     error: {
       control: 'text',
+      description: 'Error message text',
     },
-    min: {
-      control: 'number',
+    disabled: {
+      control: 'boolean',
+      description: 'Disabled state',
     },
-    max: {
-      control: 'number',
+    required: {
+      control: 'boolean',
+      description: 'Required indicator',
     },
-    step: {
-      control: 'number',
+    className: {
+      control: 'text',
+      description: 'Additional custom CSS classes',
     },
   },
 };
@@ -56,121 +89,164 @@ const meta: Meta<RangeSliderComponent> = {
 export default meta;
 type Story = StoryObj<RangeSliderComponent>;
 
+// ─── Default ────────────────────────────────────────────────────────────────────
 export const Default: Story = {
-  args: {
-    label: 'Volume',
-    helperText: 'Adjust the volume level',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-  },
   render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [helperText]="helperText" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
+    props: {
+      ...args,
+      id: args.id || undefined,
+      name: args.name || undefined,
+      label: args.label || undefined,
+      helperText: args.helperText || undefined,
+      error: args.error || undefined,
+    },
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          [id]="id"
+          [name]="name"
+          [label]="label"
+          [value]="value"
+          [min]="min"
+          [max]="max"
+          [step]="step"
+          [size]="size"
+          [variant]="variant"
+          [helperText]="helperText"
+          [error]="error"
+          [disabled]="disabled"
+          [required]="required"
+          [className]="className"
+        ></ae-range-slider>
+      </div>
+    `,
   }),
 };
 
-export const WithError: Story = {
-  args: {
-    label: 'Price Range',
-    error: 'Please select a value below 70',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-[500px]"><ae-range-slider [label]="label" [error]="error" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [helperText]="helperText" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
-  }),
-};
-
-export const Required: Story = {
-  args: {
-    label: 'Required Field',
-    required: true,
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [required]="required" [size]="size" [variant]="variant" [disabled]="disabled" [helperText]="helperText" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
-  }),
-};
-
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled Slider',
-    disabled: true,
-    helperText: 'This slider is disabled',
-    size: 'base',
-    variant: 'primary',
-    required: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [disabled]="disabled" [helperText]="helperText" [size]="size" [variant]="variant" [required]="required" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
-  }),
-};
-
+// ─── Secondary Variant ──────────────────────────────────────────────────────────
 export const Secondary: Story = {
-  args: {
-    label: 'Secondary Variant',
-    variant: 'secondary',
-    size: 'base',
-    disabled: false,
-    required: false,
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [variant]="variant" [size]="size" [disabled]="disabled" [required]="required" [helperText]="helperText" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="A range"
+          [value]="20"
+          variant="secondary"
+        ></ae-range-slider>
+      </div>
+    `,
   }),
 };
 
-export const Small: Story = {
-  args: {
-    label: 'Small Size',
-    size: 'sm',
-    variant: 'primary',
-    disabled: false,
-    required: false,
+// ─── Disabled ───────────────────────────────────────────────────────────────────
+export const Disabled: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [helperText]="helperText" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="A range"
+          [value]="20"
+          [disabled]="true"
+        ></ae-range-slider>
+      </div>
+    `,
   }),
 };
 
-export const Large: Story = {
-  args: {
-    label: 'Large Size',
-    size: 'lg',
-    variant: 'primary',
-    disabled: false,
-    required: false,
+// ─── With Helper Text ───────────────────────────────────────────────────────────
+export const WithHelperText: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [helperText]="helperText" [error]="error" [min]="min" [max]="max" [step]="step"></ae-range-slider></div>`,
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="Volume"
+          [value]="50"
+          helperText="Adjust the volume level"
+        ></ae-range-slider>
+      </div>
+    `,
   }),
 };
 
+// ─── With Error ─────────────────────────────────────────────────────────────────
+export const WithError: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="Price Range"
+          [value]="80"
+          error="Please select a value below 70"
+        ></ae-range-slider>
+      </div>
+    `,
+  }),
+};
+
+// ─── Required ───────────────────────────────────────────────────────────────────
+export const Required: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="Required field"
+          [value]="20"
+          [required]="true"
+        ></ae-range-slider>
+      </div>
+    `,
+  }),
+};
+
+// ─── Custom Range (Temperature) ─────────────────────────────────────────────────
 export const CustomRange: Story = {
-  args: {
-    label: 'Temperature',
-    min: -20,
-    max: 40,
-    step: 5,
-    helperText: 'Select temperature in Celsius',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<div class="w-80"><ae-range-slider [label]="label" [min]="min" [max]="max" [step]="step" [helperText]="helperText" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [error]="error"></ae-range-slider></div>`,
+  render: () => ({
+    template: `
+      <div class="w-[500px] p-6">
+        <ae-range-slider
+          label="Temperature"
+          [value]="10"
+          [min]="-20"
+          [max]="40"
+          [step]="5"
+          helperText="Select temperature in Celsius"
+        ></ae-range-slider>
+      </div>
+    `,
+  }),
+};
+
+// ─── RTL Support ────────────────────────────────────────────────────────────────
+export const RTL: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div dir="rtl" class="w-[500px] p-6">
+        <ae-range-slider
+          label="نطاق"
+          [value]="20"
+        ></ae-range-slider>
+      </div>
+    `,
   }),
 };

@@ -6,84 +6,19 @@ import {
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconDirective } from '../Icon/icon.directive';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
 
 export type CardVariant = 'default' | 'news' | 'service' | 'creative';
 export type CardSize = 'sm' | 'base' | 'lg';
-export type CardStackDirection = 'horizontal' | 'vertical' | 'matrix';
-
-const styles = {
-  base: 'transition-all duration-300 ease-in-out bg-white',
-  bordered: 'border border-primary-300 overflow-hidden',
-  glow: 'hover:shadow-xl hover:shadow-primary-500/30',
-  sizes: {
-    sm: {
-      padding: 'p-4',
-      gap: 'space-y-5',
-      icon: 'w-7 h-7',
-      title: 'text-h6',
-      rounded: 'rounded-lg',
-    },
-    base: {
-      padding: 'p-6',
-      gap: 'space-y-6',
-      icon: 'w-10 h-10',
-      title: 'text-h5',
-      rounded: 'rounded-xl',
-    },
-    lg: {
-      padding: 'p-7',
-      gap: 'space-y-7',
-      icon: 'w-14 h-14',
-      title: 'text-h4',
-      rounded: 'rounded-2xl',
-    }
-  },
-  variants: {
-    default: '',
-    news: 'group',
-    service: 'hover:bg-primary-50',
-    creative: 'relative after:absolute after:inset-0 after:w-full after:h-full after:bg-linear-to-t after:from-primary-700 overflow-hidden text-white'
-  }
-};
 
 @Component({
-  selector: 'ae-card-link',
-  standalone: true,
-  imports: [CommonModule, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <a
-      [href]="href()"
-      [class]="linkClasses()"
-    >
-      <ng-content></ng-content>
-      <ae-icon name="caret-right" [size]="20" className="ml-2 rtl:-scale-x-100"></ae-icon>
-    </a>
-  `,
-  styles: [`
-    :host {
-      display: inline-block;
-    }
-  `]
-})
-export class CardLinkComponent {
-  readonly href = input<string>('#');
-  readonly className = input<string>('');
-
-  readonly linkClasses = computed(() =>
-    cn('inline-flex items-center text-primary-600 hover:text-primary-800 font-medium', this.className())
-  );
-}
-
-@Component({
-  selector: 'ae-card-stack',
+  selector: 'ae-card-group',
   standalone: true,
   imports: [CommonModule],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <div [class]="stackClasses()">
+    <div [class]="groupClasses()">
       <ng-content></ng-content>
     </div>
   `,
@@ -94,61 +29,192 @@ export class CardLinkComponent {
     }
   `]
 })
-export class CardStackComponent {
-  readonly direction = input<CardStackDirection>('horizontal');
-  readonly collapsed = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly gap = input<number>(4);
-  readonly columns = input<number>(3);
+export class CardGroupComponent {
+  /**
+   * Whether cards are stacked seamlessly without inner gaps
+   */
+  readonly stacked = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
-  readonly stackClasses = computed(() =>
-    cn(
-      'grid',
-      this.direction() === 'horizontal' && 'grid-flow-col auto-cols-fr',
-      this.direction() === 'vertical' && 'grid-flow-row',
-      this.direction() === 'matrix' && `grid-cols-${this.columns()}`,
-      !this.collapsed() && `gap-${this.gap()}`,
+  protected readonly groupClasses = computed(() => {
+    if (this.stacked()) {
+      return cn(
+        'flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-aeblack-100 border border-aeblack-100 rounded-2xl overflow-hidden bg-white shadow-xs [&>*]:flex-1 [&>*]:p-6',
+        this.className()
+      );
+    }
+
+    return cn(
+      'flex flex-col md:flex-row flex-wrap gap-6 [&>*]:flex-1',
       this.className()
-    )
-  );
+    );
+  });
 }
 
 @Component({
   selector: 'ae-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div [class]="cardClasses()">
-      <ng-content></ng-content>
+      @if (isCreative()) {
+        @if (imageSrc()) {
+          <img [src]="imageSrc()" [alt]="imageAlt()" class="min-h-134" />
+        }
+        <div class="card-content">
+          @if (title()) {
+            {{ title() }}
+          } @else {
+            <ng-content></ng-content>
+          }
+        </div>
+      } @else if (isNews()) {
+        @if (imageSrc()) {
+          <a [href]="linkHref() || '#'">
+            <img [src]="imageSrc()" [alt]="imageAlt()" class="card-image" />
+          </a>
+        }
+        <div class="card-content">
+          <ng-content select="[card-meta], .custom-divide"></ng-content>
+          @if (title()) {
+            <h5 class="card-title line-clamp-3">{{ title() }}</h5>
+          }
+          @if (description()) {
+            <p class="line-clamp-3">{{ description() }}</p>
+          }
+          <ng-content></ng-content>
+          @if (linkText()) {
+            <a [href]="linkHref() || '#'" class="aegov-link">
+              {{ linkText() }}
+              <svg aeIcon name="arrow-right" [size]="20" class="link-icon rtl:-scale-x-100"></svg>
+            </a>
+          }
+        </div>
+      } @else if (isService()) {
+        @if (title()) {
+          <h5 class="card-service-title line-clamp-2">
+            <a [href]="linkHref() || '#'">{{ title() }}</a>
+          </h5>
+        }
+        @if (description()) {
+          <p>{{ description() }}</p>
+        }
+        <ng-content></ng-content>
+        @if (linkText()) {
+          <div class="flex items-center justify-between gap-4">
+            <a [href]="linkHref() || '#'" class="aegov-link">
+              {{ linkText() }}
+              <svg aeIcon name="arrow-right" [size]="20" class="link-icon rtl:-scale-x-100"></svg>
+            </a>
+            <ng-content select="[card-action], .card-action"></ng-content>
+          </div>
+        }
+      } @else {
+        @if (imageSrc()) {
+          <img [src]="imageSrc()" [alt]="imageAlt()" class="card-image w-full h-auto rounded-xl" />
+        }
+        <ng-content select="[card-header], [card-icon]"></ng-content>
+        @if (title()) {
+          <h5 class="card-title">{{ title() }}</h5>
+        }
+        @if (description()) {
+          <p>{{ description() }}</p>
+        }
+        <ng-content></ng-content>
+        @if (linkText()) {
+          <div class="block">
+            <a [href]="linkHref() || '#'" class="aegov-link">
+              {{ linkText() }}
+              <svg aeIcon name="arrow-right" [size]="20" class="link-icon rtl:-scale-x-100"></svg>
+            </a>
+          </div>
+        }
+      }
     </div>
   `,
   styles: [`
     :host {
       display: block;
+      width: 100%;
     }
   `]
 })
 export class CardComponent {
+  /**
+   * Card visual variant ('default' | 'news' | 'service' | 'creative')
+   */
   readonly variant = input<CardVariant>('default');
+
+  /**
+   * Card sizing scale ('sm' | 'base' | 'lg')
+   */
   readonly size = input<CardSize>('base');
+
+  /**
+   * Whether to apply the design system border (.card-bordered)
+   */
   readonly bordered = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether to apply the interactive elevation hover glow (.card-glow)
+   */
   readonly glow = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly noRadius = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Card header title
+   */
+  readonly title = input<string | undefined>(undefined);
+
+  /**
+   * Card body description
+   */
+  readonly description = input<string | undefined>(undefined);
+
+  /**
+   * Optional image URL
+   */
+  readonly imageSrc = input<string | undefined>(undefined);
+
+  /**
+   * Image alt text for accessibility
+   */
+  readonly imageAlt = input<string>('Card image');
+
+  /**
+   * Action link label
+   */
+  readonly linkText = input<string | undefined>(undefined);
+
+  /**
+   * Action link destination URL
+   */
+  readonly linkHref = input<string | undefined>(undefined);
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
-  readonly cardClasses = computed(() => {
-    const s = this.size();
-    const v = this.variant();
+  protected readonly isCreative = computed(() => this.variant() === 'creative');
+  protected readonly isNews = computed(() => this.variant() === 'news');
+  protected readonly isService = computed(() => this.variant() === 'service');
 
+  protected readonly cardClasses = computed(() => {
+    const v = this.variant();
+    const s = this.size();
     return cn(
-      styles.base,
-      !this.noRadius() && styles.sizes[s].rounded,
-      styles.variants[v],
-      this.bordered() && styles.bordered,
-      this.glow() && styles.glow,
-      v !== 'creative' && styles.sizes[s].padding,
-      v !== 'news' && styles.sizes[s].gap,
+      'aegov-card',
+      this.bordered() && 'card-bordered',
+      this.glow() && 'card-glow',
+      v === 'news' && 'card-news',
+      v === 'service' && 'card-service',
+      v === 'creative' && 'card-creative',
+      s !== 'base' && `card-${s}`,
       this.className()
     );
   });

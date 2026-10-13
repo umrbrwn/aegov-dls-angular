@@ -1,0 +1,198 @@
+.aegov-header {
+  --header-gradient-from: var(--color-primary-400);
+  --header-gradient-to: var(--color-primary-600);
+  @apply relative pt-2;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    height: 0.5rem;
+    width: 100%;
+    background-image: linear-gradient(to bottom, var(--header-gradient-from), var(--header-gradient-to));
+  }
+}
+
+.custom-divide-common,
+.custom-divide > *:not(:last-child) {
+  @apply before:content-[""] before:absolute before:end-0 before:top-2/4 before:-translate-y-2/4;
+}
+
+.custom-divide > * {
+  @apply relative inline-flex;
+
+  &:not(:last-child) {
+    @apply me-3 pe-3 before:h-3.5 before:w-px xl:me-4 xl:pe-4;
+
+    &:before {
+      background-color: var(--color-aeblack-100);
+    }
+  }
+}
+
+.custom-divide-sm > *:not(:last-child) {
+  @apply me-1.5 pe-1.5 before:h-3.5 before:w-px xl:me-2 xl:pe-2;
+}
+
+.logos {
+  @apply flex flex-shrink-0 items-center;
+
+  & .logo-item {
+    @apply relative;
+
+    &:not(:last-child) {
+      @apply me-4 md:me-5 lg:me-6 xl:me-10;
+    }
+  }
+}
+
+.logo img {
+  @apply block max-h-12 max-w-[8.75rem] sm:max-h-14 sm:max-w-[10.625rem] md:max-h-16 md:max-w-[11.25rem] lg:max-h-[4.688rem] lg:max-w-[13rem] xl:max-h-20 xl:max-w-[15rem] 2xl:max-h-24 2xl:max-w-[25rem];
+}
+
+.secondary-logo {
+  @apply h-8 object-contain md:h-12 lg:h-14 xl:h-[4.5rem];
+}
+
+.header-top-right {
+  @apply relative min-w-10 min-h-10 md:min-w-12 md:min-h-12 lg:min-w-16 xl:min-w-20 xl:min-h-20;
+
+  & > a {
+    @apply absolute -top-2 right-0 min-w-max min-h-max;
+  }
+
+  & .emblem-logo {
+    @apply h-12 w-12 max-w-max md:h-14 md:w-14 lg:h-[4.5rem] lg:w-[4.5rem] xl:h-24 xl:w-24;
+  }
+}
+
+.hamburger-icon svg {
+  @apply inline-flex h-8 w-8;
+}
+
+.header-common-links {
+  & li:not(:last-child):before {
+    background-color: var(--color-primary-300);
+  }
+
+  & a {
+    color: var(--color-aeblack-700);
+    @apply flex items-center gap-3 text-sm font-medium no-underline;
+
+    &:hover {
+      color: var(--color-primary-500);
+    }
+  }
+}
+
+.header-navs {
+  background-color: var(--color-aeblack-50);
+}
+
+.main-navigation {
+  & .nav-menu > .menu-item > a {
+    color: var(--color-aeblack-800);
+    @apply inline-flex items-center rounded-none border-b border-transparent font-bold md:border-b-2 lg:h-14 lg:px-2 lg:text-sm xl:h-16 xl:border-b-[0.188rem] xl:px-3 xl:text-base 2xl:border-b-4 2xl:text-lg delay-200;
+  }
+
+  & .menu-item a {
+    @apply no-underline;
+  }
+
+  & .menu-item.active-page > a {
+    border-color: var(--color-primary-900);
+    color: var(--color-primary-900);
+  }
+
+  & .menu-item.menu-item-has-children {
+    & > a {
+      @apply inline-flex items-center gap-2 lg:pe-6 xl:pe-8 2xl:pe-9;
+      transition-property: color, border-color, text-decoration-color;
+      transition-timing-function: cubic-bezier(.4, 0, .2, 1);
+      transition-duration: 0.3s;
+    }
+
+    & .submenu-btn {
+      @apply relative inline-block lg:-ms-5 xl:-ms-8 lg:w-4 xl:w-6 lg:h-14 xl:h-16;
+
+      &:focus,
+      &.active-ic-btn {
+        outline: none;
+        box-shadow: 0 0 0 2px var(--color-primary-support-600);
+      }
+
+      &.inactive-ic-btn {
+        box-shadow: none !important;
+      }
+
+      & svg,
+      & img {
+        @apply lg:w-3 lg:h-3 mx-auto;
+      }
+    }
+  }
+}
+
+[dir="rtl"] .aegov-header .main-navigation .nav-menu > .menu-item {
+  & > a {
+    @apply font-medium lg:font-bold lg:text-xs xl:text-sm 2xl:text-base;
+  }
+
+  &.menu-item-has-children > a {
+    @apply gap-1 lg:gap-2;
+  }
+
+  &:first-child > a > span {
+    display: none;
+  }
+}
+
+.has-link-icon a {
+  @apply inline-flex items-center gap-2 no-underline;
+
+  & svg {
+    @apply h-4 w-4 flex-shrink-0 xl:h-5 xl:w-5;
+  }
+}
+
+.header-navs-right li a {
+  color: var(--color-primary-600);
+  @apply text-sm font-bold lg:text-xs xl:text-sm;
+
+  &:hover {
+    color: var(--color-primary-500);
+  }
+}
+
+.submenu {
+  background-color: var(--color-whitely-50);
+
+  & .submenu-title {
+    @apply capitalize lg:mb-4 xl:mb-5 2xl:mb-6;
+  }
+
+  & li a {
+    color: var(--color-aeblack-900);
+    @apply inline-block px-3 py-2 text-sm transition-colors xl:text-base;
+
+    &:hover {
+      color: var(--color-primary-700);
+      @apply underline;
+    }
+  }
+}
+
+.submenu-title {
+  color: var(--color-primary-500);
+  @apply !font-bold lg:text-sm xl:text-base;
+}
+
+.rounded-bordered {
+  border-color: var(--color-aeblack-100);
+  @apply rounded-lg border;
+}
+
+.aegov-backdrop + .aegov-backdrop,
+.aegov-modal-backdrop + .aegov-modal-backdrop {
+  @apply z-50;
+}

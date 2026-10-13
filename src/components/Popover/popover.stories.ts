@@ -1,40 +1,112 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { PopoverComponent } from './popover.component';
-import { ButtonComponent } from '../Button/button.component';
-import { IconComponent } from '../Icon/icon.component';
+import { ButtonDirective } from '../Button/button.directive';
+import { IconDirective } from '../Icon/icon.directive';
 
 const meta: Meta<PopoverComponent> = {
   title: 'Components/Popover',
   component: PopoverComponent,
+  tags: ['autodocs'],
   decorators: [
     moduleMetadata({
-      imports: [ButtonComponent, PopoverComponent, IconComponent],
+      imports: [PopoverComponent, ButtonDirective, IconDirective],
     }),
   ],
   parameters: {
     layout: 'centered',
   },
   args: {
+    id: undefined,
+    title: 'Popover title',
+    description: 'Engaging and insightful content for an enriching experience.',
+    triggerText: 'Default popover',
+    triggerVariant: 'solid',
+    triggerColor: 'primary',
     trigger: 'click',
     side: 'bottom',
     align: 'center',
+    widthClass: 'w-64',
+    showCloseButton: false,
+    closeOnOutsideClick: true,
+    closeOnEscape: true,
     isOpen: false,
+    hasCustomTrigger: false,
+    disabled: false,
+    className: '',
   },
   argTypes: {
+    id: {
+      control: 'text',
+      description: 'Unique HTML ID for popover',
+    },
+    title: {
+      control: 'text',
+      description: 'Popover header title text',
+    },
+    description: {
+      control: 'text',
+      description: 'Popover body description text',
+    },
+    triggerText: {
+      control: 'text',
+      description: 'Text for default trigger button',
+    },
+    triggerVariant: {
+      control: 'select',
+      options: ['solid', 'outline', 'soft', 'link'],
+      description: 'Default button variant',
+    },
+    triggerColor: {
+      control: 'select',
+      options: ['primary', 'secondary'],
+      description: 'Default button color',
+    },
     trigger: {
       control: 'select',
       options: ['click', 'hover'],
+      description: 'Trigger activation mode',
     },
     side: {
       control: 'select',
-      options: ['bottom', 'top', 'left', 'right'],
+      options: ['top', 'right', 'bottom', 'left'],
+      description: 'Placement side',
     },
     align: {
       control: 'select',
       options: ['start', 'center', 'end'],
+      description: 'Alignment along the side',
+    },
+    widthClass: {
+      control: 'text',
+      description: 'Width utility class',
+    },
+    showCloseButton: {
+      control: 'boolean',
+      description: 'Whether to show an X close button inside popover',
+    },
+    closeOnOutsideClick: {
+      control: 'boolean',
+      description: 'Whether clicking outside dismisses the popover',
+    },
+    closeOnEscape: {
+      control: 'boolean',
+      description: 'Whether Escape key dismisses the popover',
     },
     isOpen: {
       control: 'boolean',
+      description: 'Controlled open state',
+    },
+    hasCustomTrigger: {
+      control: 'boolean',
+      description: 'Whether custom trigger element is projected',
+    },
+    disabled: {
+      control: 'boolean',
+      description: 'Disabled state',
+    },
+    className: {
+      control: 'text',
+      description: 'Additional custom CSS classes',
     },
   },
 };
@@ -42,31 +114,56 @@ const meta: Meta<PopoverComponent> = {
 export default meta;
 type Story = StoryObj<PopoverComponent>;
 
-export const Basic: Story = {
-  args: {
-    trigger: 'click',
-    side: 'bottom',
-    align: 'center',
-    isOpen: false,
-  },
+export const Default: Story = {
   render: (args) => ({
-    props: args,
+    props: {
+      ...args,
+      id: args.id || undefined,
+      title: args.title || undefined,
+      description: args.description || undefined,
+    },
     template: `
       <div class="p-20 flex justify-center">
-        <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
-          <button trigger class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs border border-gray-300 hover:bg-gray-50 cursor-pointer">
-            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
-            Open Popover
-          </button>
-          <div class="flex flex-col gap-4">
-            <h4 class="text-lg font-semibold text-gray-900">Popover Title</h4>
-            <p class="text-sm text-gray-500">
-              This is a description text that can contain any content you want to display in the popover
+        <ae-popover
+          [id]="id"
+          [title]="title"
+          [description]="description"
+          [triggerText]="triggerText"
+          [triggerVariant]="triggerVariant"
+          [triggerColor]="triggerColor"
+          [trigger]="trigger"
+          [side]="side"
+          [align]="align"
+          [widthClass]="widthClass"
+          [showCloseButton]="showCloseButton"
+          [closeOnOutsideClick]="closeOnOutsideClick"
+          [closeOnEscape]="closeOnEscape"
+          [isOpen]="isOpen"
+          [hasCustomTrigger]="hasCustomTrigger"
+          [disabled]="disabled"
+          [className]="className"
+        ></ae-popover>
+      </div>
+    `,
+  }),
+};
+
+export const FlexiblePopover: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-20 flex justify-center">
+        <ae-popover triggerText="Flexible Popover" widthClass="w-72">
+          <div slot="content" class="space-y-3">
+            <p class="text-sm text-aeblack-700 leading-relaxed mb-0">
+              Add text, images, links, or any content to enhance the user experience and share extra details.
             </p>
-            <div class="flex justify-end">
-              <button class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 cursor-pointer">
-                Action
-              </button>
+            <div class="pt-2 flex justify-end gap-2 border-t border-aeblack-100">
+              <a href="#" (click)="$event.preventDefault()" class="text-xs font-semibold text-primary-600 hover:underline">
+                Read guidelines
+              </a>
             </div>
           </div>
         </ae-popover>
@@ -75,124 +172,112 @@ export const Basic: Story = {
   }),
 };
 
-export const WithForm: Story = {
-  args: {
-    trigger: 'click',
-    side: 'bottom',
-    align: 'center',
-    isOpen: false,
+export const TriggerOnHover: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
       <div class="p-20 flex justify-center">
-        <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
-          <button trigger class="inline-flex items-center justify-center rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-xs border border-gray-300 hover:bg-gray-50 cursor-pointer">
-            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
-            Settings
-          </button>
-          <form class="flex flex-col gap-4 min-w-[240px]">
-            <h4 class="text-lg font-semibold text-gray-900">Preferences</h4>
-            <div class="space-y-4">
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">Name</label>
-                <input
-                  type="text"
-                  class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-hidden"
-                  placeholder="Enter your name"
-                />
-              </div>
-              <div class="flex flex-col gap-2">
-                <label class="text-sm font-medium text-gray-700">Email</label>
-                <input
-                  type="email"
-                  class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-hidden"
-                  placeholder="Enter your email"
-                />
-              </div>
-            </div>
-            <div class="flex justify-end gap-2">
-              <button
-                type="button"
-                class="rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-xs ring-1 ring-inset ring-gray-300 hover:bg-gray-50 cursor-pointer"
-              >
-                Cancel
-              </button>
-              <button
-                type="submit"
-                class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 cursor-pointer"
-              >
-                Save
-              </button>
-            </div>
-          </form>
-        </ae-popover>
+        <ae-popover
+          triggerText="Hover me"
+          trigger="hover"
+          title="Quick Information"
+          description="This popover opens seamlessly when the user hovers over the trigger."
+          side="top"
+        ></ae-popover>
       </div>
     `,
   }),
 };
 
-export const Positions: Story = {
-  argTypes: {
-    side: { table: { disable: true } },
+export const Placements: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    trigger: 'click',
-    align: 'center',
-  },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
-      <div class="p-24 flex gap-4 justify-center">
-        <ae-popover side="top" [trigger]="trigger" [align]="align">
-          <button trigger class="rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 cursor-pointer">Top</button>
-          <p class="text-sm text-gray-500">This popover appears on the top</p>
-        </ae-popover>
-        <ae-popover side="right" [trigger]="trigger" [align]="align">
-          <button trigger class="rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 cursor-pointer">Right</button>
-          <p class="text-sm text-gray-500">This popover appears on the right</p>
-        </ae-popover>
-        <ae-popover side="bottom" [trigger]="trigger" [align]="align">
-          <button trigger class="rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 cursor-pointer">Bottom</button>
-          <p class="text-sm text-gray-500">This popover appears on the bottom</p>
-        </ae-popover>
-        <ae-popover side="left" [trigger]="trigger" [align]="align">
-          <button trigger class="rounded-md bg-white px-4 py-2 text-sm font-medium text-gray-700 border border-gray-300 cursor-pointer">Left</button>
-          <p class="text-sm text-gray-500">This popover appears on the left</p>
-        </ae-popover>
+      <div class="p-28 flex flex-wrap gap-8 justify-center items-center">
+        <ae-popover
+          triggerText="Top Popover"
+          side="top"
+          title="Top Position"
+          description="Opens floating directly above the trigger element."
+        ></ae-popover>
+
+        <ae-popover
+          triggerText="Bottom Popover"
+          side="bottom"
+          title="Bottom Position"
+          description="Opens floating directly below the trigger element."
+        ></ae-popover>
+
+        <ae-popover
+          triggerText="Left Popover"
+          side="left"
+          title="Left Position"
+          description="Opens floating to the left of the trigger element."
+        ></ae-popover>
+
+        <ae-popover
+          triggerText="Right Popover"
+          side="right"
+          title="Right Position"
+          description="Opens floating to the right of the trigger element."
+        ></ae-popover>
       </div>
     `,
   }),
 };
 
-export const HoverTrigger: Story = {
-  args: {
-    trigger: 'hover',
-    side: 'bottom',
-    align: 'center',
-    isOpen: false,
+export const InteractiveCardPopover: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
+  render: () => ({
     template: `
       <div class="p-20 flex justify-center">
-        <ae-popover [trigger]="trigger" [side]="side" [align]="align" [isOpen]="isOpen">
-          <button trigger class="inline-flex items-center justify-center rounded-md bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-xs hover:bg-primary-500 cursor-pointer">
-            <ae-icon name="list" [size]="16" className="mr-2"></ae-icon>
-            Hover Me
+        <ae-popover
+          widthClass="w-80"
+          [hasCustomTrigger]="true"
+          [showCloseButton]="true"
+        >
+          <button trigger type="button" class="aegov-btn btn-secondary flex items-center gap-2">
+            <svg aeIcon name="info" [size]="18"></svg>
+            <span>Service Requirements</span>
           </button>
-          <div class="flex flex-col gap-4">
-            <h4 class="text-lg font-semibold text-gray-900">Hover Popover</h4>
-            <p class="text-sm text-gray-500">
-              This popover appears when you hover over the trigger button.
-            </p>
-            <div class="flex justify-end">
-              <button class="rounded-md bg-primary-600 px-3 py-2 text-sm font-semibold text-white shadow-xs hover:bg-primary-500 cursor-pointer">
-                Action
-              </button>
+
+          <div slot="content" class="space-y-3 p-1">
+            <h4 class="font-bold text-aeblack-900 text-sm">Required Documents</h4>
+            <ul class="text-xs text-aeblack-600 space-y-1 list-disc ps-4">
+              <li>Original Emirates ID card</li>
+              <li>Valid passport with residency visa</li>
+              <li>Proof of residential address (DEWA bill)</li>
+            </ul>
+            <div class="pt-2 flex justify-between items-center border-t border-aeblack-100">
+              <span class="text-xs text-aeblack-400">Fee: Free</span>
+              <button type="button" class="aegov-btn btn-xs">Apply Now</button>
             </div>
           </div>
         </ae-popover>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    template: `
+      <div class="p-20 flex justify-center" dir="rtl">
+        <ae-popover
+          triggerText="تفاصيل الخدمة"
+          title="معلومات هامة"
+          description="محتوى مفيد وموثوق لتوفير تجربة مستخدم مثرية وسلسة على كافة المنصات."
+          widthClass="w-64"
+        ></ae-popover>
       </div>
     `,
   }),

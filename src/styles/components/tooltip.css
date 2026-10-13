@@ -1,0 +1,43 @@
+.aegov-tooltip {
+  --tooltip-bg: var(--color-aeblack-900);
+  --tooltip-fg: var(--color-whitely-50);
+
+  background-color: var(--tooltip-bg);
+  color: var(--tooltip-fg);
+  @apply absolute invisible inline-block px-6 py-2.5 text-xs font-normal transition-all rounded shadow-sm opacity-0;
+
+  & .tooltip-arrow,
+  & .tooltip-arrow::before {
+    background-color: var(--tooltip-bg);
+    @apply absolute h-4 w-4 rounded;
+  }
+
+  & .tooltip-arrow {
+    visibility: hidden;
+  }
+
+  & .tooltip-arrow::before {
+    border-color: transparent;
+    @apply visible start-0 rotate-45 transition-none content-[""];
+  }
+
+  &[data-popper-placement^="top"] > .tooltip-arrow {
+    @apply -bottom-1;
+  }
+
+  &[data-popper-placement^="bottom"] > .tooltip-arrow {
+    @apply -top-1;
+  }
+
+  &[data-popper-placement^="left"] > .tooltip-arrow {
+    @apply -end-1;
+  }
+
+  &[data-popper-placement^="right"] > .tooltip-arrow {
+    @apply -start-1;
+  }
+
+  &.in-visible > .tooltip-arrow::before {
+    visibility: hidden;
+  }
+}

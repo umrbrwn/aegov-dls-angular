@@ -1,72 +1,86 @@
 import {
   Component,
   input,
+  computed,
   ChangeDetectionStrategy,
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../Icon/icon.component';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
+import { cn } from '../../utils/cn';
 
-export interface BreadcrumbItemData {
+export interface BreadcrumbItem {
   label: string;
   href?: string;
-  icon?: string;
+  title?: string;
+  icon?: IconName;
 }
 
-export type BreadcrumbSeparator = 'slash' | 'caret';
+export type BreadcrumbSeparator = 'slash' | 'caret' | 'none';
 
 @Component({
   selector: 'ae-breadcrumbs',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <nav
-      aria-label="Breadcrumb"
-      [class]="className()"
-      itemscope
-      itemtype="https://schema.org/BreadcrumbList"
+      [attr.aria-label]="ariaLabel()"
+      [class]="navClasses()"
     >
-      <ol class="flex flex-wrap items-center">
-        @for (item of items(); track item.label; let idx = $index; let isLast = $last; let isFirst = $first) {
+      <ol
+        [attr.itemscope]="microdata() ? '' : null"
+        [attr.itemtype]="microdata() ? 'https://schema.org/BreadcrumbList' : null"
+      >
+        @for (item of items(); track item.label + '_' + $index; let idx = $index; let isLast = $last; let isFirst = $first) {
           <li
-            class="flex items-center"
-            itemprop="itemListElement"
-            itemscope
-            itemtype="https://schema.org/ListItem"
+            [attr.itemprop]="microdata() ? 'itemListElement' : null"
+            [attr.itemscope]="microdata() ? '' : null"
+            [attr.itemtype]="microdata() ? 'https://schema.org/ListItem' : null"
           >
             @if (isLast) {
-              <span aria-current="page" class="text-sm font-semibold text-gray-800 max-w-[160px] truncate" itemprop="name">
+              <span
+                aria-current="page"
+                [attr.itemprop]="microdata() ? 'name' : null"
+              >
                 @if (isFirst && showHomeIcon()) {
-                  <ae-icon name="house" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <svg aeIcon name="house" [size]="20" class="rtl:-scale-x-100"></svg>
                 } @else if (item.icon) {
-                  <ae-icon [name]="item.icon" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <svg aeIcon [name]="item.icon" [size]="20" class="rtl:-scale-x-100"></svg>
                 }
-                <span itemprop="name" class="truncate">{{ item.label }}</span>
+                {{ item.label }}
               </span>
             } @else {
               <a
                 [href]="item.href || '#'"
-                class="text-sm text-gray-500 hover:text-primary-600 max-w-[140px] truncate font-medium py-2 hover:underline decoration-2 underline-offset-2 flex items-center"
-                itemprop="item"
+                [attr.title]="item.title || item.label"
+                [attr.itemprop]="microdata() ? 'item' : null"
               >
                 @if (isFirst && showHomeIcon()) {
-                  <ae-icon name="house" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <svg aeIcon name="house" [size]="20" class="rtl:-scale-x-100"></svg>
                 } @else if (item.icon) {
-                  <ae-icon [name]="item.icon" [size]="16" className="mr-1 rtl:ml-1 rtl:mr-0 inline-block"></ae-icon>
+                  <svg aeIcon [name]="item.icon" [size]="20" class="rtl:-scale-x-100"></svg>
                 }
-                <span itemprop="name" class="truncate">{{ item.label }}</span>
+                @if (microdata()) {
+                  <span itemprop="name">{{ item.label }}</span>
+                } @else {
+                  {{ item.label }}
+                }
               </a>
             }
 
-            @if (!isLast) {
-              @if (separator() === 'caret') {
-                <ae-icon name="caret-right" [size]="16" className="text-gray-400 mx-2 rtl:scale-x-[-1]"></ae-icon>
-              } @else {
-                <span class="mx-2 text-gray-400" aria-hidden="true">/</span>
-              }
+            @if (separator() === 'caret' && !isLast) {
+              <svg
+                aeIcon
+                name="caret-right"
+                [size]="16"
+                class="w-4 h-4 inline-block mx-2 rtl:-scale-x-100"
+              ></svg>
             }
-            <meta itemprop="position" [attr.content]="idx + 1" />
+
+            @if (microdata()) {
+              <meta itemprop="position" [attr.content]="idx + 1" />
+            }
           </li>
         }
       </ol>
@@ -75,12 +89,59 @@ export type BreadcrumbSeparator = 'slash' | 'caret';
   styles: [`
     :host {
       display: block;
+      width: 100%;
+    }
+    :host .aegov-breadcrumb a > span,
+    :host .aegov-breadcrumb [aria-current="page"] > span {
+      display: inline !important;
+      position: static !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    :host .aegov-breadcrumb a > span::after,
+    :host .aegov-breadcrumb [aria-current="page"] > span::after {
+      display: none !important;
+      content: none !important;
     }
   `]
 })
 export class BreadcrumbsComponent {
-  readonly items = input<BreadcrumbItemData[]>([]);
+  /**
+   * List of breadcrumb navigation items
+   */
+  readonly items = input<BreadcrumbItem[]>([]);
+
+  /**
+   * Separator style between breadcrumbs ('slash' | 'caret' | 'none')
+   */
   readonly separator = input<BreadcrumbSeparator>('slash');
+
+  /**
+   * Whether to display a home icon on the first breadcrumb link
+   */
   readonly showHomeIcon = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether to render Schema.org microdata attributes (BreadcrumbList/ListItem)
+   */
+  readonly microdata = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Accessible ARIA label for the nav element (defaults to 'Breadcrumb')
+   */
+  readonly ariaLabel = input<string>('Breadcrumb');
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
+
+  protected readonly navClasses = computed(() => {
+    return cn(
+      'aegov-breadcrumb',
+      this.separator() === 'slash' && 'with-seperator',
+      this.className()
+    );
+  });
 }

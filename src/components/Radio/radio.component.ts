@@ -4,9 +4,9 @@ import {
   output,
   signal,
   computed,
+  effect,
   forwardRef,
   inject,
-  effect,
   ChangeDetectionStrategy,
   booleanAttribute
 } from '@angular/core';
@@ -16,52 +16,26 @@ import { cn } from '../../utils/cn';
 
 export type RadioSize = 'sm' | 'base' | 'lg';
 export type RadioVariant = 'primary' | 'secondary';
+export type RadioLayout = 'auto' | 'item' | 'group' | 'list';
 export type RadioOrientation = 'horizontal' | 'vertical';
 
-const sizeStyles = {
-  sm: {
-    radio: 'h-4 w-4',
-    indicator: 'h-2 w-2',
-    label: 'text-sm',
-    description: 'text-xs',
-  },
-  base: {
-    radio: 'h-5 w-5',
-    indicator: 'h-2.5 w-2.5',
-    label: 'text-base',
-    description: 'text-sm',
-  },
-  lg: {
-    radio: 'h-6 w-6',
-    indicator: 'h-3 w-3',
-    label: 'text-lg',
-    description: 'text-base',
-  },
-};
-
-const variantStyles = {
-  primary: {
-    radio: 'border-primary-400 focus-visible:ring-primary-500 before:bg-primary-50',
-    indicator: 'bg-aegold-450',
-    hover: 'hover:border-primary-500 before:absolute before:inset-s-2/4 before:top-2/4 before:mix-blend-multiply before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:scale-0 before:rounded-full before:transition-all hover:before:scale-100',
-  },
-  secondary: {
-    radio: 'border-secondary-400 focus-visible:ring-secondary-500 before:bg-secondary-50',
-    indicator: 'bg-secondary-800',
-    hover: 'hover:border-secondary-500 before:absolute before:inset-s-2/4 before:top-2/4 before:mix-blend-multiply before:h-12 before:w-12 before:-translate-x-2/4 before:-translate-y-2/4 before:scale-0 before:rounded-full before:transition-all hover:before:scale-100',
-  },
-};
+export interface RadioOption {
+  label: string;
+  value: any;
+  description?: string;
+  disabled?: boolean;
+}
 
 @Component({
   selector: 'ae-radio-group',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, forwardRef(() => RadioComponent)],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
       useExisting: forwardRef(() => RadioGroupComponent),
-      multi: true
-    }
+      multi: true,
+    },
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
@@ -70,7 +44,24 @@ const variantStyles = {
       [attr.aria-required]="required() ? 'true' : null"
       [class]="groupClasses()"
     >
-      <ng-content></ng-content>
+      @if (options() && options()!.length > 0) {
+        @for (opt of options()!; track opt.value) {
+          <ae-radio
+            [name]="computedName()"
+            [value]="opt.value"
+            [label]="opt.label"
+            [description]="opt.description"
+            [disabled]="disabled() || opt.disabled"
+            [size]="size()"
+            [variant]="variant()"
+            [layout]="layout()"
+            [checked]="selectedValue() === opt.value"
+            (valueChange)="selectValue($event)"
+          ></ae-radio>
+        }
+      } @else {
+        <ng-content></ng-content>
+      }
     </div>
   `,
   styles: [`
@@ -81,50 +72,105 @@ const variantStyles = {
   `]
 })
 export class RadioGroupComponent implements ControlValueAccessor {
+  /**
+   * Group input name
+   */
   readonly name = input<string | undefined>(undefined);
-  readonly defaultValue = input<string | undefined>(undefined);
-  readonly value = input<string | undefined>(undefined);
+
+  /**
+   * Controlled value
+   */
+  readonly value = input<any>(undefined);
+
+  /**
+   * Data-driven options array
+   */
+  readonly options = input<RadioOption[] | undefined>(undefined);
+
+  /**
+   * Sizing scale: 'sm' | 'base' | 'lg'
+   */
   readonly size = input<RadioSize>('base');
+
+  /**
+   * Theme variant: 'primary' | 'secondary'
+   */
   readonly variant = input<RadioVariant>('primary');
+
+  /**
+   * Layout type: 'auto' | 'item' | 'group' | 'list'
+   */
+  readonly layout = input<RadioLayout>('auto');
+
+  /**
+   * Visual arrangement: 'horizontal' | 'vertical'
+   */
   readonly orientation = input<RadioOrientation>('vertical');
+
+  /**
+   * Disabled state for entire group
+   */
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Required field indicator
+   */
   readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
-  readonly change = output<string>();
+  /**
+   * Event emitted when selected value changes
+   */
+  readonly valueChange = output<any>();
+  readonly change = output<any>();
 
-  readonly internalValue = signal<string | undefined>(undefined);
+  private readonly internalValue = signal<any>(undefined);
+
+  private readonly uniqueName = `aegov-rg-${Math.random().toString(36).substring(2, 9)}`;
+
+  readonly computedName = computed(() => this.name() || this.uniqueName);
+  readonly selectedValue = computed(() => this.internalValue());
 
   constructor() {
     effect(() => {
       const v = this.value();
       if (v !== undefined) {
         this.internalValue.set(v);
-      } else {
-        const def = this.defaultValue();
-        if (def !== undefined) {
-          this.internalValue.set(def);
-        }
       }
     });
   }
 
-  readonly selectedValue = computed(() => this.internalValue());
+  protected readonly groupClasses = computed<string>(() => {
+    const ori = this.orientation();
+    const l = this.layout();
 
-  readonly effectiveSize = computed<RadioSize>(() => this.size() || 'base');
-  readonly effectiveVariant = computed<RadioVariant>(() => this.variant() || 'primary');
-  readonly effectiveOrientation = computed<RadioOrientation>(() => this.orientation() || 'vertical');
+    if (l === 'list') {
+      return cn('divide-y divide-aeblack-100 sm:w-80', this.className());
+    }
 
-  readonly groupClasses = computed(() =>
-    cn(
-      'space-y-6',
-      this.effectiveOrientation() === 'horizontal' && 'flex space-x-8 space-y-0 rtl:space-x-reverse',
-      this.className()
-    )
-  );
+    if (ori === 'horizontal') {
+      return cn('flex flex-wrap gap-6 items-center', this.className());
+    }
 
-  onChange = (_value: any) => {};
-  onTouched = () => {};
+    return cn('space-y-6', this.className());
+  });
+
+  selectValue(val: any): void {
+    if (this.disabled()) return;
+    this.internalValue.set(val);
+    this.onChange(val);
+    this.valueChange.emit(val);
+    this.change.emit(val);
+    this.onTouched();
+  }
+
+  // ControlValueAccessor
+  protected onChange: (value: any) => void = () => {};
+  protected onTouched: () => void = () => {};
 
   writeValue(val: any): void {
     this.internalValue.set(val);
@@ -138,125 +184,290 @@ export class RadioGroupComponent implements ControlValueAccessor {
     this.onTouched = fn;
   }
 
-  select(val: string): void {
-    if (this.disabled()) return;
-    this.internalValue.set(val);
-    this.change.emit(val);
-    this.onChange(val);
-    this.onTouched();
+  setDisabledState?(isDisabled: boolean): void {
+    // Handled via input signal
   }
 }
 
 @Component({
-  selector: 'ae-radio-item',
+  selector: 'ae-radio',
   standalone: true,
   imports: [CommonModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => RadioComponent),
+      multi: true,
+    },
+  ],
   changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '[class.block]': 'isBlockLayout()',
+    '[class.w-full]': 'isBlockLayout()',
+    '[class.inline-block]': '!isBlockLayout()',
+  },
   template: `
-    <div [class]="wrapperClasses()">
-      <button
-        type="button"
-        role="radio"
-        [id]="computedId()"
-        [attr.aria-checked]="isSelected()"
-        [attr.aria-disabled]="isDisabled() ? 'true' : null"
-        [disabled]="isDisabled()"
-        [class]="buttonClasses()"
-        (click)="select()"
-      >
-        @if (isSelected()) {
-          <span [class]="indicatorClasses()"></span>
-        }
-      </button>
-
-      <div class="flex-1">
+    <div [class]="containerClasses()">
+      <!-- List Layout: Label on Left, Input on Right -->
+      @if (effectiveLayout() === 'list') {
         <label
           [attr.for]="computedId()"
-          [class]="labelClasses()"
+          [id]="computedId() + '-description'"
         >
           @if (label()) {
             {{ label() }}
           } @else {
             <ng-content></ng-content>
           }
+          @if (effectiveRequired()) {
+            <span class="text-aered-600 ms-0.5" aria-hidden="true">*</span>
+          }
         </label>
-        @if (description()) {
-          <p [class]="descriptionClasses()">
-            {{ description() }}
-          </p>
-        }
-      </div>
+        <input
+          [id]="computedId()"
+          type="radio"
+          class="rounded-full"
+          [name]="effectiveName()"
+          [value]="value() ?? ''"
+          [checked]="isChecked()"
+          [disabled]="effectiveDisabled()"
+          [required]="effectiveRequired()"
+          [attr.aria-disabled]="effectiveDisabled() ? 'true' : null"
+          [attr.aria-describedby]="description() ? computedId() + '-desc' : (computedId() + '-description')"
+          (change)="onInputChange($event)"
+          (blur)="onTouched()"
+        />
+      }
+
+      <!-- Group Layout: Input on Left, Label + Description on Right -->
+      @else if (effectiveLayout() === 'group') {
+        <input
+          [id]="computedId()"
+          type="radio"
+          class="rounded-full"
+          [name]="effectiveName()"
+          [value]="value() ?? ''"
+          [checked]="isChecked()"
+          [disabled]="effectiveDisabled()"
+          [required]="effectiveRequired()"
+          [attr.aria-disabled]="effectiveDisabled() ? 'true' : null"
+          [attr.aria-describedby]="description() ? computedId() + '-desc' : null"
+          (change)="onInputChange($event)"
+          (blur)="onTouched()"
+        />
+        <div>
+          <label [attr.for]="computedId()">
+            @if (label()) {
+              {{ label() }}
+            } @else {
+              <ng-content></ng-content>
+            }
+            @if (effectiveRequired()) {
+              <span class="text-aered-600 ms-0.5" aria-hidden="true">*</span>
+            }
+          </label>
+          @if (description()) {
+            <p [id]="computedId() + '-desc'">{{ description() }}</p>
+          }
+        </div>
+      }
+
+      <!-- Item Layout: Simple Standard Item -->
+      @else {
+        <input
+          [id]="computedId()"
+          type="radio"
+          class="rounded-full"
+          [name]="effectiveName()"
+          [value]="value() ?? ''"
+          [checked]="isChecked()"
+          [disabled]="effectiveDisabled()"
+          [required]="effectiveRequired()"
+          [attr.aria-disabled]="effectiveDisabled() ? 'true' : null"
+          (change)="onInputChange($event)"
+          (blur)="onTouched()"
+        />
+        <label [attr.for]="computedId()">
+          @if (label()) {
+            {{ label() }}
+          } @else {
+            <ng-content></ng-content>
+          }
+          @if (effectiveRequired()) {
+            <span class="text-aered-600 ms-0.5" aria-hidden="true">*</span>
+          }
+        </label>
+      }
     </div>
   `,
   styles: [`
-    :host {
+    :host([layout="list"]), :host([layout="group"]) {
       display: block;
       width: 100%;
     }
+    input[type="radio"] {
+      border-radius: 9999px !important;
+    }
   `]
 })
-export class RadioItemComponent {
+export class RadioComponent implements ControlValueAccessor {
   private readonly group = inject(RadioGroupComponent, { optional: true });
 
-  readonly value = input.required<string>();
+  /**
+   * HTML ID for input and label pairing (auto-generated if omitted)
+   */
   readonly id = input<string | undefined>(undefined);
+
+  /**
+   * Form control name
+   */
+  readonly name = input<string | undefined>(undefined);
+
+  /**
+   * Value attribute for form submission
+   */
+  readonly value = input<any>(undefined);
+
+  /**
+   * Primary label text
+   */
   readonly label = input<string | undefined>(undefined);
+
+  /**
+   * Accompanying helper description text
+   */
   readonly description = input<string | undefined>(undefined);
+
+  /**
+   * Radio sizing scale ('sm' | 'base' | 'lg')
+   */
+  readonly size = input<RadioSize>('base');
+
+  /**
+   * Visual color variant ('primary' | 'secondary')
+   */
+  readonly variant = input<RadioVariant>('primary');
+
+  /**
+   * Layout style ('auto' | 'item' | 'group' | 'list')
+   */
+  readonly layout = input<RadioLayout>('auto');
+
+  /**
+   * Whether the radio is disabled
+   */
   readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether the radio is required
+   */
+  readonly required = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Initial or controlled checked state
+   */
+  readonly checked = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
-  private readonly generatedId = `radio-${Math.random().toString(36).slice(2, 9)}`;
-  readonly computedId = computed(() => this.id() || this.generatedId);
+  /**
+   * Event emitted when checked state changes
+   */
+  readonly checkedChange = output<boolean>();
+  readonly valueChange = output<any>();
+  readonly change = output<Event>();
 
-  readonly isSelected = computed(() => this.group ? this.group.selectedValue() === this.value() : false);
-  readonly isDisabled = computed(() => this.disabled() || (this.group ? this.group.disabled() : false));
+  protected readonly isChecked = signal<boolean>(false);
 
-  readonly size = computed(() => this.group?.effectiveSize() || 'base');
-  readonly variant = computed(() => this.group?.effectiveVariant() || 'primary');
+  private readonly uniqueId = `aegov-radio-${Math.random().toString(36).substring(2, 9)}`;
 
-  readonly wrapperClasses = computed(() =>
-    cn('flex rtl:flex-row-reverse rtl:text-right items-start gap-4 cursor-pointer w-full', this.className())
-  );
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
 
-  readonly buttonClasses = computed(() =>
-    cn(
-      'relative border-2 rounded-full bg-whitely-50 shrink-0 mt-[3px] cursor-pointer',
-      'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2',
-      'disabled:cursor-not-allowed disabled:opacity-50 disabled:border-primary-200 disabled:before:hidden! disabled:pointer-events-none',
-      'transition-colors',
-      sizeStyles[this.size()]?.radio,
-      variantStyles[this.variant()]?.radio,
-      variantStyles[this.variant()]?.hover
-    )
-  );
+  constructor() {
+    effect(() => {
+      if (this.group && this.group.selectedValue() !== undefined) {
+        this.isChecked.set(this.group.selectedValue() === this.value());
+      } else {
+        this.isChecked.set(this.checked());
+      }
+    });
+  }
 
-  readonly indicatorClasses = computed(() =>
-    cn(
-      'flex items-center justify-center absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full',
-      sizeStyles[this.size()]?.indicator,
-      variantStyles[this.variant()]?.indicator
-    )
-  );
+  protected readonly effectiveName = computed(() => this.name() || this.group?.computedName() || this.computedId());
+  protected readonly effectiveDisabled = computed(() => this.disabled() || (this.group ? this.group.disabled() : false));
+  protected readonly effectiveRequired = computed(() => this.required() || (this.group ? this.group.required() : false));
+  protected readonly effectiveSize = computed(() => (this.group ? this.group.size() : this.size()));
+  protected readonly effectiveVariant = computed(() => (this.group ? this.group.variant() : this.variant()));
 
-  readonly labelClasses = computed(() =>
-    cn(
-      'text-aeblack-800 font-semibold block select-none cursor-pointer',
-      this.isDisabled() && 'text-aeblack-300 cursor-not-allowed',
-      this.group?.required() && 'after:ms-0.5 after:text-red-500 after:content-["*"]',
-      sizeStyles[this.size()]?.label
-    )
-  );
+  protected readonly effectiveLayout = computed<RadioLayout>(() => {
+    const l = this.layout();
+    if (l !== 'auto') return l;
+    if (this.group && this.group.layout() !== 'auto') return this.group.layout();
+    if (this.description()) return 'group';
+    return 'item';
+  });
 
-  readonly descriptionClasses = computed(() =>
-    cn(
-      'text-aeblack-400 mt-1',
-      this.isDisabled() && 'text-aeblack-200',
-      sizeStyles[this.size()]?.description
-    )
-  );
+  protected readonly isBlockLayout = computed(() => {
+    const l = this.effectiveLayout();
+    if (l === 'list' || l === 'group') return true;
+    if (this.group && this.group.orientation() === 'horizontal') return false;
+    if (this.group && this.group.orientation() === 'vertical') return true;
+    return false;
+  });
 
-  select(): void {
-    if (this.isDisabled()) return;
-    this.group?.select(this.value());
+  protected readonly containerClasses = computed(() => {
+    const l = this.effectiveLayout();
+    const sz = this.effectiveSize();
+    const v = this.effectiveVariant();
+
+    return cn(
+      l === 'item' && 'aegov-check-item',
+      l === 'group' && 'aegov-check-group',
+      l === 'list' && 'aegov-check-group group-list',
+      v === 'secondary' && 'check-secondary',
+      sz !== 'base' && `check-${sz}`,
+      this.className()
+    );
+  });
+
+  protected onInputChange(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    const isChk = target.checked;
+    this.isChecked.set(isChk);
+    const val = this.value();
+    this.onChange(val !== undefined ? val : isChk);
+    this.checkedChange.emit(isChk);
+    this.valueChange.emit(val !== undefined ? val : isChk);
+    if (this.group) {
+      this.group.selectValue(val !== undefined ? val : isChk);
+    }
+    this.change.emit(event);
+  }
+
+  // ControlValueAccessor
+  protected onChange: (value: any) => void = () => {};
+  protected onTouched: () => void = () => {};
+
+  writeValue(value: any): void {
+    if (this.value() !== undefined) {
+      this.isChecked.set(value === this.value());
+    } else {
+      this.isChecked.set(!!value);
+    }
+  }
+
+  registerOnChange(fn: (value: any) => void): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: () => void): void {
+    this.onTouched = fn;
+  }
+
+  setDisabledState?(isDisabled: boolean): void {
+    // Handled via input signal
   }
 }

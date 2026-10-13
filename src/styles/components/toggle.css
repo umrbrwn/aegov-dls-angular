@@ -1,0 +1,134 @@
+.aegov-toggle {
+  /* --- CORE STRUCTURE & LAYOUT --- */
+  @apply relative inline-flex cursor-pointer items-center;
+
+  /* --- DEFAULT COLOR SCHEME (Primary) --- */
+  --toggle-bg: var(--color-aeblack-100);
+  --toggle-bg-checked: var(--color-primary-300);
+  --toggle-thumb-bg: var(--color-whitely-50);
+  --toggle-thumb-border: var(--color-aeblack-100);
+  --toggle-thumb-border-checked: var(--color-primary-600);
+  --toggle-focus-ring: var(--color-primary-500);
+  --toggle-icon-unchecked-url: url("data:image/svg+xml,%0A%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%23BBBCBD' viewBox='0 0 256 256'%3E%3Cpath d='M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z'%3E%3C/path%3E%3C/svg%3E");
+  --toggle-icon-checked-url: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%23D6BE8E' viewBox='0 0 256 256'%3E%3Cpath d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E");
+
+  & .toggle-text {
+    @apply ms-3;
+  }
+
+  & input[type="checkbox"] {
+    @apply absolute;
+  }
+
+  /* --- TRACK --- */
+  & .toggle-item {
+    @apply relative flex h-4 w-10 cursor-pointer items-center rounded-full px-0;
+    background-color: var(--toggle-bg);
+    outline-color: var(--color-aeblack-400);
+    transition: background-color 200ms ease-in-out;
+
+    &::before {
+      content: '';
+      @apply h-5 w-5 rounded-full shadow;
+      background-color: var(--toggle-thumb-bg);
+      border: 1px solid;
+      border-color: var(--toggle-thumb-border);
+      transition: transform 200ms ease-in-out, border-color 200ms ease-in-out;
+      transform: translateX(0);
+    }
+  }
+
+  /* --- WITH ICON --- */
+  & .toggle-icon {
+    @apply mb-0 before:h-5 before:w-5 before:bg-center before:bg-no-repeat;
+
+    &::before {
+      content: '';
+      background-image: var(--toggle-icon-unchecked-url);
+      background-size: 10px 10px;
+    }
+  }
+
+  /* --- CHECKED STATE --- */
+  & .peer:checked ~ .toggle-item {
+    background-color: var(--toggle-bg-checked);
+
+    &::before {
+      border-color: var(--toggle-thumb-border-checked);
+      transform: translateX(100%);
+    }
+  }
+
+  /* --- RTL SUPPORT --- */
+  [dir="rtl"] & .peer:checked ~ .toggle-item::before {
+    transform: translateX(-100%);
+  }
+
+  /* --- FOCUS STATE --- */
+  & .peer:focus-visible ~ .toggle-item {
+    @apply outline outline-offset-[3px];
+    outline-color: var(--toggle-focus-ring);
+  }
+
+  & .peer:checked ~ .toggle-icon::before {
+    background-image: var(--toggle-icon-checked-url);
+  }
+
+  /* --- VARIANTS --- */
+  &.toggle-secondary {
+    --toggle-bg-checked: var(--color-secondary-800);
+    --toggle-thumb-border-checked: var(--color-secondary-600);
+    --toggle-focus-ring: var(--color-secondary-200);
+    --toggle-icon-checked-url: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%23c3c6cb' viewBox='0 0 256 256'%3E%3Cpath d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  &.toggle-success {
+    --toggle-bg-checked: var(--color-aegreen-300);
+    --toggle-thumb-border-checked: var(--color-aegreen-600);
+    --toggle-focus-ring: var(--color-aegreen-200);
+    --toggle-icon-checked-url: url("data:image/svg+xml, %3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%23A0D5AB' viewBox='0 0 256 256'%3E%3Cpath d='M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z'%3E%3C/path%3E%3C/svg%3E");
+  }
+
+  &.toggle-mode {
+    --toggle-mode-bg: var(--color-whitely-50);
+    --toggle-mode-border: var(--color-aeblack-100);
+    --toggle-mode-bg-checked: var(--color-aeblack-950);
+    --toggle-mode-thumb-icon-unchecked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='M7.65 2.5V1c0-.28.22-.5.5-.5s.5.22.5.5v1.5c0 .28-.22.5-.5.5s-.5-.22-.5-.5zM8.15 4a4 4 0 100 8 4 4 0 000-8zm-4.36.35c.2.2.51.2.71 0s.2-.51 0-.71l-1-1a.5.5 0 00-.71.71l1 1zm0 7.3l-1 1a.5.5 0 10.71.71l1-1a.5.5 0 00-.71-.71zm8.36-7.3a.5.5 0 00.71 0l1-1a.5.5 0 00-.71-.71l-1 1a.5.5 0 000 .71zm0 7.3a.5.5 0 000 .71l1 1a.5.5 0 00.71-.71l-1-1a.5.5 0 00-.71 0zM3.15 8c0-.28-.22-.5-.5-.5H1.15a.5.5 0 100 1h1.5c.28 0 .5-.22.5-.5zm5 5c-.28 0-.5.22-.5.5V15a.5.5 0 101 0v-1.5c0-.28-.22-.5-.5-.5zm7-5.5h-1.5a.5.5 0 100 1h1.5a.5.5 0 100-1z' fill='%23232528'/%3E%3C/svg%3E");
+    --toggle-mode-thumb-icon-checked: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32' fill='%23ffffff' viewBox='0 0 256 256'%3E%3Cpath d='M235.54,150.21a104.84,104.84,0,0,1-37,52.91A104,104,0,0,1,32,120,103.09,103.09,0,0,1,52.88,57.48a104.84,104.84,0,0,1,52.91-37,8,8,0,0,1,10,10,88.08,88.08,0,0,0,109.8,109.8,8,8,0,0,1,10,10Z'%3E%3C/path%3E%3C/svg%3E");
+
+    & .toggle-item {
+      @apply h-6 w-12;
+      background-color: var(--toggle-mode-bg);
+      border: 1px solid;
+      border-color: var(--toggle-mode-border);
+
+      &::before {
+        @apply h-4 w-4 shadow-none;
+        background-color: transparent;
+        border-color: transparent !important;
+        transform: translateX(0.25rem);
+        background-image: var(--toggle-mode-thumb-icon-unchecked);
+      }
+    }
+
+    [dir="rtl"] & .toggle-item::before {
+      transform: translateX(-0.25rem);
+    }
+
+    & .peer:checked ~ .toggle-item {
+      background-color: var(--toggle-mode-bg-checked);
+      border-color: transparent;
+
+      &::before {
+        background-size: cover;
+        background-position: center;
+        transform: translateX(1.75rem);
+        background-image: var(--toggle-mode-thumb-icon-checked);
+      }
+    }
+
+    [dir="rtl"] & .peer:checked ~ .toggle-item::before {
+      transform: translateX(-1.75rem);
+    }
+  }
+}

@@ -1,129 +1,200 @@
-import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { BreadcrumbsComponent } from './breadcrumbs.component';
+import type { Meta, StoryObj } from '@storybook/angular';
+import { moduleMetadata } from '@storybook/angular';
+import { BreadcrumbsComponent, type BreadcrumbItem, type BreadcrumbSeparator } from './breadcrumbs.component';
+import { IconDirective } from '../Icon/icon.directive';
+
+const defaultItems: BreadcrumbItem[] = [
+  { label: 'Home', href: '#' },
+  { label: 'Media centre', href: '#', title: 'Media centre' },
+  { label: 'News', href: '#', title: 'News' },
+  { label: 'Special articles', href: '#', title: 'Special articles' },
+  { label: 'Press release and features', href: '#', title: 'Press release and features' },
+  { label: 'A really long page name that must be affected.' },
+];
+
+const arabicItems: BreadcrumbItem[] = [
+  { label: 'الصفحة الرئيسة', href: '#' },
+  { label: 'المركز الإعلامي', href: '#', title: 'المركز الإعلامي' },
+  { label: 'التوعية و الإرشاد', href: '#', title: 'التوعية و الإرشاد' },
+  { label: 'عزيزي العامل – اعرف حقوقك' },
+];
 
 const meta: Meta<BreadcrumbsComponent> = {
   title: 'Components/Breadcrumbs',
   component: BreadcrumbsComponent,
+  tags: ['autodocs'],
   decorators: [
     moduleMetadata({
-      imports: [BreadcrumbsComponent],
+      imports: [BreadcrumbsComponent, IconDirective],
     }),
   ],
-  parameters: {
-    layout: 'padded',
-  },
-  args: {
-    separator: 'slash',
-    showHomeIcon: false,
-  },
   argTypes: {
     separator: {
       control: 'select',
-      options: ['slash', 'caret'],
+      options: ['slash', 'caret', 'none'] as BreadcrumbSeparator[],
+      description: 'The visual separator between breadcrumb items',
     },
     showHomeIcon: {
       control: 'boolean',
+      description: 'Display home icon on the first breadcrumb item',
     },
+    microdata: {
+      control: 'boolean',
+      description: 'Render Schema.org microdata structured data attributes',
+    },
+    ariaLabel: {
+      control: 'text',
+      description: 'Accessible ARIA label for navigation',
+    },
+  },
+  args: {
+    items: defaultItems,
+    separator: 'slash',
+    showHomeIcon: false,
+    microdata: false,
+    ariaLabel: 'Breadcrumb',
   },
 };
 
 export default meta;
 type Story = StoryObj<BreadcrumbsComponent>;
 
-const defaultItems = [
-  { label: 'Home', href: '#' },
-  { label: 'Media centre', href: '#' },
-  { label: 'News', href: '#' },
-  { label: 'Press release and features', href: '#' },
-  { label: 'A really long page name that must be affected' },
-];
-
 export const Default: Story = {
-  args: {
-    items: defaultItems,
-    separator: 'slash',
-    showHomeIcon: false,
-  },
   render: (args) => ({
     props: args,
-    template: `<ae-breadcrumbs [items]="items" [separator]="separator" [showHomeIcon]="showHomeIcon"></ae-breadcrumbs>`,
+    template: `
+      <div class="p-6">
+        <ae-breadcrumbs
+          [items]="items"
+          [separator]="separator"
+          [showHomeIcon]="showHomeIcon"
+          [microdata]="microdata"
+          [ariaLabel]="ariaLabel"
+        ></ae-breadcrumbs>
+      </div>
+    `,
   }),
 };
 
 export const WithHomeIcon: Story = {
-  args: {
-    items: [
-      { label: 'Home', href: '#' },
-      { label: 'Media centre', href: '#' },
-      { label: 'News', href: '#' },
-      { label: 'Press release', href: '#' },
-      { label: 'A really long page name that must be affected' },
-    ],
-    separator: 'slash',
-    showHomeIcon: true,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-breadcrumbs [items]="items" [separator]="separator" [showHomeIcon]="showHomeIcon"></ae-breadcrumbs>`,
-  }),
-};
-
-export const WithCaretSeparator: Story = {
-  args: {
-    items: [
-      { label: 'Home', href: '#' },
-      { label: 'Media centre', href: '#' },
-      { label: 'News', href: '#' },
-      { label: 'Press release', href: '#' },
-      { label: 'A really long page name that must be affected' },
-    ],
-    separator: 'caret',
-    showHomeIcon: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-breadcrumbs [items]="items" [separator]="separator" [showHomeIcon]="showHomeIcon"></ae-breadcrumbs>`,
-  }),
-};
-
-export const WithCustomIcons: Story = {
-  args: {
-    items: [
-      { label: 'Dashboard', href: '#', icon: 'table' },
-      { label: 'Notifications', href: '#', icon: 'bell-simple' },
-      { label: 'News', href: '#', icon: 'newspaper' },
-      { label: 'Current Page' },
-    ],
-    separator: 'caret',
-    showHomeIcon: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<ae-breadcrumbs [items]="items" [separator]="separator" [showHomeIcon]="showHomeIcon"></ae-breadcrumbs>`,
-  }),
-};
-
-export const WithMicrodata: Story = {
-  args: {
-    items: [
-      { label: 'Home', href: '/' },
-      { label: 'Products', href: '/products' },
-      { label: 'Electronics', href: '/products/electronics' },
-      { label: 'Smartphones' },
-    ],
-    separator: 'slash',
-    showHomeIcon: true,
-  },
   parameters: {
-    docs: {
-      description: {
-        story:
-          'The Breadcrumbs component automatically embeds Schema.org BreadcrumbList microdata attributes (itemscope, itemtype, itemprop, and position) for SEO rich snippets in search engines.',
-      },
-    },
+    controls: { disable: true },
   },
-  render: (args) => ({
-    props: args,
-    template: `<ae-breadcrumbs [items]="items" [separator]="separator" [showHomeIcon]="showHomeIcon"></ae-breadcrumbs>`,
+  render: () => ({
+    props: {
+      items: defaultItems,
+    },
+    template: `
+      <div class="p-6">
+        <ae-breadcrumbs
+          [items]="items"
+          separator="slash"
+          [showHomeIcon]="true"
+        ></ae-breadcrumbs>
+      </div>
+    `,
+  }),
+};
+
+export const CaretSeparator: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      items: defaultItems,
+    },
+    template: `
+      <div class="p-6">
+        <ae-breadcrumbs
+          [items]="items"
+          separator="caret"
+          [showHomeIcon]="true"
+        ></ae-breadcrumbs>
+      </div>
+    `,
+  }),
+};
+
+export const MicrodataSchema: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      items: defaultItems,
+    },
+    template: `
+      <div class="p-6 space-y-3">
+        <p class="text-xs text-gray-500">Inspect DOM to view Schema.org <code>BreadcrumbList</code> and <code>ListItem</code> metadata.</p>
+        <ae-breadcrumbs
+          [items]="items"
+          separator="slash"
+          [microdata]="true"
+        ></ae-breadcrumbs>
+      </div>
+    `,
+  }),
+};
+
+export const DeepHierarchy: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      items: [
+        { label: 'Home', href: '#' },
+        { label: 'Government', href: '#' },
+        { label: 'Ministries', href: '#' },
+        { label: 'Ministry of Health and Prevention', href: '#' },
+        { label: 'Services', href: '#' },
+        { label: 'Healthcare Professionals', href: '#' },
+        { label: 'Licensing & Certification Guidelines for Medical Practitioners in Dubai' },
+      ],
+    },
+    template: `
+      <div class="p-6">
+        <ae-breadcrumbs
+          [items]="items"
+          separator="slash"
+          [showHomeIcon]="true"
+        ></ae-breadcrumbs>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      defaultItems,
+      arabicItems,
+    },
+    template: `
+      <div class="space-y-8 p-6">
+        <div dir="ltr" class="border border-gray-200 rounded-xl p-4">
+          <div class="text-xs font-bold text-gray-500 uppercase mb-3">LTR Orientation</div>
+          <ae-breadcrumbs
+            [items]="defaultItems"
+            separator="caret"
+            [showHomeIcon]="true"
+          ></ae-breadcrumbs>
+        </div>
+
+        <div dir="rtl" class="border border-primary-200 bg-primary-50/10 rounded-xl p-4">
+          <div class="text-xs font-bold text-primary-700 uppercase mb-3">تخطيط من اليمين إلى اليسار (RTL)</div>
+          <ae-breadcrumbs
+            [items]="arabicItems"
+            separator="caret"
+            [showHomeIcon]="true"
+            ariaLabel="مسار التنقل"
+          ></ae-breadcrumbs>
+        </div>
+      </div>
+    `,
   }),
 };

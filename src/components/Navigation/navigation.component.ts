@@ -1,548 +1,657 @@
 import {
   Component,
-  input,
-  signal,
+  Directive,
+  Input,
+  TemplateRef,
   computed,
+  contentChild,
+  contentChildren,
+  input,
+  output,
+  signal,
   ChangeDetectionStrategy,
-  booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { cn } from '../../utils/cn';
-import { IconComponent, type IconName } from '../Icon/icon.component';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
+
+export type NavTarget = 'all' | 'desktop' | 'mobile' | 'drawer';
+
+function normalizeTarget(val: unknown): NavTarget {
+  if (!val || val === '' || val === 'all') {
+    return 'all';
+  }
+  return val as NavTarget;
+}
 
 export interface NavDropdownItem {
   label: string;
-  href?: string;
-  routerLink?: string | any[];
+  url?: string | any[];
+  navigation?: 'router' | 'href';
   target?: string;
+  onClick?: (event: MouseEvent) => void;
 }
 
 export interface NavDropdownGroup {
-  title: string;
+  title?: string;
   items: NavDropdownItem[];
 }
 
 export interface NavItemData {
   label: string;
+  url?: string | any[];
+  navigation?: 'router' | 'href';
   icon?: IconName;
-  href?: string;
-  routerLink?: string | any[];
-  routerLinkActive?: string;
-  routerLinkActiveOptions?: { exact: boolean };
-  target?: string;
   dropdown?: NavDropdownGroup[];
-  type?: 'primary' | 'secondary';
-  tooltipText?: string;
-  visible?: boolean;
+  dropdownColumns?: number;
+  dropdownVariant?: 'standard' | 'multi-column' | 'mega';
+  target?: string;
+  onClick?: (event: MouseEvent) => void;
 }
 
-export type NavBreakpoint = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
-
-const TOP_BAR_BREAKPOINTS: Record<string, string> = {
-  sm: 'max-sm:hidden',
-  md: 'max-md:hidden',
-  lg: 'max-lg:hidden',
-  xl: 'max-xl:hidden',
-  '2xl': 'max-2xl:hidden',
-};
-
-const MOBILE_BREAKPOINTS: Record<string, string> = {
-  sm: 'sm:hidden',
-  md: 'md:hidden',
-  lg: 'lg:hidden',
-  xl: 'xl:hidden',
-  '2xl': '2xl:hidden',
-};
-
-@Component({
-  selector: 'ae-nav-item',
+/** Structural directive for projecting custom brand logo/content in desktop, mobile, or drawer headers */
+@Directive({
+  selector: '[aeNavBrand]',
   standalone: true,
-  imports: [CommonModule, RouterModule, IconComponent],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    @if (type() === 'secondary') {
-      <li class="inline-flex items-center shrink-0 h-full">
-        @if (routerLink()) {
-          <a
-            [routerLink]="routerLink()!"
-            [routerLinkActive]="routerLinkActive()"
-            [routerLinkActiveOptions]="routerLinkActiveOptions()"
-            class="flex items-center justify-center shrink-0 h-14 px-3 focus-visible:ring-primary-support-400 focus-visible:ring-2 focus-visible:ring-inset outline-hidden text-primary-600 hover:text-primary-500 no-underline"
-            [attr.title]="tooltipText() || label()"
-          >
-            @if (icon()) {
-              <ae-icon [name]="icon()!" [size]="24"></ae-icon>
-            }
-            <span class="sr-only">{{ label() }}</span>
-          </a>
-        } @else {
-          <a
-            [href]="href() || '#'"
-            [target]="target() || '_self'"
-            class="flex items-center justify-center shrink-0 h-14 px-3 focus-visible:ring-primary-support-400 focus-visible:ring-2 focus-visible:ring-inset outline-hidden text-primary-600 hover:text-primary-500 no-underline"
-            [attr.title]="tooltipText() || label()"
-          >
-            @if (icon()) {
-              <ae-icon [name]="icon()!" [size]="24"></ae-icon>
-            }
-            <span class="sr-only">{{ label() }}</span>
-          </a>
-        }
-      </li>
-    } @else if (dropdown() && dropdown()!.length > 0) {
-      <li
-        class="relative group h-full flex items-stretch shrink-0"
-        (mouseenter)="openDropdown()"
-        (mouseleave)="closeDropdown()"
-      >
-        <button
-          type="button"
-          [class]="triggerClasses()"
-          (click)="toggleOpen()"
-          [attr.aria-expanded]="isOpen()"
-        >
-          @if (icon()) {
-            <ae-icon [name]="icon()!" [size]="20"></ae-icon>
-          }
-          <span>{{ label() }}</span>
-          <ae-icon
-            name="caret-down"
-            [size]="16"
-            className="transition-transform duration-200"
-            [class.rotate-180]="isOpen()"
-          ></ae-icon>
-        </button>
-
-        @if (isOpen()) {
-          <div
-            class="absolute top-full start-0 z-50 min-w-[300px] max-w-[90vw]"
-            (mouseenter)="openDropdown()"
-            (mouseleave)="closeDropdown()"
-          >
-            <div class="rounded-lg border border-aeblack-100 bg-white p-5 shadow-xl flex flex-wrap gap-6 text-start">
-              @for (group of dropdown()!; track group.title) {
-                <div class="min-w-[180px] flex-1">
-                  @if (group.title) {
-                    <h3 class="mb-2 text-primary-700 font-bold text-sm">{{ group.title }}</h3>
-                  }
-                  <ul class="space-y-1.5 list-none p-0 m-0">
-                    @for (item of group.items; track item.label) {
-                      <li>
-                        @if (item.routerLink) {
-                          <a
-                            [routerLink]="item.routerLink"
-                            (click)="closeDropdown()"
-                            class="block py-1 text-aeblack-800 hover:text-primary-700 hover:underline transition-colors text-sm no-underline text-start font-medium"
-                          >
-                            {{ item.label }}
-                          </a>
-                        } @else {
-                          <a
-                            [href]="item.href || '#'"
-                            [target]="item.target || '_self'"
-                            (click)="closeDropdown()"
-                            class="block py-1 text-aeblack-800 hover:text-primary-700 hover:underline transition-colors text-sm no-underline text-start font-medium"
-                          >
-                            {{ item.label }}
-                          </a>
-                        }
-                      </li>
-                    }
-                  </ul>
-                </div>
-              }
-            </div>
-          </div>
-        }
-      </li>
-    } @else {
-      <li class="relative inline-flex items-stretch shrink-0 h-full">
-        @if (routerLink()) {
-          <a
-            [routerLink]="routerLink()!"
-            [routerLinkActive]="routerLinkActive()"
-            [routerLinkActiveOptions]="routerLinkActiveOptions()"
-            [class]="linkClasses()"
-          >
-            @if (icon()) {
-              <ae-icon [name]="icon()!" [size]="20"></ae-icon>
-            }
-            <span>{{ label() }}</span>
-          </a>
-        } @else {
-          <a
-            [href]="href() || '#'"
-            [target]="target() || '_self'"
-            [class]="linkClasses()"
-          >
-            @if (icon()) {
-              <ae-icon [name]="icon()!" [size]="20"></ae-icon>
-            }
-            <span>{{ label() }}</span>
-          </a>
-        }
-      </li>
-    }
-  `,
-  styles: [`
-    :host {
-      display: inline-flex;
-      align-self: stretch;
-      height: 100%;
-    }
-  `]
 })
-export class NavItemComponent {
-  readonly label = input<string>('');
-  readonly href = input<string | undefined>(undefined);
-  readonly routerLink = input<string | any[] | undefined>(undefined);
-  readonly routerLinkActive = input<string>('border-primary-900 text-primary-900 font-bold');
-  readonly routerLinkActiveOptions = input<{ exact: boolean }>({ exact: false });
-  readonly target = input<string | undefined>(undefined);
-  readonly icon = input<IconName | undefined>(undefined);
-  readonly isActive = input<boolean, unknown>(false, { transform: booleanAttribute });
-  readonly dropdown = input<NavDropdownGroup[] | undefined>(undefined);
-  readonly type = input<'primary' | 'secondary'>('primary');
-  readonly tooltipText = input<string | undefined>(undefined);
+export class NavBrandDirective {
+  private _target: NavTarget = 'all';
 
-  readonly isOpen = signal<boolean>(false);
-
-  private readonly baseItemClasses =
-    'inline-flex items-center gap-2 border-b-2 border-transparent px-2.5 xl:px-3.5 py-4 font-bold text-sm whitespace-nowrap shrink-0 h-full transition-colors no-underline -mb-px ' +
-    'hover:border-primary-800 hover:text-primary-800 focus-visible:ring-primary-support-400 focus-visible:ring-2 focus-visible:ring-inset outline-hidden';
-
-  readonly triggerClasses = computed(() =>
-    cn(
-      this.baseItemClasses,
-      'bg-transparent cursor-pointer',
-      (this.isActive() || this.isOpen()) && 'border-primary-900 text-primary-900 font-bold'
-    )
-  );
-
-  readonly linkClasses = computed(() =>
-    cn(
-      this.baseItemClasses,
-      this.isActive() && 'border-primary-900 text-primary-900 font-bold'
-    )
-  );
-
-  openDropdown(): void {
-    this.isOpen.set(true);
+  @Input('aeNavBrand')
+  set target(value: NavTarget | '' | undefined | null) {
+    this._target = normalizeTarget(value);
+  }
+  get target(): NavTarget {
+    return this._target;
   }
 
-  closeDropdown(): void {
-    this.isOpen.set(false);
-  }
-
-  toggleOpen(): void {
-    this.isOpen.update(prev => !prev);
-  }
+  constructor(public readonly template: TemplateRef<unknown>) {}
 }
 
-@Component({
-  selector: 'ae-main-menu',
+/** Structural directive for projecting custom primary action buttons in the top bar (desktop & mobile) */
+@Directive({
+  selector: '[aeNavPrimaryActions]',
   standalone: true,
-  imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <ul [class]="menuClasses()">
-      <ng-content></ng-content>
-    </ul>
-  `,
-  styles: [`
-    :host {
-      display: flex;
-      align-self: stretch;
-      height: 100%;
-    }
-  `]
 })
-export class MainMenuComponent {
-  readonly className = input<string>('');
-  readonly menuClasses = computed(() => cn('flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 h-full', this.className()));
+export class NavPrimaryActionsDirective {
+  private _target: NavTarget = 'all';
+
+  @Input('aeNavPrimaryActions')
+  set target(value: NavTarget | '' | undefined | null) {
+    this._target = normalizeTarget(value);
+  }
+  get target(): NavTarget {
+    return this._target;
+  }
+
+  constructor(public readonly template: TemplateRef<unknown>) {}
 }
 
-@Component({
-  selector: 'ae-secondary-menu',
+/** Structural directive for projecting custom secondary action buttons/dropdowns (desktop navbar & mobile drawer) */
+@Directive({
+  selector: '[aeNavSecondaryActions]',
   standalone: true,
-  imports: [CommonModule],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  template: `
-    <div [class]="menuClasses()">
-      <ul class="flex items-center flex-nowrap gap-1 list-none m-0 p-0 h-full">
-        <ng-content></ng-content>
-      </ul>
-    </div>
-  `,
-  styles: [`
-    :host {
-      display: flex;
-      align-self: stretch;
-      height: 100%;
-    }
-  `]
 })
-export class SecondaryMenuComponent {
-  readonly className = input<string>('');
-  readonly menuClasses = computed(() => cn('header-navs-right flex items-center shrink-0 ms-auto h-full', this.className()));
+export class NavSecondaryActionsDirective {
+  private _target: NavTarget = 'all';
+
+  @Input('aeNavSecondaryActions')
+  set target(value: NavTarget | '' | undefined | null) {
+    this._target = normalizeTarget(value);
+  }
+  get target(): NavTarget {
+    return this._target;
+  }
+
+  constructor(public readonly template: TemplateRef<unknown>) {}
+}
+
+/** Structural directive for projecting custom body content in the mobile slide-out drawer */
+@Directive({
+  selector: '[aeNavDrawerContent]',
+  standalone: true,
+})
+export class NavDrawerContentDirective {
+  constructor(public readonly template: TemplateRef<unknown>) {}
 }
 
 @Component({
   selector: 'ae-navigation',
   standalone: true,
-  imports: [CommonModule, RouterModule, IconComponent, NavItemComponent],
+  imports: [CommonModule, RouterModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
+
+  host: {
+    class: 'block w-full',
+  },
   template: `
-    <!-- Desktop Top Bar Slot (For Branding Logos, Notifications, Search, etc.) -->
-    <div [class]="topBarClasses()">
-      <ng-content select="[top-bar], [slot=top-bar]"></ng-content>
-    </div>
+    <header class="w-full" [class.aegov-header]="hasHeaderSlots()">
 
-    <!-- Mobile Header Bar (Visible on mobile viewports) -->
-    <div [class]="mobileHeaderClasses()">
-      <div class="py-2.5 px-4 bg-white flex items-center justify-between border-b border-aeblack-100">
-        <!-- Mobile Logo Slot -->
-        <div class="flex items-center gap-3">
-          <ng-content select="[logo], [slot=logo]"></ng-content>
-        </div>
+      <!-- ========================================== -->
+      <!-- DESKTOP HEADER TOP BAR                     -->
+      <!-- ========================================== -->
+      @if (desktopBrand() || desktopPrimaryActions()) {
+        <div class="header-desktop max-lg:hidden">
+          <div class="header-top py-3">
+            <div class="container mx-auto">
+              <div class="lg:flex lg:items-center lg:justify-between">
 
-        <!-- Mobile Right Controls (Actions + Hamburger) -->
-        <div class="flex items-center gap-2">
-          <!-- Persistent Mobile Actions Slot (e.g. Notification Bell) -->
-          <ng-content select="[mobile-actions], [slot=mobile-actions]"></ng-content>
+                <div class="header-logo logos">
+                  @if (desktopBrand()) {
+                    <ng-container *ngTemplateOutlet="desktopBrand()!.template" />
+                  }
+                </div>
 
-          <!-- Mobile Menu Hamburger Button -->
-          <button
-            type="button"
-            (click)="toggleMobileDrawer(true)"
-            class="p-1.5 text-aeblack-800 hover:text-primary-700 cursor-pointer bg-transparent border-0 flex items-center justify-center"
-            [attr.aria-label]="drawerToggleLabel()"
-          >
-            <ae-icon name="list" [size]="28"></ae-icon>
-          </button>
-        </div>
-      </div>
+                <div class="header-top-right flex flex-wrap items-center">
+                  @if (desktopPrimaryActions()) {
+                    <ng-container *ngTemplateOutlet="desktopPrimaryActions()!.template" />
+                  }
+                </div>
 
-      <!-- Full-Screen Responsive Mobile Menu Drawer -->
-      @if (mobileOpen()) {
-        <div class="fixed inset-0 z-50 bg-white flex flex-col overflow-hidden animate-fadeIn">
-          <!-- Drawer Top Header Bar -->
-          <div class="p-4 flex items-center justify-between border-b border-aeblack-100 bg-aeblack-50">
-            <div class="flex items-center">
-              <ng-content select="[drawer-header], [slot=drawer-header]">
-                <span class="font-bold text-primary-700 text-lg">{{ drawerTitle() }}</span>
-              </ng-content>
+              </div>
             </div>
-            <button
-              type="button"
-              (click)="toggleMobileDrawer(false)"
-              class="p-2 text-aeblack-800 hover:text-red-600 bg-transparent border-0 cursor-pointer"
-              [attr.aria-label]="drawerCloseLabel()"
-            >
-              <ae-icon name="x" [size]="24"></ae-icon>
-            </button>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- MOBILE HEADER TOP BAR                      -->
+      <!-- ========================================== -->
+      @if (mobileBrand() || mobilePrimaryActions() || items().length > 0) {
+        <div class="header-mobile lg:hidden">
+          <div class="header-top py-2">
+            <div class="container mx-auto max-sm:px-4">
+              <div class="max-lg:flex max-lg:items-center justify-between">
+
+                <div class="header-logo logos">
+                  @if (mobileBrand()) {
+                    <ng-container *ngTemplateOutlet="mobileBrand()!.template" />
+                  }
+                </div>
+
+                <div class="header-top-right">
+                  <div>
+                    <div class="flex items-center gap-3">
+                      @if (mobilePrimaryActions()) {
+                        <ng-container *ngTemplateOutlet="mobilePrimaryActions()!.template" />
+                      }
+                      <button
+                        type="button"
+                        (click)="toggleMobileDrawer()"
+                        class="hamburger-icon text-aeblack-700"
+                        aria-label="Toggle main menu"
+                      >
+                        <svg aeIcon name="list" [size]="28"></svg>
+                        <span class="sr-only">Toggle main menu</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+
+      <!-- ========================================== -->
+      <!-- MOBILE DRAWER MODAL                        -->
+      <!-- ========================================== -->
+      <div
+        [class.hidden]="!isMobileDrawerOpen()"
+        class="responsive-menu transform-none! [&_.main-navigation_.menu-item.active-page_a]:border-none [&_.accordion-active_svg]:rotate-180 max-lg:py-4 lg:hidden max-lg:bg-whitely-50 max-lg:fixed max-lg:inset-0 max-lg:w-full max-lg:[&_li_a]:w-full max-lg:[&_li_a]:py-2 max-lg:[&_.submenu-btn]:absolute! max-lg:[&_.submenu-btn]:end-0 max-lg:[&_.submenu-btn]:top-2 max-lg:[&_.submenu-btn]:w-6 max-lg:z-50 max-lg:flex-wrap max-lg:items-start max-lg:justify-start"
+        tabindex="-1"
+        role="dialog"
+        aria-modal="true"
+      >
+        <div class="w-full">
+          <div class="w-full max-lg:px-4 flex items-center justify-between gap-4 mb-4">
+            <div class="header-logo logos">
+              @if (drawerBrand()) {
+                <ng-container *ngTemplateOutlet="drawerBrand()!.template" />
+              }
+            </div>
+
+            <div class="flex items-center gap-4">
+              @if (drawerHeaderActions()) {
+                <ng-container *ngTemplateOutlet="drawerHeaderActions()!.template" />
+              }
+              <button
+                type="button"
+                (click)="closeMobileDrawer()"
+                class="text-aeblack-700"
+                aria-label="Close main menu"
+              >
+                <svg aeIcon name="x" [size]="24" class="w-6"></svg>
+                <span class="sr-only">Close main menu</span>
+              </button>
+            </div>
           </div>
 
-          <!-- Drawer Scrollable Body (Navigation Links & Content) -->
-          <div class="flex-1 overflow-y-auto p-4 flex flex-col justify-between">
-            <div>
-              <!-- Auto-rendered Navigation Items (Data-Driven Mode) -->
-              @if (items().length > 0) {
-                <nav class="mb-6" aria-label="Mobile navigation">
-                  <ul class="space-y-1 list-none m-0 p-0">
-                    @for (item of items(); track item.label) {
-                      @if (item.visible !== false) {
-                        <li>
-                          @if (item.dropdown && item.dropdown.length > 0) {
-                            <div>
-                              <button
-                                type="button"
-                                (click)="toggleMobileItem(item.label)"
-                                class="flex items-center justify-between w-full px-3 py-2.5 text-base font-bold text-aeblack-800 hover:bg-aeblack-50 hover:text-primary-800 rounded-md transition-colors bg-transparent border-0 cursor-pointer text-start"
-                              >
-                                <div class="flex items-center gap-3">
-                                  @if (item.icon) {
-                                    <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
+          <div class="max-lg:max-h-[calc(100vh-6.375rem)] max-lg:px-4 max-lg:overflow-auto">
+            @if (drawerContent()) {
+              <ng-container *ngTemplateOutlet="drawerContent()!.template" />
+            }
+
+            <!-- Mobile Main Navigation Accordion -->
+            @if (items().length > 0) {
+              <nav class="main-navigation mb-4" aria-label="Main navigation">
+                <div class="menu-main-menu-container">
+                  <ul class="menu nav-menu">
+                    @for (item of items(); track item.label; let i = $index) {
+                      <li
+                        class="menu-item relative"
+                        [class.has-link-icon]="!!item.icon"
+                        [class.menu-item-has-children]="item.dropdown && item.dropdown.length > 0"
+                        routerLinkActive="active-page"
+                        [routerLinkActiveOptions]="{ exact: !item.dropdown || item.dropdown.length === 0 }"
+                      >
+                        @if (isRouterNavigation(item)) {
+                          <a
+                            [routerLink]="item.url"
+                            routerLinkActive="active-page"
+                            [routerLinkActiveOptions]="{ exact: true }"
+                            [target]="item.target || '_self'"
+                            (click)="onItemClick(item, $event)"
+                          >
+                            @if (item.icon) {
+                              <svg aeIcon [name]="item.icon" [size]="18" class="text-inherit me-1"></svg>
+                            }
+                            <span>{{ item.label }}</span>
+                          </a>
+                        } @else {
+                          <a
+                            [href]="item.url || '#'"
+                            [target]="item.target || '_self'"
+                            (click)="onItemClick(item, $event)"
+                          >
+                            @if (item.icon) {
+                              <svg aeIcon [name]="item.icon" [size]="18" class="text-inherit me-1"></svg>
+                            }
+                            <span>{{ item.label }}</span>
+                          </a>
+                        }
+
+                        @if (item.dropdown && item.dropdown.length > 0) {
+                          <button
+                            type="button"
+                            class="submenu-btn shrink-0"
+                            [class.accordion-active]="openMobileSubmenuIndex() === i"
+                            (click)="toggleMobileSubmenu(i)"
+                          >
+                            <span><span class="sr-only">show submenu for "{{ item.label }}"</span></span>
+                            <svg aeIcon name="caret-down" [size]="16"></svg>
+                          </button>
+
+                          <div
+                            class="submenu z-10 bg-transparent"
+                            [class.hidden]="openMobileSubmenuIndex() !== i"
+                          >
+                            <div class="[&>div]:p-3 [&_ul]:space-y-1.5">
+                              @for (group of item.dropdown; track group.title || $index) {
+                                <div>
+                                  @if (group.title) {
+                                    <h2 class="submenu-title max-lg:text-sm">{{ group.title }}</h2>
                                   }
-                                  <span>{{ item.label }}</span>
-                                </div>
-                                <ae-icon
-                                  name="caret-down"
-                                  [size]="16"
-                                  className="text-aeblack-500 transition-transform duration-200"
-                                  [class.rotate-180]="isMobileItemExpanded(item.label)"
-                                ></ae-icon>
-                              </button>
-                              @if (isMobileItemExpanded(item.label)) {
-                                <div class="ps-6 pe-2 py-1 space-y-3">
-                                  @for (group of item.dropdown; track group.title) {
-                                    <div>
-                                      @if (group.title) {
-                                        <p class="text-xs font-bold text-primary-600 uppercase tracking-wider mb-1 mt-2">{{ group.title }}</p>
+                                  <ul>
+                                    @for (subItem of group.items; track subItem.label) {
+                                      @if (isRouterNavigation(subItem)) {
+                                        <li class="menu-item" routerLinkActive="active-page" [routerLinkActiveOptions]="{ exact: true }">
+                                          <a
+                                            [routerLink]="subItem.url"
+                                            [target]="subItem.target || '_self'"
+                                            (click)="onSubItemClick(subItem, $event)"
+                                          >{{ subItem.label }}</a>
+                                        </li>
+                                      } @else {
+                                        <li class="menu-item">
+                                          <a
+                                            [href]="subItem.url || '#'"
+                                            [target]="subItem.target || '_self'"
+                                            (click)="onSubItemClick(subItem, $event)"
+                                          >{{ subItem.label }}</a>
+                                        </li>
                                       }
-                                      <ul class="space-y-1 list-none m-0 p-0">
-                                        @for (subItem of group.items; track subItem.label) {
-                                          <li>
-                                            @if (subItem.routerLink) {
-                                              <a
-                                                [routerLink]="subItem.routerLink"
-                                                (click)="toggleMobileDrawer(false)"
-                                                class="block py-1 text-sm text-aeblack-700 hover:text-primary-700 hover:underline transition-colors no-underline text-start font-medium"
-                                              >
-                                                {{ subItem.label }}
-                                              </a>
-                                            } @else {
-                                              <a
-                                                [href]="subItem.href || '#'"
-                                                [target]="subItem.target || '_self'"
-                                                (click)="toggleMobileDrawer(false)"
-                                                class="block py-1 text-sm text-aeblack-700 hover:text-primary-700 hover:underline transition-colors no-underline text-start font-medium"
-                                              >
-                                                {{ subItem.label }}
-                                              </a>
-                                            }
-                                          </li>
-                                        }
-                                      </ul>
-                                    </div>
-                                  }
+                                    }
+                                  </ul>
                                 </div>
                               }
                             </div>
-                          } @else if (item.routerLink) {
-                            <a
-                              [routerLink]="item.routerLink"
-                              (click)="toggleMobileDrawer(false)"
-                              class="flex items-center gap-3 px-3 py-2.5 text-base font-bold text-aeblack-800 hover:bg-aeblack-50 hover:text-primary-800 rounded-md transition-colors no-underline text-start"
-                            >
-                              @if (item.icon) {
-                                <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
-                              }
-                              <span>{{ item.label }}</span>
-                            </a>
-                          } @else {
-                            <a
-                              [href]="item.href || '#'"
-                              [target]="item.target || '_self'"
-                              (click)="toggleMobileDrawer(false)"
-                              class="flex items-center gap-3 px-3 py-2.5 text-base font-bold text-aeblack-800 hover:bg-aeblack-50 hover:text-primary-800 rounded-md transition-colors no-underline text-start"
-                            >
-                              @if (item.icon) {
-                                <ae-icon [name]="item.icon" [size]="20" className="text-primary-700"></ae-icon>
-                              }
-                              <span>{{ item.label }}</span>
-                            </a>
-                          }
-                        </li>
-                      }
+                          </div>
+                        }
+                      </li>
                     }
                   </ul>
-                </nav>
-              }
-
-              <!-- Content Slots for Custom Body Projection -->
-              <ng-content select="[drawer-body], [slot=drawer-body]"></ng-content>
-              <ng-content select="ae-main-menu, [main-menu]"></ng-content>
-              <ng-content></ng-content>
-            </div>
-
-            <!-- Drawer Bottom Footer / Utilities Slot -->
-            <div class="border-t border-aeblack-100 pt-4 mt-auto">
-              <ng-content select="[drawer-footer], [slot=drawer-footer]"></ng-content>
-            </div>
-          </div>
-        </div>
-      }
-    </div>
-
-    <!-- Desktop Navigation Bar (Visible on desktop viewports) -->
-    <div [class]="desktopClasses()">
-      <div class="bg-aeblack-50 border-b border-aeblack-100">
-        <div [class]="containerClass()">
-          <div class="w-full flex items-stretch justify-between gap-4">
-            <!-- Auto-rendered Navigation Items (Data-Driven Mode) -->
-            @if (items().length > 0) {
-              <ul class="flex items-stretch flex-nowrap gap-0.5 xl:gap-1.5 list-none m-0 p-0 min-w-0 h-full">
-                @for (item of items(); track item.label) {
-                  @if (item.visible !== false) {
-                    <ae-nav-item
-                      [label]="item.label"
-                      [icon]="item.icon"
-                      [href]="item.href"
-                      [routerLink]="item.routerLink"
-                      [routerLinkActive]="item.routerLinkActive || 'border-primary-900 text-primary-900 font-bold'"
-                      [routerLinkActiveOptions]="item.routerLinkActiveOptions || { exact: false }"
-                      [target]="item.target"
-                      [dropdown]="item.dropdown"
-                      [type]="item.type || 'primary'"
-                      [tooltipText]="item.tooltipText"
-                    ></ae-nav-item>
-                  }
-                }
-              </ul>
+                </div>
+              </nav>
             }
 
-            <!-- Slot Projection for Main Menu & Secondary Actions -->
-            <ng-content select="ae-main-menu, [main-menu]"></ng-content>
-            <ng-content select="ae-secondary-menu, [secondary-menu]"></ng-content>
+            <!-- Mobile Secondary / Navbar Actions (at bottom of drawer menu) -->
+            @if (mobileSecondaryActions()) {
+              <div class="drawer-secondary-actions pt-3 mt-2 border-t border-aeblack-100 flex flex-col gap-2">
+                <ng-container *ngTemplateOutlet="mobileSecondaryActions()!.template" />
+              </div>
+            }
           </div>
         </div>
       </div>
-    </div>
+
+      <!-- ========================================== -->
+      <!-- DESKTOP NAVIGATION BAR (Large Screens)     -->
+      <!-- ========================================== -->
+      <div class="header-navs max-lg:hidden relative">
+        <div class="container mx-auto">
+          <div class="flex content-between flex-wrap lg:flex-nowrap lg:justify-between lg:items-center">
+            <!-- Left Main Navigation -->
+            <nav class="main-navigation" aria-label="Main navigation">
+              <div class="menu-main-menu-container">
+                <ul class="menu nav-menu lg:flex lg:items-center lg:gap-1 xl:gap-2">
+                  @for (item of items(); track item.label; let i = $index) {
+                    <li
+                      class="menu-item lg:inline-flex lg:items-center"
+                      [class.has-link-icon]="!!item.icon"
+                      [class.relative]="item.dropdown && item.dropdown.length > 0 && item.dropdownVariant !== 'mega' && (item.dropdownColumns || 1) < 4"
+                      [class.menu-item-has-children]="item.dropdown && item.dropdown.length > 0"
+                      [class.group]="item.dropdown && item.dropdown.length > 0"
+                      routerLinkActive="active-page"
+                      [routerLinkActiveOptions]="{ exact: !item.dropdown || item.dropdown.length === 0 }"
+                      (mouseenter)="onDesktopItemMouseEnter(i)"
+                      (mouseleave)="onDesktopItemMouseLeave(i)"
+                    >
+                      @if (isRouterNavigation(item)) {
+                        <a
+                          [routerLink]="item.url"
+                          routerLinkActive="active-page"
+                          [routerLinkActiveOptions]="{ exact: true }"
+                          [target]="item.target || '_self'"
+                          (click)="onItemClick(item, $event)"
+                          class="hover:text-primary-800! hover:border-primary-800! group-hover:text-primary-800! group-hover:border-primary-800!"
+                        >
+                          @if (item.icon) {
+                            <svg aeIcon [name]="item.icon" [size]="18" class="text-inherit me-1"></svg>
+                          }
+                          <span>{{ item.label }}</span>
+                        </a>
+                      } @else {
+                        <a
+                          [href]="item.url || '#'"
+                          [target]="item.target || '_self'"
+                          (click)="onItemClick(item, $event)"
+                          class="hover:text-primary-800! hover:border-primary-800! group-hover:text-primary-800! group-hover:border-primary-800!"
+                        >
+                          @if (item.icon) {
+                            <svg aeIcon [name]="item.icon" [size]="18" class="text-inherit me-1"></svg>
+                          }
+                          <span>{{ item.label }}</span>
+                        </a>
+                      }
+
+                      @if (item.dropdown && item.dropdown.length > 0) {
+                        <button
+                          type="button"
+                          class="submenu-btn shrink-0 group-hover:text-primary-800!"
+                          [attr.aria-expanded]="openDesktopIndex() === i"
+                          (click)="toggleDesktopSubmenu(i, $event)"
+                        >
+                          <span><span class="sr-only">show submenu for "{{ item.label }}"</span></span>
+                          <svg aeIcon name="caret-down" [size]="16"></svg>
+                        </button>
+
+                        <!-- Mega Menu Variant (Full width container with 4-5 cols) -->
+                        @if (item.dropdownVariant === 'mega' || (item.dropdownColumns && item.dropdownColumns >= 4) || item.dropdown.length >= 4) {
+                          <div
+                            class="submenu absolute z-50 lg:py-4 xl:py-5 2xl:py-6 inset-x-0 top-full transform-none xl:px-4 2xl:px-5 bg-whitely-50 shadow-lg border-t border-aeblack-100"
+                            [class.hidden]="openDesktopIndex() !== i"
+                          >
+                            <div class="container mx-auto">
+                              <div class="lg:grid lg:grid-cols-5 [&>div]:p-3">
+                                @for (group of item.dropdown; track group.title || $index) {
+                                  <div>
+                                    @if (group.title) {
+                                      <h2 class="submenu-title max-lg:text-sm">{{ group.title }}</h2>
+                                    }
+                                    <ul class="space-y-1.5 xl:space-y-2 2xl:space-y-2.5">
+                                      @for (subItem of group.items; track subItem.label) {
+                                        @if (isRouterNavigation(subItem)) {
+                                          <li class="menu-item" routerLinkActive="active-page" [routerLinkActiveOptions]="{ exact: true }">
+                                            <a
+                                              [routerLink]="subItem.url"
+                                              [target]="subItem.target || '_self'"
+                                              (click)="onSubItemClick(subItem, $event)"
+                                            >{{ subItem.label }}</a>
+                                          </li>
+                                        } @else {
+                                          <li class="menu-item">
+                                            <a
+                                              [href]="subItem.url || '#'"
+                                              [target]="subItem.target || '_self'"
+                                              (click)="onSubItemClick(subItem, $event)"
+                                            >{{ subItem.label }}</a>
+                                          </li>
+                                        }
+                                      }
+                                    </ul>
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                          </div>
+                        } @else {
+                          <!-- Standard / Multi-Column Dropdown (Positioned absolute below the menu item) -->
+                          <div
+                            class="submenu absolute z-50 top-full start-0 lg:py-4 xl:py-5 2xl:py-6 rounded-bordered bg-whitely-50 shadow-lg min-w-max"
+                            [class.hidden]="openDesktopIndex() !== i"
+                          >
+                            <div
+                              class="[&>div]:p-3 lg:flex lg:flex-wrap"
+                              [ngClass]="(item.dropdownVariant === 'multi-column' || (item.dropdown && item.dropdown.length > 1)) ? '[&>div]:w-52' : '[&>div]:w-72'"
+                            >
+                              @for (group of item.dropdown; track group.title || $index) {
+                                <div>
+                                  @if (group.title) {
+                                    <h2 class="submenu-title max-lg:text-sm">{{ group.title }}</h2>
+                                  }
+                                  <ul class="space-y-1.5 xl:space-y-2 2xl:space-y-2.5">
+                                    @for (subItem of group.items; track subItem.label) {
+                                      @if (isRouterNavigation(subItem)) {
+                                        <li class="menu-item" routerLinkActive="active-page" [routerLinkActiveOptions]="{ exact: true }">
+                                          <a
+                                            [routerLink]="subItem.url"
+                                            [target]="subItem.target || '_self'"
+                                            (click)="onSubItemClick(subItem, $event)"
+                                          >{{ subItem.label }}</a>
+                                        </li>
+                                      } @else {
+                                        <li class="menu-item">
+                                          <a
+                                            [href]="subItem.url || '#'"
+                                            [target]="subItem.target || '_self'"
+                                            (click)="onSubItemClick(subItem, $event)"
+                                          >{{ subItem.label }}</a>
+                                        </li>
+                                      }
+                                    }
+                                  </ul>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        }
+                      }
+                    </li>
+                  }
+                </ul>
+              </div>
+            </nav>
+
+            <!-- Right Actions Slot (e.g. Dropdowns, User Profile, Language Switcher) -->
+            @if (desktopSecondaryActions()) {
+              <div class="header-navs-right flex items-center">
+                <ng-container *ngTemplateOutlet="desktopSecondaryActions()!.template" />
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+    </header>
   `,
-  styles: [`
-    :host {
-      display: block;
-      width: 100%;
-    }
-  `]
 })
 export class NavigationComponent {
-  readonly className = input<string>('');
-  readonly containerClass = input<string>('container mx-auto px-4 sm:px-6 lg:px-8');
-  readonly breakpoint = input<NavBreakpoint>('xl');
-  readonly drawerTitle = input<string>('UAE Gov Menu');
-  readonly drawerToggleLabel = input<string>('Toggle main menu');
-  readonly drawerCloseLabel = input<string>('Close menu');
+  // Directives for header slots
+  readonly brandList = contentChildren(NavBrandDirective);
+  readonly primaryActionsList = contentChildren(NavPrimaryActionsDirective);
+  readonly secondaryActionsList = contentChildren(NavSecondaryActionsDirective);
+  readonly drawerContent = contentChild(NavDrawerContentDirective);
+
+  // Resolved slot templates
+  protected readonly desktopBrand = computed(() => {
+    const list = this.brandList();
+    return list.find((b) => b.target === 'desktop') || list.find((b) => b.target === 'all');
+  });
+
+  protected readonly mobileBrand = computed(() => {
+    const list = this.brandList();
+    return list.find((b) => b.target === 'mobile') || list.find((b) => b.target === 'all');
+  });
+
+  protected readonly drawerBrand = computed(() => {
+    const list = this.brandList();
+    return (
+      list.find((b) => b.target === 'drawer') ||
+      list.find((b) => b.target === 'mobile') ||
+      list.find((b) => b.target === 'all')
+    );
+  });
+
+  protected readonly desktopPrimaryActions = computed(() => {
+    const list = this.primaryActionsList();
+    return list.find((a) => a.target === 'desktop') || list.find((a) => a.target === 'all');
+  });
+
+  protected readonly mobilePrimaryActions = computed(() => {
+    const list = this.primaryActionsList();
+    return list.find((a) => a.target === 'mobile') || list.find((a) => a.target === 'all');
+  });
+
+  protected readonly drawerHeaderActions = computed(() => {
+    const list = this.primaryActionsList();
+    return list.find((a) => a.target === 'drawer');
+  });
+
+  protected readonly desktopSecondaryActions = computed(() => {
+    const list = this.secondaryActionsList();
+    return list.find((a) => a.target === 'desktop') || list.find((a) => a.target === 'all');
+  });
+
+  protected readonly mobileSecondaryActions = computed(() => {
+    const list = this.secondaryActionsList();
+    return (
+      list.find((a) => a.target === 'mobile' || a.target === 'drawer') ||
+      list.find((a) => a.target === 'all')
+    );
+  });
+
+  /**
+   * Whether any header slots (brand, primary actions, custom drawer content) are present.
+   * When false, component acts as a standalone navbar and omits the .aegov-header styling.
+   */
+  protected readonly hasHeaderSlots = computed(() =>
+    Boolean(
+      this.brandList().length > 0 ||
+      this.primaryActionsList().length > 0 ||
+      this.drawerContent()
+    )
+  );
+
+  /**
+   * Main navigation items list
+   */
   readonly items = input<NavItemData[]>([]);
 
-  readonly mobileOpen = signal<boolean>(false);
-  readonly expandedMobileItems = signal<Set<string>>(new Set());
+  /**
+   * Emitted when a nav item is clicked
+   */
+  readonly itemClick = output<NavItemData>();
 
-  readonly topBarClasses = computed(() =>
-    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden')
-  );
+  /**
+   * Emitted when a sub-item is clicked
+   */
+  readonly subItemClick = output<NavDropdownItem>();
 
-  readonly mobileHeaderClasses = computed(() =>
-    cn(MOBILE_BREAKPOINTS[this.breakpoint()] ?? 'xl:hidden')
-  );
+  /**
+   * Emitted when mobile drawer state changes
+   */
+  readonly mobileDrawerChange = output<boolean>();
 
-  readonly desktopClasses = computed(() =>
-    cn(TOP_BAR_BREAKPOINTS[this.breakpoint()] ?? 'max-xl:hidden', this.className())
-  );
+  protected readonly openDesktopIndex = signal<number | null>(null);
+  protected readonly openMobileSubmenuIndex = signal<number | null>(null);
+  protected readonly isMobileDrawerOpen = signal<boolean>(false);
 
-  toggleMobileItem(label: string): void {
-    this.expandedMobileItems.update(set => {
-      const next = new Set(set);
-      if (next.has(label)) {
-        next.delete(label);
-      } else {
-        next.add(label);
-      }
+  private hoverTimeout: any = null;
+
+  
+
+
+  toggleMobileDrawer(): void {
+    this.isMobileDrawerOpen.update((open) => {
+      const next = !open;
+      this.mobileDrawerChange.emit(next);
       return next;
     });
   }
 
-  isMobileItemExpanded(label: string): boolean {
-    return this.expandedMobileItems().has(label);
-  }
-
-  toggleMobileDrawer(open?: boolean): void {
-    if (open !== undefined) {
-      this.mobileOpen.set(open);
-    } else {
-      this.mobileOpen.update(prev => !prev);
+  closeMobileDrawer(): void {
+    if (this.isMobileDrawerOpen()) {
+      this.isMobileDrawerOpen.set(false);
+      this.mobileDrawerChange.emit(false);
     }
   }
+
+  openMobileDrawer(): void {
+    if (!this.isMobileDrawerOpen()) {
+      this.isMobileDrawerOpen.set(true);
+      this.mobileDrawerChange.emit(true);
+    }
+  }
+
+  protected isRouterNavigation(item: { navigation?: 'router' | 'href' }): boolean {
+    return item.navigation !== 'href';
+  }
+
+  protected onDesktopItemMouseEnter(index: number): void {
+    if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
+    this.openDesktopIndex.set(index);
+  }
+
+  protected onDesktopItemMouseLeave(_index: number): void {
+    this.hoverTimeout = setTimeout(() => {
+      this.openDesktopIndex.set(null);
+    }, 150);
+  }
+
+  protected toggleDesktopSubmenu(index: number, event: MouseEvent): void {
+    event.stopPropagation();
+    this.openDesktopIndex.update(cur => (cur === index ? null : index));
+  }
+
+  protected toggleMobileSubmenu(index: number): void {
+    this.openMobileSubmenuIndex.update(cur => (cur === index ? null : index));
+  }
+
+  protected onItemClick(item: NavItemData, event: MouseEvent): void {
+    if (item.onClick) {
+      item.onClick(event);
+    }
+    this.itemClick.emit(item);
+  }
+
+  protected onSubItemClick(subItem: NavDropdownItem, event: MouseEvent): void {
+    if (subItem.onClick) {
+      subItem.onClick(event);
+    }
+    this.subItemClick.emit(subItem);
+    this.openDesktopIndex.set(null);
+  }
 }
+

@@ -8,11 +8,11 @@ import {
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { IconDirective } from '../Icon/icon.directive';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
 
 export type BannerPosition = 'top' | 'bottom' | 'static';
-export type BannerVariant = 'default' | 'camel' | 'red' | 'dark' | 'primaryNotice' | 'secondaryNotice';
+export type BannerVariant = 'default' | 'camel' | 'red' | 'dark' | 'notice-primary' | 'notice-secondary';
 
 export interface BannerAction {
   text: string;
@@ -23,79 +23,147 @@ export interface BannerAction {
 @Component({
   selector: 'ae-banner',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     @if (isVisible()) {
       <div
-        role="alert"
+        [attr.role]="role()"
+        [attr.aria-label]="effectiveAriaLabel()"
         [class]="containerClasses()"
       >
-        @if (isNotice()) {
-          <div class="py-4 max-w-(--breakpoint-lg) flex-1">
-            @if (title()) {
-              <h2 class="mb-4 text-xl font-bold text-slate-800">{{ title() }}</h2>
-            }
-            <p class="font-normal text-slate-800 mb-0">
-              <ng-content></ng-content>
-            </p>
-          </div>
-          <div class="flex items-center gap-4 shrink-0">
-            @if (effectiveAction(); as act) {
-              <a
-                [href]="act.href || '#'"
-                [class]="actionClasses()"
-                (click)="onActionClick($event, act)"
-              >
-                {{ act.text }}
-                <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-              </a>
-            }
-            @if (effectiveDismissible()) {
-              <button
-                type="button"
-                (click)="handleDismiss()"
-                class="p-0.5 hover:opacity-60 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-400 rounded-sm cursor-pointer"
-                aria-label="Dismiss"
-              >
-                <ae-icon name="x" [size]="20"></ae-icon>
-              </button>
-            }
-          </div>
-        } @else {
-          <div [class]="contentWrapperClasses()">
-            <div [class]="textContentClasses()">
-              @if (title()) {
-                <div class="font-bold mb-1">{{ title() }}</div>
-              }
-              <ng-content></ng-content>
-            </div>
-            @if (effectiveAction(); as act) {
-              <div [class]="actionWrapperClasses()">
-                <a
-                  [href]="act.href || '#'"
-                  [class]="actionClasses()"
-                  (click)="onActionClick($event, act)"
+        <div class="container">
+          @if (isNotice()) {
+            <div class="banner-notice">
+              <div class="py-4 banner-content max-w-(--breakpoint-lg)">
+                @if (title()) {
+                  <h2
+                    class="mb-4 text-xl font-bold"
+                    [class.text-primary-800]="variant() === 'notice-primary'"
+                    [class.text-aeblack-800]="variant() !== 'notice-primary'"
+                  >
+                    {{ title() }}
+                  </h2>
+                }
+                <div
+                  class="font-normal mb-0"
+                  [class.text-primary-800]="variant() === 'notice-primary'"
+                  [class.text-aeblack-800]="variant() !== 'notice-primary'"
                 >
-                  {{ act.text }}
-                  <ae-icon name="caret-right" [size]="20" className="rtl:-scale-x-100"></ae-icon>
-                </a>
+                  @if (content()) {
+                    <p class="mb-0">{{ content() }}</p>
+                  } @else {
+                    <ng-content></ng-content>
+                  }
+                </div>
               </div>
-            }
-          </div>
-          @if (effectiveDismissible()) {
-            <div class="flex items-center">
-              <button
-                type="button"
-                (click)="handleDismiss()"
-                class="p-0.5 hover:opacity-60 focus:outline-hidden focus:ring-2 focus:ring-offset-2 focus:ring-slate-400 rounded-sm cursor-pointer"
-                aria-label="Dismiss"
+              <div class="flex items-center shrink-0 gap-3">
+                <ng-content select="[banner-actions], [actions]"></ng-content>
+                @if (effectiveAction(); as act) {
+                  <a
+                    [href]="act.href || '#'"
+                    class="aegov-btn"
+                    [class.btn-primary]="variant() === 'notice-primary'"
+                    [class.btn-secondary]="variant() !== 'notice-primary'"
+                    (click)="handleActionClick($event, act)"
+                  >
+                    {{ act.text }}
+                  </a>
+                }
+                @if (dismissible()) {
+                  <button
+                    type="button"
+                    class="banner-dismiss"
+                    aria-label="Close"
+                    (click)="handleDismiss()"
+                  >
+                    <svg aeIcon name="x" [size]="20"></svg>
+                  </button>
+                }
+              </div>
+            </div>
+          } @else if (variant() === 'dark') {
+            <div class="flex items-center justify-between gap-3">
+              <div class="banner-content text-whitely-50 flex flex-col md:flex-row md:items-center gap-3">
+                @if (title()) {
+                  <span class="font-bold">{{ title() }}</span>
+                }
+                @if (content()) {
+                  <span>{{ content() }}</span>
+                } @else {
+                  <ng-content></ng-content>
+                }
+                @if (effectiveAction(); as act) {
+                  <a
+                    [href]="act.href || '#'"
+                    class="aegov-link link-underline text-whitely-50 hover:text-whitely-100 focus-visible:ring-whitely-400 focus-visible:ring-offset-aeblack-700"
+                    (click)="handleActionClick($event, act)"
+                  >
+                    {{ act.text }}
+                    <svg aeIcon name="caret-right" [size]="20" class="rtl:-scale-x-100"></svg>
+                  </a>
+                }
+              </div>
+              @if (dismissible()) {
+                <button
+                  type="button"
+                  class="banner-dismiss text-whitely-50"
+                  aria-label="Close"
+                  (click)="handleDismiss()"
+                >
+                  <svg aeIcon name="x" [size]="20"></svg>
+                </button>
+              }
+            </div>
+          } @else {
+            <div class="flex items-center justify-between gap-3">
+              <div
+                class="banner-content flex-1 flex flex-wrap md:flex-nowrap items-center gap-3"
+                [class.md:justify-center]="centered()"
+                [class.justify-start]="!centered()"
+                [class.text-camel-50]="variant() === 'camel'"
+                [class.text-aered-600]="variant() === 'red'"
               >
-                <ae-icon name="x" [size]="20"></ae-icon>
-              </button>
+                @if (title()) {
+                  <span class="font-bold">{{ title() }}</span>
+                }
+                @if (content()) {
+                  <span>{{ content() }}</span>
+                } @else {
+                  <ng-content></ng-content>
+                }
+                @if (effectiveAction(); as act) {
+                  <a
+                    [href]="act.href || '#'"
+                    class="banner-link aegov-link link-underline"
+                    [class.text-camel-50]="variant() === 'camel'"
+                    [class.hover:text-camel-100]="variant() === 'camel'"
+                    [class.focus-visible:ring-camel-400]="variant() === 'camel'"
+                    [class.focus-visible:ring-offset-camel-600]="variant() === 'camel'"
+                    [class.text-aered-600]="variant() === 'red'"
+                    [class.hover:text-aered-700]="variant() === 'red'"
+                    [class.focus-visible:ring-aered-400]="variant() === 'red'"
+                    [class.focus-visible:ring-offset-aered-50]="variant() === 'red'"
+                    (click)="handleActionClick($event, act)"
+                  >
+                    {{ act.text }}
+                    <svg aeIcon name="caret-right" [size]="20" class="rtl:-scale-x-100"></svg>
+                  </a>
+                }
+              </div>
+              @if (dismissible()) {
+                <button
+                  type="button"
+                  class="banner-dismiss shrink-0"
+                  aria-label="Close"
+                  (click)="handleDismiss()"
+                >
+                  <svg aeIcon name="x" [size]="20"></svg>
+                </button>
+              }
             </div>
           }
-        }
+        </div>
       </div>
     }
   `,
@@ -107,23 +175,93 @@ export interface BannerAction {
   `]
 })
 export class BannerComponent {
-  readonly position = input<BannerPosition>('static');
+  /**
+   * Position of the banner ('top' | 'bottom' | 'static')
+   */
+  readonly position = input<BannerPosition>('top');
+
+  /**
+   * Semantic color variant of the banner
+   */
   readonly variant = input<BannerVariant>('default');
+
+  /**
+   * Banner title / headline
+   */
   readonly title = input<string | undefined>(undefined);
+
+  /**
+   * Banner message content. Alternatively use content projection via <ng-content>
+   */
+  readonly content = input<string | undefined>(undefined);
+
+  /**
+   * Structured action link or button
+   */
   readonly action = input<BannerAction | undefined>(undefined);
+
+  /**
+   * Action link text
+   */
   readonly actionText = input<string | undefined>(undefined);
+
+  /**
+   * Action link URL destination
+   */
   readonly actionHref = input<string | undefined>(undefined);
-  readonly isDismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether the banner includes a close / dismiss button
+   */
   readonly dismissible = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether content is centered horizontally (defaults to true)
+   */
   readonly centered = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Whether the banner is fixed/sticky to the viewport
+   */
+  readonly sticky = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * ARIA role for accessibility ('region' | 'status' | 'alert' | 'banner')
+   */
+  readonly role = input<string>('region');
+
+  /**
+   * Accessible description label for the banner
+   */
+  readonly ariaLabel = input<string | undefined>(undefined);
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
+  /**
+   * Event emitted when the banner is dismissed
+   */
   readonly dismiss = output<void>();
+  readonly onDismiss = output<void>();
 
-  readonly isVisible = signal<boolean>(true);
+  /**
+   * Event emitted when the action link is clicked
+   */
+  readonly actionClick = output<MouseEvent>();
 
-  readonly effectiveDismissible = computed(() => this.isDismissible() || this.dismissible());
-  readonly effectiveAction = computed<BannerAction | undefined>(() => {
+  protected readonly isVisible = signal<boolean>(true);
+
+  protected readonly isNotice = computed(() => {
+    return this.variant() === 'notice-primary' || this.variant() === 'notice-secondary';
+  });
+
+  protected readonly effectiveAriaLabel = computed(() => {
+    return this.ariaLabel() || this.title() || 'Announcement banner';
+  });
+
+  protected readonly effectiveAction = computed<BannerAction | undefined>(() => {
     if (this.action()) return this.action();
     if (this.actionText()) {
       return {
@@ -134,78 +272,38 @@ export class BannerComponent {
     return undefined;
   });
 
-  readonly variantStyles: Record<BannerVariant, string> = {
-    default: 'bg-slate-50 border-slate-500 text-slate-600',
-    camel: 'bg-camel-600 border-camel-500 text-camel-50',
-    red: 'bg-aered-50 border-aered-500 text-aered-600',
-    primaryNotice: 'bg-primary-50 border-primary-700',
-    secondaryNotice: 'bg-slate-50 border-slate-700',
-    dark: 'bg-slate-700 text-slate-50 rounded-xl m-4',
-  };
-
-  readonly actionStyles: Record<BannerVariant, string> = {
-    default: 'text-slate-600 hover:text-slate-700 focus-visible:ring-slate-400',
-    camel: 'text-camel-50 hover:text-camel-100 focus-visible:ring-camel-400',
-    red: 'text-aered-600 hover:text-aered-700 focus-visible:ring-aered-400',
-    primaryNotice: 'text-primary-700 hover:text-primary-800 focus-visible:ring-primary-400',
-    secondaryNotice: 'text-secondary-700 hover:text-secondary-800 focus-visible:ring-secondary-400',
-    dark: 'text-slate-50 hover:text-slate-100 focus-visible:ring-slate-400',
-  };
-
-  readonly positionStyles: Record<BannerPosition, string> = {
-    top: 'border-b-2 fixed top-0 left-0 right-0 z-50',
-    bottom: 'border-t-2 fixed bottom-0 left-0 right-0 z-50',
-    static: 'border-b-2 relative'
-  };
-
-  readonly isNotice = computed(() =>
-    this.variant() === 'primaryNotice' || this.variant() === 'secondaryNotice'
-  );
-
-  readonly containerClasses = computed(() =>
-    cn(
-      'relative px-4 py-3 flex',
-      this.variantStyles[this.variant()],
-      this.positionStyles[this.position()],
-      this.isNotice() && 'flex flex-col md:flex-row justify-between gap-4 items-center',
+  protected readonly containerClasses = computed(() => {
+    const v = this.variant();
+    const p = this.position();
+    return cn(
+      'aegov-banner',
+      p === 'top' && 'banner-top',
+      p === 'bottom' && 'banner-bottom',
+      this.sticky() && (p === 'bottom' ? 'fixed bottom-0 left-0 right-0 z-50' : 'fixed top-0 left-0 right-0 z-50'),
+      v === 'camel' && 'bg-camel-600 border-camel-500',
+      v === 'red' && 'bg-aered-50 border-aered-500',
+      v === 'dark' && 'bg-slate-700 rounded-xl',
+      v === 'notice-primary' && 'bg-primary-50 border-primary-700',
+      v === 'notice-secondary' && 'bg-slate-50 border-slate-700',
       this.className()
-    )
-  );
+    );
+  });
 
-  readonly actionClasses = computed(() =>
-    cn(
-      'inline-flex items-center gap-2 font-medium underline underline-offset-1 hover:underline focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-offset-2 rounded-xs whitespace-nowrap',
-      this.actionStyles[this.variant()]
-    )
-  );
-
-  readonly contentWrapperClasses = computed(() =>
-    cn(
-      'flex flex-col md:flex-row gap-3 grow',
-      this.centered() ? 'justify-center' : 'justify-start'
-    )
-  );
-
-  readonly textContentClasses = computed(() =>
-    cn(this.centered() ? 'text-center' : 'text-left')
-  );
-
-  readonly actionWrapperClasses = computed(() =>
-    cn(
-      'flex items-center gap-3',
-      this.centered() ? 'justify-center' : 'justify-start'
-    )
-  );
-
-  handleDismiss(): void {
+  protected handleDismiss(): void {
     this.isVisible.set(false);
     this.dismiss.emit();
+    this.onDismiss.emit();
   }
 
-  onActionClick(event: MouseEvent, act: BannerAction): void {
+  protected handleActionClick(event: MouseEvent, act: BannerAction): void {
+    this.actionClick.emit(event);
     if (act.onClick) {
       event.preventDefault();
       act.onClick();
     }
+  }
+
+  show(): void {
+    this.isVisible.set(true);
   }
 }

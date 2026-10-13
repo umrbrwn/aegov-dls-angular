@@ -1,0 +1,159 @@
+.aegov-step {
+  --step-badge-bg: var(--color-whitely-50);
+  --step-badge-fg: var(--color-aeblack-900);
+  --step-badge-border: var(--color-slate-200);
+  --step-badge-ring: transparent;
+  --step-connector-bg: var(--color-aeblack-200);
+
+  & .step-badge {
+    background-color: var(--step-badge-bg);
+    color: var(--step-badge-fg);
+    border-color: var(--step-badge-border);
+    font-size: var(--text-base);
+    @apply relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border bg-[length:1.5rem] leading-6 font-bold no-underline;
+    outline-style: solid;
+    outline-width: 2px;
+    outline-offset: 2px;
+    outline-color: var(--step-badge-ring);
+
+    &:focus-visible {
+      --step-badge-ring: var(--color-primary-support-600);
+    }
+
+    .step-upcoming &:hover {
+      background-color: var(--color-primary-100);
+      border-color: var(--color-primary-100);
+      color: var(--color-primary-800);
+    }
+
+    & svg {
+      @apply h-6 w-6 fill-current;
+    }
+  }
+
+  & .step-connector {
+    @apply absolute inset-0 flex items-center;
+  }
+
+  & .step-connector-state {
+    background-color: var(--step-connector-bg);
+    @apply h-[0.188rem] w-full;
+  }
+
+  & .step-connector-vertical {
+    @apply absolute start-5 -ms-px top-5 h-full w-[0.188rem];
+  }
+
+  & .step-text-below {
+    color: var(--color-aeblack-900);
+    @apply absolute top-[calc(100%_+_1rem)] whitespace-nowrap font-medium;
+  }
+
+  /* State Modifiers */
+  & .step-completed,
+  & .step-current {
+    --step-badge-bg: var(--color-primary-600);
+    --step-badge-fg: var(--color-whitely-50);
+    --step-badge-border: var(--color-primary-600);
+
+    & .step-connector-state {
+      background-color: var(--color-primary-600);
+    }
+  }
+
+  & .step-current .step-badge {
+    --step-badge-ring: var(--color-primary-100);
+    @apply pointer-events-none;
+    outline-width: 4px;
+    outline-offset: 0px;
+
+    &:focus-visible {
+      --step-badge-ring: var(--color-primary-support-600);
+      outline-width: 2px;
+    }
+  }
+
+  & .step-completed .step-badge {
+    @apply bg-center bg-no-repeat;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Crect width='256' height='256' fill='none'/%3E%3Cpolyline points='40 144 96 200 224 72' fill='none' stroke='%23ffffff' stroke-linecap='round' stroke-linejoin='round' stroke-width='16'/%3E%3C/svg%3E");
+
+    &:hover {
+      --step-badge-ring: var(--color-primary-100);
+      @apply ring-4;
+    }
+  }
+
+  & .step-disabled {
+    @apply pointer-events-none opacity-50;
+  }
+
+  /* Size Modifiers */
+  & .step-connector {
+    @apply start-12 w-[calc(100%_-_3.5rem)];
+  }
+
+  & .step-connector-vertical {
+    @apply top-12 h-[calc(100%_-_3.5rem)];
+  }
+
+  &.step-sm {
+    & .step-connector {
+      @apply start-10 w-[calc(100%_-_3rem)];
+    }
+
+    & .step-badge {
+      @apply h-8 w-8 bg-[length:1rem] text-sm;
+
+      & svg {
+        @apply h-5 w-5;
+      }
+    }
+
+    & .step-connector-vertical {
+      @apply top-10 start-4 h-[calc(100%_-_3rem)];
+    }
+  }
+
+  &.step-lg {
+    & .step-connector {
+      @apply start-14 w-[calc(100%_-_4rem)];
+    }
+
+    & .step-badge {
+      @apply h-12 w-12 bg-[length:2rem] text-lg;
+
+      & svg {
+        @apply h-8 w-8;
+      }
+    }
+
+    & .step-connector-vertical {
+      @apply top-14 start-6 h-[calc(100%_-_4rem)];
+    }
+  }
+}
+
+.aegov-step-title {
+  background-color: var(--color-aeblack-50);
+  @apply relative p-6;
+
+  & .step-outof {
+    color: var(--color-primary-600);
+    @apply text-xs font-normal;
+  }
+
+  & .step-title {
+    color: var(--color-aeblack-800);
+    @apply text-lg font-medium;
+  }
+
+  & .step-title-progress {
+    background-color: var(--color-aeblack-200);
+    @apply absolute inset-x-0 bottom-0 w-full overflow-hidden rounded-full;
+  }
+
+  & .step-title-progress-status {
+    background-color: var(--color-primary-600);
+    @apply h-1 rounded-full;
+  }
+}

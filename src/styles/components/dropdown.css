@@ -1,0 +1,43 @@
+.aegov-dropdown {
+  /* --- 1. STRUCTURAL STYLES --- */
+  @apply rounded-lg z-50 hidden;
+
+  /* --- 2. DYNAMIC COLOR PROPERTIES --- */
+  background-color: var(--dropdown-bg);
+  box-shadow: 0 20px 25px -5px color-mix(in srgb, var(--color-aeblack-900) 10%, transparent), 0 8px 10px -6px color-mix(in srgb, var(--color-aeblack-900) 10%, transparent);
+
+  /* --- 3. DEFAULT COLOR SCHEME --- */
+  --dropdown-bg: var(--color-whitely-50);
+  --dropdown-header-fg: var(--color-aeblack-900);
+  --dropdown-header-border: var(--color-aeblack-50);
+  --dropdown-body-fg: var(--color-aeblack-700);
+  --dropdown-item-bg-hover: var(--color-secondary-50);
+
+  & .dropdown-header {
+    color: var(--dropdown-header-fg);
+    border-bottom-color: var(--dropdown-header-border);
+    @apply border-b px-3 py-2;
+  }
+
+  & .dropwdown-body,
+  & .dropdown-body {
+    color: var(--dropdown-body-fg);
+
+    & a {
+      @apply text-inherit active:text-inherit visited:text-inherit hover:text-inherit no-underline;
+    }
+  }
+}
+
+.dropdown-item {
+  @apply flex items-center gap-3 rounded-none px-3 py-2 text-inherit no-underline;
+  @apply active:text-inherit visited:text-inherit hover:text-inherit;
+
+  &:hover {
+    background-color: var(--dropdown-item-bg-hover);
+  }
+
+  & svg {
+    @apply h-5 w-5 text-current;
+  }
+}

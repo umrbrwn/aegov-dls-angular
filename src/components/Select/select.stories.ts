@@ -1,272 +1,182 @@
 import type { Meta, StoryObj } from '@storybook/angular';
-import { SelectComponent } from './select.component';
+import { moduleMetadata } from '@storybook/angular';
+import { SelectDirective, type SelectOption } from './select.directive';
+import { FormControlDirective } from '../Input/input.directive';
 
-const countryOptions = [
+const countryOptions: SelectOption[] = [
   { value: 'uae', label: 'United Arab Emirates' },
-  { value: 'india', label: 'India' },
+  { value: 'india', label: 'India', disabled: true },
   { value: 'uk', label: 'United Kingdom' },
   { value: 'usa', label: 'USA' },
 ];
 
-const meta: Meta<SelectComponent> = {
+export interface SelectStoryArgs {
+  label?: string;
+  placeholder?: string;
+  options?: SelectOption[];
+  size?: 'sm' | 'base' | 'lg';
+  variant?: 'primary' | 'secondary';
+  error?: string;
+  helperText?: string;
+  disabled?: boolean;
+  required?: boolean;
+}
+
+const meta: Meta<SelectStoryArgs> = {
   title: 'Components/Select',
-  component: SelectComponent,
+  tags: ['autodocs'],
+  decorators: [
+    moduleMetadata({
+      imports: [SelectDirective, FormControlDirective],
+    }),
+  ],
   parameters: {
-    layout: 'padded',
+    layout: 'centered',
   },
   args: {
+    label: 'Country of Residence',
+    placeholder: 'Select a country',
+    options: countryOptions,
     size: 'base',
     variant: 'primary',
+    error: '',
+    helperText: 'Select your preferred option from the list.',
     disabled: false,
     required: false,
-    placeholder: 'Choose a country',
-    label: 'Country',
-    options: countryOptions,
   },
   argTypes: {
-    size: {
-      control: 'select',
-      options: ['sm', 'base', 'lg'],
-    },
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary'],
-    },
-    disabled: {
-      control: 'boolean',
-    },
-    required: {
-      control: 'boolean',
-    },
-    label: {
-      control: 'text',
-    },
-    placeholder: {
-      control: 'text',
-    },
-    helperText: {
-      control: 'text',
-    },
-    error: {
-      control: 'text',
-    },
+    label: { control: 'text' },
+    placeholder: { control: 'text' },
+    options: { control: 'object' },
+    size: { control: 'select', options: ['sm', 'base', 'lg'] },
+    variant: { control: 'select', options: ['primary', 'secondary'] },
+    error: { control: 'text' },
+    helperText: { control: 'text' },
+    disabled: { control: 'boolean' },
+    required: { control: 'boolean' },
   },
 };
 
 export default meta;
-type Story = StoryObj<SelectComponent>;
+type Story = StoryObj<SelectStoryArgs>;
 
-export const Basic: Story = {
-  args: {
-    label: 'Select an option',
-    placeholder: 'Choose a country',
-    id: 'country',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    options: countryOptions,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [id]="id" [options]="options" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [error]="error" [helperText]="helperText"></ae-select></div>`,
-  }),
-};
-
-export const WithHelperText: Story = {
-  args: {
-    label: 'Country',
-    placeholder: 'Choose a country',
-    helperText: 'Select your country of residence',
-    id: 'country-helper',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    options: countryOptions,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [helperText]="helperText" [id]="id" [options]="options" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [error]="error"></ae-select></div>`,
-  }),
-};
-
-export const WithError: Story = {
-  args: {
-    label: 'Country',
-    placeholder: 'Choose a country',
-    error: 'Please select a country',
-    id: 'country-error',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    options: countryOptions,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [error]="error" [id]="id" [options]="options" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [helperText]="helperText"></ae-select></div>`,
-  }),
-};
-
-export const Sizes: Story = {
-  argTypes: {
-    size: { table: { disable: true } },
-  },
-  args: {
-    variant: 'primary',
-    disabled: false,
-    required: false,
-  },
+export const Default: Story = {
   render: (args) => ({
     props: args,
     template: `
-      <div class="flex flex-col space-y-4 max-w-md">
-        <ae-select size="sm" label="Small Select" placeholder="Small size" id="small" [variant]="variant" [disabled]="disabled" [required]="required" [options]="[
-          { value: 'uae', label: 'United Arab Emirates' },
-          { value: 'india', label: 'India' }
-        ]"></ae-select>
-        <ae-select size="base" label="Base Select" placeholder="Base size" id="base" [variant]="variant" [disabled]="disabled" [required]="required" [options]="[
-          { value: 'uae', label: 'United Arab Emirates' },
-          { value: 'india', label: 'India' }
-        ]"></ae-select>
-        <ae-select size="lg" label="Large Select" placeholder="Large size" id="large" [variant]="variant" [disabled]="disabled" [required]="required" [options]="[
-          { value: 'uae', label: 'United Arab Emirates' },
-          { value: 'india', label: 'India' }
-        ]"></ae-select>
+      <div class="w-[400px] p-6">
+        <div aeFormControl [size]="size" [variant]="variant" [error]="!!error">
+          @if (label) {
+            <label for="sample-select">
+              {{ label }}
+              @if (required) {
+                <span class="text-aered-600 ms-0.5">*</span>
+              }
+            </label>
+          }
+          <div class="form-control-input">
+            <select
+              aeSelect
+              id="sample-select"
+              [options]="options"
+              [placeholder]="placeholder"
+              [disabled]="disabled"
+              [required]="required"
+            ></select>
+          </div>
+          @if (error) {
+            <p class="error-message">{{ error }}</p>
+          } @else if (helperText) {
+            <p class="mt-2 text-xs leading-6 text-aeblack-500">{{ helperText }}</p>
+          }
+        </div>
       </div>
     `,
   }),
 };
 
-export const Variants: Story = {
-  argTypes: {
-    variant: { table: { disable: true } },
+export const DeclarativeOptions: Story = {
+  parameters: {
+    controls: { disable: true },
   },
-  args: {
-    size: 'base',
-    disabled: false,
-    required: false,
-  },
-  render: (args) => ({
-    props: args,
-    template: `
-      <div class="flex flex-col space-y-4 max-w-md">
-        <ae-select variant="primary" label="Primary Select" placeholder="Primary variant" id="primary" [size]="size" [disabled]="disabled" [required]="required" [options]="[
-          { value: 'uae', label: 'United Arab Emirates' },
-          { value: 'india', label: 'India' }
-        ]"></ae-select>
-        <ae-select variant="secondary" label="Secondary Select" placeholder="Secondary variant" id="secondary" [size]="size" [disabled]="disabled" [required]="required" [options]="[
-          { value: 'uae', label: 'United Arab Emirates' },
-          { value: 'india', label: 'India' }
-        ]"></ae-select>
-      </div>
-    `,
-  }),
-};
-
-export const Required: Story = {
-  args: {
-    label: 'Country',
-    placeholder: 'Choose a country',
-    required: true,
-    id: 'required-country',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    options: countryOptions,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [required]="required" [id]="id" [options]="options" [size]="size" [variant]="variant" [disabled]="disabled" [error]="error" [helperText]="helperText"></ae-select></div>`,
-  }),
-};
-
-export const Disabled: Story = {
-  args: {
-    label: 'Disabled Select',
-    placeholder: 'This select is disabled',
-    disabled: true,
-    id: 'disabled',
-    size: 'base',
-    variant: 'primary',
-    required: false,
-    options: countryOptions,
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [disabled]="disabled" [id]="id" [options]="options" [size]="size" [variant]="variant" [required]="required" [error]="error" [helperText]="helperText"></ae-select></div>`,
-  }),
-};
-
-export const LongList: Story = {
-  args: {
-    label: 'Country',
-    placeholder: 'Select a country',
-    id: 'long-list',
-    size: 'base',
-    variant: 'primary',
-    disabled: false,
-    required: false,
-    options: [
-      { value: 'af', label: 'Afghanistan' },
-      { value: 'al', label: 'Albania' },
-      { value: 'dz', label: 'Algeria' },
-      { value: 'ar', label: 'Argentina' },
-      { value: 'au', label: 'Australia' },
-      { value: 'at', label: 'Austria' },
-      { value: 'bd', label: 'Bangladesh' },
-      { value: 'be', label: 'Belgium' },
-      { value: 'br', label: 'Brazil' },
-      { value: 'bg', label: 'Bulgaria' },
-      { value: 'kh', label: 'Cambodia' },
-      { value: 'ca', label: 'Canada' },
-      { value: 'cl', label: 'Chile' },
-      { value: 'cn', label: 'China' },
-      { value: 'co', label: 'Colombia' },
-      { value: 'hr', label: 'Croatia' },
-      { value: 'dk', label: 'Denmark' },
-      { value: 'eg', label: 'Egypt' },
-      { value: 'fi', label: 'Finland' },
-      { value: 'fr', label: 'France' },
-      { value: 'de', label: 'Germany' },
-      { value: 'gr', label: 'Greece' },
-      { value: 'in', label: 'India' },
-      { value: 'id', label: 'Indonesia' },
-      { value: 'ir', label: 'Iran' },
-      { value: 'iq', label: 'Iraq' },
-      { value: 'ie', label: 'Ireland' },
-      { value: 'it', label: 'Italy' },
-      { value: 'jp', label: 'Japan' },
-    ],
-  },
-  render: (args) => ({
-    props: args,
-    template: `<div class="max-w-md"><ae-select [label]="label" [placeholder]="placeholder" [id]="id" [options]="options" [size]="size" [variant]="variant" [disabled]="disabled" [required]="required" [error]="error" [helperText]="helperText"></ae-select></div>`,
-  }),
-};
-
-export const HtmlMultiSelect: Story = {
   render: () => ({
     template: `
-      <div class="max-w-md">
-        <label for="country_multiple" class="font-semibold mb-2 block">
-          Select options
-        </label>
-        <select
-          multiple
-          id="country_multiple"
-          name="country_multiple"
-          class="w-full min-h-[120px] border-2 border-[#c9a227] rounded-lg p-2 text-[#6b4226] text-[15px] focus:outline-hidden focus:ring-2 focus:ring-[#c9a227]"
-        >
-          <option value="United Arab Emirates">United Arab Emirates</option>
-          <option value="India">India</option>
-          <option value="United Kingdom">United Kingdom</option>
-          <option value="USA">USA</option>
-        </select>
-        <p class="mt-2 text-gray-500 text-xs">
-          This is a native HTML <code>&lt;select multiple&gt;</code> element for multi-select functionality.
-        </p>
+      <div class="w-[400px] p-6">
+        <div aeFormControl>
+          <label for="decl-select">Country <span class="text-aered-600">*</span></label>
+          <div class="form-control-input">
+            <select aeSelect id="decl-select">
+              <option value="" disabled selected hidden>Select an option</option>
+              <option value="uae">United Arab Emirates</option>
+              <option value="sa">Saudi Arabia</option>
+              <option value="om">Oman</option>
+              <option value="kw">Kuwait</option>
+            </select>
+          </div>
+          <p class="mt-2 text-xs leading-6 text-aeblack-500">Rendered with standard child option tags.</p>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const ErrorState: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      options: countryOptions,
+    },
+    template: `
+      <div class="w-[400px] p-6">
+        <div aeFormControl [error]="true">
+          <label for="err-select">Country <span class="text-aered-600">*</span></label>
+          <div class="form-control-input">
+            <select
+              aeSelect
+              id="err-select"
+              [options]="options"
+              placeholder="-- Please choose an option --"
+            ></select>
+          </div>
+          <p class="error-message">Error: We encountered a problem with your selection.</p>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const RtlSupport: Story = {
+  parameters: {
+    controls: { disable: true },
+  },
+  render: () => ({
+    props: {
+      emirateOptions: [
+        { value: 'auh', label: 'أبوظبي' },
+        { value: 'dxb', label: 'دبي' },
+        { value: 'shj', label: 'الشارقة' },
+        { value: 'ajm', label: 'عجمان' },
+        { value: 'uaq', label: 'أم القيوين' },
+        { value: 'rak', label: 'رأس الخيمة' },
+        { value: 'fuj', label: 'الفجيرة' },
+      ],
+    },
+    template: `
+      <div class="w-[400px] p-6" dir="rtl">
+        <div aeFormControl>
+          <label for="rtl-select">الإمارة <span class="text-aered-600">*</span></label>
+          <div class="form-control-input">
+            <select
+              aeSelect
+              id="rtl-select"
+              [options]="emirateOptions"
+              placeholder="اختر الإمارة"
+            ></select>
+          </div>
+          <p class="mt-2 text-xs leading-6 text-aeblack-500">يرجى تحديد إمارة الإقامة من القائمة.</p>
+        </div>
       </div>
     `,
   }),

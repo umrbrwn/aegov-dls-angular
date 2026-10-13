@@ -5,75 +5,82 @@ import {
   signal,
   computed,
   effect,
-  inject,
   ChangeDetectionStrategy,
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { IconComponent } from '../Icon/icon.component';
-import { ToastService } from './toast.service';
+import { IconDirective } from '../Icon/icon.directive';
+import { ButtonDirective } from '../Button/button.directive';
+import { cn } from '../../utils/cn';
 
 @Component({
   selector: 'ae-toast',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective, ButtonDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
-    <!-- Standalone Controlled Toast -->
-    @if (open()) {
+    @if (isVisible() && show()) {
       <div
-        class="fixed bottom-4 right-4 z-50 w-[380px] bg-white rounded-lg shadow-lg p-4 border border-gray-200 animate-slideIn"
+        [id]="computedId()"
+        [class]="toastClasses()"
+        role="alert"
       >
-        <div class="flex justify-between items-start gap-4">
-          <div class="flex-1">
+        <div class="flex items-start">
+          @if (icon()) {
+            <div class="toast-icon" [class]="iconColor()">
+              <svg aeIcon [name]="icon()!" [size]="iconSize()"></svg>
+            </div>
+          }
+
+          <div class="toast-body">
+            @if (title()) {
+              <span class="mb-1 text-base font-semibold text-aeblack-900 block">{{ title() }}</span>
+            }
+
+            @if (message()) {
+              <div class="mb-2 font-normal">{{ message() }}</div>
+            }
+
             <ng-content></ng-content>
+
+            @if (actionText()) {
+              @if (actionHref()) {
+                <a
+                  [href]="actionHref()"
+                  aeButton
+                  size="xs"
+                  (click)="onActionClick($event)"
+                >
+                  {{ actionText() }}
+                </a>
+              } @else {
+                <button
+                  type="button"
+                  aeButton
+                  size="xs"
+                  (click)="onActionClick($event)"
+                >
+                  {{ actionText() }}
+                </button>
+              }
+            }
           </div>
-          <button
-            type="button"
-            (click)="closeToast()"
-            class="text-gray-400 hover:text-gray-600 rounded-lg p-1 hover:bg-gray-100 transition-colors cursor-pointer"
-            aria-label="Close"
-          >
-            <ae-icon name="x" [size]="16"></ae-icon>
-          </button>
+
+          @if (dismissible()) {
+            <button
+              type="button"
+              class="toast-dismiss cursor-pointer"
+              [attr.data-dismiss-target]="'#' + computedId()"
+              [attr.aria-label]="dismissAriaLabel()"
+              (click)="dismissToast()"
+            >
+              <span class="sr-only">{{ dismissAriaLabel() }}</span>
+              <svg aeIcon name="x" [size]="32"></svg>
+            </button>
+          }
         </div>
       </div>
     }
-
-    <!-- Global Toast Queue from ToastService -->
-    <div class="fixed bottom-0 right-0 flex flex-col p-4 gap-2 w-[400px] max-w-[100vw] m-0 list-none z-50 pointer-events-none">
-      @for (toast of toastService.toasts(); track toast.id) {
-        <div
-          class="bg-white rounded-lg shadow-lg p-4 border border-gray-200 animate-slideIn pointer-events-auto flex items-start justify-between gap-4"
-        >
-          <div class="flex items-start gap-3">
-            @if (toast.variant === 'success') {
-              <ae-icon name="check-circle" [size]="20" className="text-aegreen-600 mt-0.5"></ae-icon>
-            } @else if (toast.variant === 'error') {
-              <ae-icon name="x-circle" [size]="20" className="text-aered-600 mt-0.5"></ae-icon>
-            } @else if (toast.variant === 'warning') {
-              <ae-icon name="warning" [size]="20" className="text-camel-600 mt-0.5"></ae-icon>
-            } @else {
-              <ae-icon name="info" [size]="20" className="text-techblue-600 mt-0.5"></ae-icon>
-            }
-            <div>
-              @if (toast.title) {
-                <div class="font-bold text-gray-900 text-sm mb-0.5">{{ toast.title }}</div>
-              }
-              <div class="text-sm text-gray-600">{{ toast.message }}</div>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            (click)="toastService.dismiss(toast.id)"
-            class="text-gray-400 hover:text-gray-600 rounded-lg p-1 hover:bg-gray-100 transition-colors cursor-pointer"
-          >
-            <ae-icon name="x" [size]="14"></ae-icon>
-          </button>
-        </div>
-      }
-    </div>
   `,
   styles: [`
     :host {
@@ -82,36 +89,92 @@ import { ToastService } from './toast.service';
   `]
 })
 export class ToastComponent {
-  readonly toastService = inject(ToastService);
+  /**
+   * Unique ID for toast identification and data-dismiss-target
+   */
+  readonly id = input<string | undefined>(undefined);
 
-  readonly duration = input<number>(5000);
-  readonly showToast = input<boolean, unknown>(false, { transform: booleanAttribute });
+  /**
+   * Main title text (e.g. sender name or heading)
+   */
+  readonly title = input<string | undefined>(undefined);
 
-  readonly open = signal<boolean>(false);
+  /**
+   * Body message description text
+   */
+  readonly message = input<string | undefined>(undefined);
+
+  /**
+   * Icon name (e.g. 'info', 'check-circle', 'warning', 'x-circle')
+   */
+  readonly icon = input<string | undefined>('info');
+
+  /**
+   * Icon color CSS class (e.g. 'text-primary-600', 'text-aegreen-600')
+   */
+  readonly iconColor = input<string>('text-primary-600');
+
+  /**
+   * Icon size in pixels
+   */
+  readonly iconSize = input<number>(32);
+
+  /**
+   * Optional action button text (e.g. 'Replay', 'Undo')
+   */
+  readonly actionText = input<string | undefined>(undefined);
+
+  /**
+   * Optional href for action link
+   */
+  readonly actionHref = input<string | undefined>(undefined);
+
+  /**
+   * Whether to show close dismiss button
+   */
+  readonly dismissible = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Accessible aria-label for dismiss button
+   */
+  readonly dismissAriaLabel = input<string>('Close');
+
+  /**
+   * Controls toast visibility
+   */
+  readonly show = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
+  readonly className = input<string>('');
+
+  /**
+   * Event emitted when toast is dismissed
+   */
   readonly dismiss = output<void>();
-  private timeoutId: any = null;
 
-  constructor() {
-    effect(() => {
-      if (this.showToast()) {
-        this.openToast();
-      }
-    });
-  }
+  /**
+   * Event emitted when action button is clicked
+   */
+  readonly actionClick = output<MouseEvent>();
 
-  openToast(): void {
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    this.open.set(true);
-    if (this.duration() > 0) {
-      this.timeoutId = setTimeout(() => {
-        this.closeToast();
-      }, this.duration());
-    }
-  }
+  protected readonly isVisible = signal<boolean>(true);
 
-  closeToast(): void {
-    if (this.timeoutId) clearTimeout(this.timeoutId);
-    this.open.set(false);
+  private readonly uniqueId = `toast-message-${Math.random().toString(36).substring(2, 9)}`;
+
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
+
+  protected readonly toastClasses = computed(() =>
+    cn('w-full max-w-xs aegov-toast relative z-10', this.className())
+  );
+
+  dismissToast(): void {
+    this.isVisible.set(false);
     this.dismiss.emit();
+  }
+
+  protected onActionClick(event: MouseEvent): void {
+    this.actionClick.emit(event);
   }
 }

@@ -1,17 +1,17 @@
 import {
   Component,
   input,
-  signal,
+  output,
+  linkedSignal,
   computed,
   ElementRef,
   HostListener,
   ChangeDetectionStrategy,
-  output,
   booleanAttribute
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { cn } from '../../utils/cn';
-import { IconComponent } from '../Icon/icon.component';
+import { IconDirective, type IconName } from '../Icon/icon.directive';
 
 export type PopoverTrigger = 'click' | 'hover';
 export type PopoverSide = 'top' | 'right' | 'bottom' | 'left';
@@ -19,8 +19,9 @@ export type PopoverAlign = 'start' | 'center' | 'end';
 
 @Component({
   selector: 'ae-popover',
+  exportAs: 'aePopover',
   standalone: true,
-  imports: [CommonModule, IconComponent],
+  imports: [CommonModule, IconDirective],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div
@@ -28,26 +29,73 @@ export type PopoverAlign = 'start' | 'center' | 'end';
       (mouseenter)="onMouseEnter()"
       (mouseleave)="onMouseLeave()"
     >
-      <div (click)="onTriggerClick()">
-        <ng-content select="[trigger], [slot=trigger]"></ng-content>
-      </div>
+      <!-- Trigger Area -->
+      <div
+        [id]="triggerId()"
+        (click)="onTriggerClick($event)"
+        class="inline-block"
+        [attr.aria-describedby]="computedId()"
+      >
+        <ng-content select="[trigger], [slot=trigger], [popover-trigger]"></ng-content>
 
-      @if (isVisible()) {
-        <div
-          [class]="contentClasses()"
-          role="dialog"
-        >
+        @if (!hasCustomTrigger()) {
           <button
             type="button"
-            (click)="close()"
-            class="absolute right-3 rtl:left-3 rtl:right-auto top-3 inline-flex h-6 w-6 items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
-            aria-label="Close popover"
+            class="aegov-btn"
+            [class.btn-outline]="triggerVariant() === 'outline'"
+            [class.btn-soft]="triggerVariant() === 'soft'"
+            [class.btn-link]="triggerVariant() === 'link'"
+            [class.btn-secondary]="triggerColor() === 'secondary'"
+            [disabled]="disabled()"
           >
-            <ae-icon name="x" [size]="16" className="text-gray-500"></ae-icon>
+            {{ triggerText() }}
           </button>
+        }
+      </div>
 
-          <div class="pr-6">
-            <ng-content></ng-content>
+      <!-- Popover Floating Panel -->
+      @if (isVisible()) {
+        <div
+          data-popover
+          [id]="computedId()"
+          role="tooltip"
+          [class]="popoverClasses()"
+          tabindex="-1"
+          (click)="$event.stopPropagation()"
+        >
+          <!-- Optional Close Button -->
+          @if (showCloseButton()) {
+            <button
+              type="button"
+              (click)="closePopover()"
+              class="absolute top-2 end-2 p-1 text-aeblack-400 hover:text-aeblack-700 rounded-md transition-colors focus:outline-hidden"
+              aria-label="Close popover"
+            >
+              <svg aeIcon name="x" [size]="16"></svg>
+            </button>
+          }
+
+          <!-- Popover Header -->
+          <ng-content select="[popover-header], [header], [slot=header]"></ng-content>
+
+          @if (title()) {
+            <div class="popover-header bg-aeblack-50 px-3 py-2 border-b border-aeblack-50 rounded-t-lg">
+              <div class="font-semibold text-aeblack-900">{{ title() }}</div>
+            </div>
+          }
+
+          <!-- Popover Body -->
+          <div class="popover-body px-3 py-2 text-aeblack-600 rounded-b-lg">
+            <ng-content select="[popover-body], [content], [slot=content]"></ng-content>
+
+            @if (description()) {
+              <p class="mb-0 text-sm leading-relaxed">{{ description() }}</p>
+            }
+
+            <!-- Default Fallback Content -->
+            @if (!title() && !description()) {
+              <ng-content></ng-content>
+            }
           </div>
         </div>
       }
@@ -60,34 +108,131 @@ export type PopoverAlign = 'start' | 'center' | 'end';
   `]
 })
 export class PopoverComponent {
+  /**
+   * Unique HTML ID for popover (auto-generated if omitted)
+   */
+  readonly id = input<string | undefined>(undefined);
+
+  /**
+   * Popover header title text
+   */
+  readonly title = input<string | undefined>(undefined);
+
+  /**
+   * Popover body description text
+   */
+  readonly description = input<string | undefined>(undefined);
+
+  /**
+   * Text for default trigger button
+   */
+  readonly triggerText = input<string>('Default popover');
+
+  /**
+   * Default button variant: 'solid' | 'outline' | 'soft' | 'link'
+   */
+  readonly triggerVariant = input<'solid' | 'outline' | 'soft' | 'link'>('solid');
+
+  /**
+   * Default button color: 'primary' | 'secondary'
+   */
+  readonly triggerColor = input<'primary' | 'secondary'>('primary');
+
+  /**
+   * Trigger activation mode: 'click' | 'hover'
+   */
   readonly trigger = input<PopoverTrigger>('click');
+
+  /**
+   * Placement side: 'top' | 'right' | 'bottom' | 'left'
+   */
   readonly side = input<PopoverSide>('bottom');
+
+  /**
+   * Alignment along the side: 'start' | 'center' | 'end'
+   */
   readonly align = input<PopoverAlign>('center');
-  readonly sideOffset = input<number>(5);
+
+  /**
+   * Width utility class (default 'w-64')
+   */
+  readonly widthClass = input<string>('w-64');
+
+  /**
+   * Whether to show an 'X' close button inside popover
+   */
+  readonly showCloseButton = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether clicking outside dismisses the popover
+   */
+  readonly closeOnOutsideClick = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Whether Escape key dismisses the popover
+   */
+  readonly closeOnEscape = input<boolean, unknown>(true, { transform: booleanAttribute });
+
+  /**
+   * Controlled open state
+   */
   readonly isOpen = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Whether custom trigger element is projected
+   */
+  readonly hasCustomTrigger = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Disabled state
+   */
+  readonly disabled = input<boolean, unknown>(false, { transform: booleanAttribute });
+
+  /**
+   * Additional custom CSS classes
+   */
   readonly className = input<string>('');
 
+  /**
+   * Event emitted when open state changes
+   */
   readonly openChange = output<boolean>();
+  readonly open = output<void>();
+  readonly close = output<void>();
 
-  readonly openSignal = signal<boolean>(false);
+  private readonly internalOpen = linkedSignal(() => !!this.isOpen());
   private hoverTimeout: any = null;
 
-  readonly effectiveTrigger = computed<PopoverTrigger>(() => this.trigger() || 'click');
-  readonly effectiveSide = computed<PopoverSide>(() => this.side() || 'bottom');
-  readonly effectiveAlign = computed<PopoverAlign>(() => this.align() || 'center');
+  private readonly uniqueId = `popover-${Math.random().toString(36).substring(2, 9)}`;
+
+  protected readonly computedId = computed(() => this.id() || this.uniqueId);
+  protected readonly triggerId = computed(() => `${this.computedId()}-trigger`);
+
+  protected readonly isVisible = computed(() => this.internalOpen());
+
+  private readonly effectiveTrigger = computed<PopoverTrigger>(() => this.trigger() || 'click');
+  private readonly effectiveSide = computed<PopoverSide>(() => this.side() || 'bottom');
+  private readonly effectiveAlign = computed<PopoverAlign>(() => this.align() || 'center');
 
   constructor(private readonly elementRef: ElementRef) {}
 
   @HostListener('document:click', ['$event'])
   onDocumentClick(event: MouseEvent): void {
-    if (this.effectiveTrigger() === 'click' && !this.elementRef.nativeElement.contains(event.target)) {
-      this.close();
+    if (!this.isVisible() || !this.closeOnOutsideClick()) return;
+    if (!this.elementRef.nativeElement.contains(event.target)) {
+      this.closePopover();
     }
   }
 
-  readonly isVisible = computed(() => this.openSignal() || !!this.isOpen());
+  @HostListener('document:keydown', ['$event'])
+  onKeydown(event: KeyboardEvent): void {
+    if (this.isVisible() && this.closeOnEscape() && event.key === 'Escape') {
+      event.preventDefault();
+      this.closePopover();
+    }
+  }
 
-  readonly contentClasses = computed(() => {
+  protected readonly popoverClasses = computed<string>(() => {
     const s = this.effectiveSide();
     const a = this.effectiveAlign();
 
@@ -96,53 +241,85 @@ export class PopoverComponent {
 
     if (s === 'bottom') {
       sideClass = 'top-full mt-2';
-      alignClass = a === 'center' ? 'left-1/2 -translate-x-1/2' : a === 'end' ? 'right-0 rtl:left-0 rtl:right-auto' : 'left-0 rtl:right-0 rtl:left-auto';
+      alignClass =
+        a === 'center'
+          ? 'left-1/2 -translate-x-1/2'
+          : a === 'end'
+          ? 'right-0 rtl:left-0 rtl:right-auto'
+          : 'left-0 rtl:right-0 rtl:left-auto';
     } else if (s === 'top') {
       sideClass = 'bottom-full mb-2';
-      alignClass = a === 'center' ? 'left-1/2 -translate-x-1/2' : a === 'end' ? 'right-0 rtl:left-0 rtl:right-auto' : 'left-0 rtl:right-0 rtl:left-auto';
+      alignClass =
+        a === 'center'
+          ? 'left-1/2 -translate-x-1/2'
+          : a === 'end'
+          ? 'right-0 rtl:left-0 rtl:right-auto'
+          : 'left-0 rtl:right-0 rtl:left-auto';
     } else if (s === 'left') {
       sideClass = 'right-full mr-2';
-      alignClass = a === 'center' ? 'top-1/2 -translate-y-1/2' : a === 'end' ? 'bottom-0' : 'top-0';
+      alignClass =
+        a === 'center' ? 'top-1/2 -translate-y-1/2' : a === 'end' ? 'bottom-0' : 'top-0';
     } else if (s === 'right') {
       sideClass = 'left-full ml-2';
-      alignClass = a === 'center' ? 'top-1/2 -translate-y-1/2' : a === 'end' ? 'bottom-0' : 'top-0';
+      alignClass =
+        a === 'center' ? 'top-1/2 -translate-y-1/2' : a === 'end' ? 'bottom-0' : 'top-0';
     }
 
     return cn(
-      'absolute z-50 w-72 rounded-lg bg-white p-4 shadow-lg border border-gray-200 animate-fadeIn',
+      'aegov-popover !visible !opacity-100 absolute z-50 rounded-lg shadow-xl bg-whitely-50 border border-aeblack-100/60',
+      this.widthClass(),
       sideClass,
       alignClass,
       this.className()
     );
   });
 
-  onTriggerClick(): void {
+  protected onTriggerClick(event: MouseEvent): void {
+    if (this.disabled()) return;
     if (this.effectiveTrigger() === 'click') {
-      const next = !this.openSignal();
-      this.openSignal.set(next);
+      const next = !this.internalOpen();
+      this.internalOpen.set(next);
       this.openChange.emit(next);
+      if (next) this.open.emit();
+      else this.close.emit();
     }
   }
 
-  onMouseEnter(): void {
+  protected onMouseEnter(): void {
+    if (this.disabled()) return;
     if (this.effectiveTrigger() === 'hover') {
       if (this.hoverTimeout) clearTimeout(this.hoverTimeout);
-      this.openSignal.set(true);
+      this.internalOpen.set(true);
       this.openChange.emit(true);
+      this.open.emit();
     }
   }
 
-  onMouseLeave(): void {
+  protected onMouseLeave(): void {
     if (this.effectiveTrigger() === 'hover') {
       this.hoverTimeout = setTimeout(() => {
-        this.openSignal.set(false);
+        this.internalOpen.set(false);
         this.openChange.emit(false);
+        this.close.emit();
       }, 150);
     }
   }
 
-  close(): void {
-    this.openSignal.set(false);
+  openPopover(): void {
+    if (this.disabled()) return;
+    this.internalOpen.set(true);
+    this.openChange.emit(true);
+    this.open.emit();
+  }
+
+  closePopover(): void {
+    this.internalOpen.set(false);
     this.openChange.emit(false);
+    this.close.emit();
+  }
+
+  toggle(): void {
+    if (this.isVisible()) this.closePopover();
+    else this.openPopover();
   }
 }

@@ -13,13 +13,19 @@ const config: StorybookConfig = {
     config.module = config.module || { rules: [] };
     config.module.rules = config.module.rules || [];
 
-    // Specifically process tailwind.css with style-loader, css-loader and @tailwindcss/postcss
-    // without interfering with Angular's internal TypeScript / component style rules
+    // Process .storybook/storybook.css, etc. with style-loader, css-loader and @tailwindcss/postcss
+    // without interfering with Angular's internal component inline styles (?ngResource)
     config.module.rules.push({
-      test: /tailwind\.css$/,
+      test: /\.css$/,
+      resourceQuery: { not: [/ngResource/] },
       use: [
         require.resolve('style-loader'),
-        require.resolve('css-loader'),
+        {
+          loader: require.resolve('css-loader'),
+          options: {
+            import: false,
+          },
+        },
         {
           loader: require.resolve('postcss-loader'),
           options: {
