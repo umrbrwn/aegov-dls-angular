@@ -1,6 +1,6 @@
 {
   "name": "aegov-dls-angular",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Unofficial, community-driven Angular port of the UAE Government Design Language System (@aegov/design-system).",
   "scripts": {
     "generate-icons": "node scripts/generate-icons.cjs",
